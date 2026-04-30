@@ -1,16 +1,15 @@
 'use client';
 
-import { useEffect, useMemo, useRef } from 'react';
+import { useMemo } from 'react';
 import { normalizeNote } from '@/lib/chord-theory';
 
 const NOTE_ORDER = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-const KEYBOARD_START_NOTE = 'C2';
-const KEYBOARD_END_NOTE = 'C6';
 
-// Local note↔index helpers — independent of standard MIDI offset since we
-// only use them internally for ordering / scrolling. Voicing data uses note
-// names with octaves (e.g. "Eb4"); we never round-trip through MIDI numbers
-// to Tone.js, so the offset doesn't have to match Tone's internal table.
+// Internal index, not standard MIDI: idx = octave * 12 + pitchClass.
+// Pitch-class arithmetic (idx % 12) is offset-invariant, so the snap-to-C
+// and snap-to-F logic in computeVoicingRange behaves the same as if we
+// used standard MIDI numbers — and we never round-trip these values
+// through Tone.js, so the offset doesn't have to match.
 function noteToIndex(note: string): number {
   const m = note.match(/^([A-G]#?)(\d+)$/);
   if (!m) return 0;
@@ -29,25 +28,39 @@ function isBlackKey(note: string): boolean {
   return note.includes('#');
 }
 
+// Range = right hand min - 2 ... max + 2, then expand outward so the
+// start is a C (pc 0) and the end is either a C or an F (pc 0 or 5) —
+// gives a clean white-key boundary at both edges.
+function computeVoicingRange(
+  rhNotes: { note: string }[]
+): { startIdx: number; endIdx: number } {
+  if (rhNotes.length === 0) {
+    return { startIdx: noteToIndex('C4'), endIdx: noteToIndex('C6') };
+  }
+  const indices = rhNotes.map((n) => noteToIndex(normalizeNote(n.note)));
+  const minIdx = Math.min(...indices);
+  const maxIdx = Math.max(...indices);
+
+  let startIdx = minIdx - 2;
+  let endIdx = maxIdx + 2;
+  while (startIdx % 12 !== 0 && startIdx > 0) startIdx--;
+  while (endIdx % 12 !== 0 && endIdx % 12 !== 5 && endIdx < 127) endIdx++;
+  return { startIdx, endIdx };
+}
+
 type Props = {
-  lhNotes: string[];
   rhNotes: { note: string; degree: string }[];
   commonNotes: Set<string>;
   showDegrees: boolean;
 };
 
 export default function VoicingKeyboard({
-  lhNotes,
   rhNotes,
   commonNotes,
   showDegrees,
 }: Props) {
-  const wrapRef = useRef<HTMLDivElement>(null);
-  const kbRef = useRef<HTMLDivElement>(null);
-
   const { whiteKeys, blackKeys } = useMemo(() => {
-    const startIdx = noteToIndex(KEYBOARD_START_NOTE);
-    const endIdx = noteToIndex(KEYBOARD_END_NOTE);
+    const { startIdx, endIdx } = computeVoicingRange(rhNotes);
 
     const whites: { idx: number; note: string }[] = [];
     for (let i = startIdx; i <= endIdx; i++) {
@@ -70,9 +83,8 @@ export default function VoicingKeyboard({
       });
     }
     return { whiteKeys: whites, blackKeys: blacks };
-  }, []);
+  }, [rhNotes]);
 
-  const lhSet = useMemo(() => new Set(lhNotes.map(normalizeNote)), [lhNotes]);
   const rhMap = useMemo(() => {
     const m = new Map<string, { degree: string; isCommon: boolean }>();
     rhNotes.forEach((n) => {
@@ -82,87 +94,49 @@ export default function VoicingKeyboard({
     return m;
   }, [rhNotes, commonNotes]);
 
-  // Auto-scroll: center the active note range in the visible keyboard area
-  // whenever the chord (lhNotes / rhNotes) changes.
-  useEffect(() => {
-    const wrap = wrapRef.current;
-    const kb = kbRef.current;
-    if (!wrap || !kb) return;
-    const allNotes = [
-      ...lhNotes.map(normalizeNote),
-      ...rhNotes.map((n) => normalizeNote(n.note)),
-    ];
-    if (allNotes.length === 0) return;
-
-    const indices = allNotes.map(noteToIndex);
-    const minIdx = Math.min(...indices);
-    const maxIdx = Math.max(...indices);
-    const centerIdx = (minIdx + maxIdx) / 2;
-    const startIdx = noteToIndex(KEYBOARD_START_NOTE);
-    const endIdx = noteToIndex(KEYBOARD_END_NOTE);
-    const ratio = (centerIdx - startIdx) / (endIdx - startIdx);
-
-    const kbWidth = kb.scrollWidth;
-    const wrapWidth = wrap.clientWidth;
-    const target = ratio * kbWidth - wrapWidth / 2;
-    const max = kbWidth - wrapWidth;
-    const finalX = Math.max(0, Math.min(max, target));
-    wrap.scrollTo({ left: finalX, behavior: 'smooth' });
-  }, [lhNotes, rhNotes]);
-
   const keyClass = (note: string) => {
-    const isLH = lhSet.has(note);
     const rhInfo = rhMap.get(note);
     const isRH = !!rhInfo && !rhInfo.isCommon;
     const isCommon = !!rhInfo && rhInfo.isCommon;
     return (
-      'vl-' + (isBlackKey(note) ? 'key-black' : 'key-white') +
-      (isLH ? ' lh-active' : '') +
+      'vl-' +
+      (isBlackKey(note) ? 'key-black' : 'key-white') +
       (isRH ? ' rh-active' : '') +
       (isCommon ? ' common-active' : '')
     );
   };
 
   const renderLabel = (note: string) => {
-    const isLH = lhSet.has(note);
     const rhInfo = rhMap.get(note);
-    if (!isLH && !rhInfo) return null;
+    if (!rhInfo) return null;
     const noteLetter = note.replace(/\d+/, '');
-    if (isLH && !rhInfo) {
-      return <span className="vl-note-label">{noteLetter}</span>;
-    }
     return (
       <span className="vl-note-label">
         {noteLetter}
-        {showDegrees && rhInfo ? (
-          <span className="vl-degree">{rhInfo.degree}</span>
-        ) : null}
+        {showDegrees ? <span className="vl-degree">{rhInfo.degree}</span> : null}
       </span>
     );
   };
 
   return (
-    <>
-      <div className="vl-keyboard-wrap" ref={wrapRef}>
-        <div className="vl-keyboard" ref={kbRef}>
-          {whiteKeys.map((wk) => (
-            <div key={wk.note} className={keyClass(wk.note)} data-note={wk.note}>
-              {renderLabel(wk.note)}
-            </div>
-          ))}
-          {blackKeys.map((bk) => (
-            <div
-              key={bk.note}
-              className={keyClass(bk.note)}
-              data-note={bk.note}
-              style={{ left: bk.left, width: bk.width }}
-            >
-              {renderLabel(bk.note)}
-            </div>
-          ))}
-        </div>
+    <div className="vl-keyboard-wrap">
+      <div className="vl-keyboard">
+        {whiteKeys.map((wk) => (
+          <div key={wk.note} className={keyClass(wk.note)} data-note={wk.note}>
+            {renderLabel(wk.note)}
+          </div>
+        ))}
+        {blackKeys.map((bk) => (
+          <div
+            key={bk.note}
+            className={keyClass(bk.note)}
+            data-note={bk.note}
+            style={{ left: bk.left, width: bk.width }}
+          >
+            {renderLabel(bk.note)}
+          </div>
+        ))}
       </div>
-      <div className="vl-scroll-hint">← → スワイプで鍵盤全体を確認できます</div>
-    </>
+    </div>
   );
 }

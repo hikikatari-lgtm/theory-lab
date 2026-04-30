@@ -178,7 +178,6 @@ export default function VoicingLabPage() {
           </div>
 
           <VoicingKeyboard
-            lhNotes={selected.lh}
             rhNotes={selected.rh}
             commonNotes={commonNotes}
             showDegrees={showDegrees}

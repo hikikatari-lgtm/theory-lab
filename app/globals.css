@@ -1019,32 +1019,16 @@ footer {
 .vl-rh-label { color: var(--vl-rh); font-weight: 500; }
 
 .vl-keyboard-wrap {
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: hidden;
   padding: 8px 0;
-  -webkit-overflow-scrolling: touch;
   position: relative;
-  background: linear-gradient(
-    to right,
-    var(--vl-panel) 0%,
-    transparent 5%,
-    transparent 95%,
-    var(--vl-panel) 100%
-  );
 }
 .vl-keyboard {
   position: relative;
-  height: 200px;
+  height: 220px;
   display: flex;
-  min-width: 960px;
+  width: 100%;
   user-select: none;
-}
-.vl-scroll-hint {
-  text-align: center;
-  color: var(--vl-text-dim);
-  font-size: 11px;
-  margin-top: 4px;
-  opacity: 0.6;
 }
 .vl-key-white {
   flex: 1;

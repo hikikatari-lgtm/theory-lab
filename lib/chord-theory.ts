@@ -183,6 +183,23 @@ export function getResultChordName(structure: ChordStructure, keyDisplay: string
   return keyDisplay + structure.result;
 }
 
+const FLAT_TO_SHARP_PC: Record<string, string> = {
+  Db: 'C#', Eb: 'D#', Gb: 'F#', Ab: 'G#', Bb: 'A#',
+};
+
+// "Eb4" → "D#4" — flat-with-octave normalized to the sharp form used by
+// keyboard data-note attributes and by Tone.Sampler internally.
+export function normalizeNote(note: string): string {
+  const m = note.match(/^([A-G])(b|#)?(\d+)$/);
+  if (!m) return note;
+  const [, letter, accidental, oct] = m;
+  if (accidental === 'b') {
+    const flat = letter + 'b';
+    if (FLAT_TO_SHARP_PC[flat]) return FLAT_TO_SHARP_PC[flat] + oct;
+  }
+  return note;
+}
+
 const WHITE_PCS = new Set([0, 2, 4, 5, 7, 9, 11]);
 
 export function isWhiteKey(midi: number): boolean {

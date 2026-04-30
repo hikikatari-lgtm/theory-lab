@@ -1,12 +1,31 @@
 import Link from 'next/link';
 import LabHeader from '@/components/LabHeader';
 
-const LABS = [
+type LabStatus = 'active' | 'coming-soon';
+type Lab = {
+  slug: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  status: LabStatus;
+};
+
+const LABS: Lab[] = [
   {
-    href: '/labs/upper-triad',
-    tag: 'Lab 01',
+    slug: 'upper-triad',
     title: 'Upper Structure Triad Explorer',
-    desc: '左手のルート単音の上に三和音を重ねて、テンションコードがどう生まれるかを 12 キーで体感する。',
+    subtitle: '左手のルート × 右手の三和音',
+    description:
+      '左手のルート単音の上に三和音を重ねて、テンションコードがどう生まれるかを 12 キーで体感する。',
+    status: 'active',
+  },
+  {
+    slug: 'voicing-lab',
+    title: 'Voicing Lab',
+    subtitle: 'プロのボイシングを体験する',
+    description:
+      'コードネームだけでは押さえにくいコードのボイシングを、音度・ローマ数字・鍵盤で同時に体験する',
+    status: 'active',
   },
 ];
 
@@ -28,14 +47,31 @@ export default function Home() {
       </header>
 
       <div className="lab-grid">
-        {LABS.map((lab) => (
-          <Link key={lab.href} href={lab.href} className="lab-card">
-            <div className="lab-tag">{lab.tag}</div>
-            <div className="lab-title">{lab.title}</div>
-            <div className="lab-desc">{lab.desc}</div>
-            <div className="lab-cta">Open →</div>
-          </Link>
-        ))}
+        {LABS.map((lab, idx) => {
+          const tag = `Lab ${String(idx + 1).padStart(2, '0')}`;
+          const isComingSoon = lab.status === 'coming-soon';
+          const inner = (
+            <>
+              <div className="lab-tag">{tag}</div>
+              <div className="lab-title">{lab.title}</div>
+              <div className="lab-subtitle">{lab.subtitle}</div>
+              <div className="lab-desc">{lab.description}</div>
+              <div className="lab-cta">{isComingSoon ? 'Coming soon' : 'Open →'}</div>
+            </>
+          );
+          if (isComingSoon) {
+            return (
+              <div key={lab.slug} className="lab-card lab-card-disabled">
+                {inner}
+              </div>
+            );
+          }
+          return (
+            <Link key={lab.slug} href={`/labs/${lab.slug}`} className="lab-card">
+              {inner}
+            </Link>
+          );
+        })}
       </div>
 
       <footer>Directline Studio  ・  Sensation Before Theory</footer>

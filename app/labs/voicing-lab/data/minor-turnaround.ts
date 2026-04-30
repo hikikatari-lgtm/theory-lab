@@ -1,0 +1,75 @@
+export type ChordVoicing = {
+  id: string;
+  symbol: string;
+  roman: string;
+  degreesLabel: string;
+  lh: string[];
+  rh: { note: string; degree: string }[];
+};
+
+export type Progression = {
+  title: string;
+  key: string;
+  tempo: number;
+  chords: ChordVoicing[];
+};
+
+export const minorTurnaround: Progression = {
+  title: 'Minor Turnaround',
+  key: 'Cm',
+  tempo: 64,
+  chords: [
+    {
+      id: 'cm69',
+      symbol: 'Cm69',
+      roman: 'Im',
+      degreesLabel: '♭3, 5, 6, 9',
+      lh: ['C2'],
+      rh: [
+        { note: 'Eb4', degree: '♭3' },
+        { note: 'G4',  degree: '5' },
+        { note: 'A4',  degree: '6' },
+        { note: 'D5',  degree: '9' },
+      ],
+    },
+    {
+      id: 'am7b5',
+      symbol: 'Am7♭5',
+      roman: 'VIm7♭5',
+      degreesLabel: '7, R, ♭3, ♭5',
+      lh: ['A2'],
+      rh: [
+        { note: 'G4',  degree: '7' },
+        { note: 'A4',  degree: 'R' },
+        { note: 'C5',  degree: '♭3' },
+        { note: 'Eb5', degree: '♭5' },
+      ],
+    },
+    {
+      id: 'd7alt',
+      symbol: 'D7alt',
+      roman: 'II7',
+      degreesLabel: '3, ♭13, 7, #9',
+      lh: ['D2'],
+      rh: [
+        { note: 'F#4', degree: '3' },
+        { note: 'Bb4', degree: '♭13' },
+        { note: 'C5',  degree: '7' },
+        { note: 'F5',  degree: '#9' },
+      ],
+    },
+    {
+      id: 'g7alt',
+      symbol: 'G7alt',
+      roman: 'V7',
+      degreesLabel: '7, #9, 3, ♭13',
+      lh: ['G2'],
+      rh: [
+        { note: 'F4',  degree: '7' },
+        { note: 'Bb4', degree: '#9' },
+        { note: 'B4',  degree: '3' },
+        { note: 'Eb5', degree: '♭13' },
+      ],
+    },
+  ],
+};

@@ -780,12 +780,26 @@ html, body {
   font-weight: 500;
   color: var(--gold-bright);
   line-height: 1.1;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
+}
+.lab-card .lab-subtitle {
+  font-family: var(--font-jbmono), 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 10px;
 }
 .lab-card .lab-desc {
   font-size: 15px;
   color: var(--muted);
   line-height: 1.5;
+}
+.lab-card-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+  filter: grayscale(0.4);
 }
 .lab-card .lab-cta {
   margin-top: 14px;
@@ -810,3 +824,409 @@ footer {
   100% { opacity: 1; transform: translateY(0); }
 }
 .card { animation: fade-in 0.35s ease backwards; }
+
+/* ============================================================
+   VOICING LAB (Lab 02)
+   Scoped under .vl-page so its red/yellow palette doesn't leak
+   into the rest of Theory Lab. Class names prefixed with .vl- to
+   avoid collisions with .detail / .controls / .keyboard from
+   other labs.
+   ============================================================ */
+.vl-page {
+  --vl-bg: #0a0a0a;
+  --vl-panel: #1a1a1a;
+  --vl-panel-2: #232323;
+  --vl-border: #333;
+  --vl-text: #f5f5f5;
+  --vl-text-dim: #888;
+  --vl-accent: #ff6b6b;
+  --vl-lh: #4a90e2;
+  --vl-rh: #ff6b6b;
+  --vl-common: #ffd54a;
+  --vl-highlight: #ffeb3b;
+
+  background: var(--vl-bg);
+  color: var(--vl-text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  min-height: 100vh;
+  padding: 16px;
+}
+.vl-shell {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.vl-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.vl-header h1 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  font-family: inherit;
+  letter-spacing: 0;
+  font-style: normal;
+  line-height: 1.2;
+}
+.vl-header-subtitle {
+  color: var(--vl-text-dim);
+  font-size: 13px;
+}
+.vl-subtitle-roman {
+  color: var(--vl-common);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-style: italic;
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+.vl-progression {
+  background: var(--vl-panel);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+  border: 1px solid var(--vl-border);
+}
+.vl-progression-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.vl-progression-label {
+  color: var(--vl-text-dim);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.vl-tempo-display {
+  display: inline-flex;
+  align-items: center;
+  background: var(--vl-panel-2);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--vl-text-dim);
+}
+.vl-tempo-display strong {
+  color: var(--vl-text);
+  margin-left: 4px;
+}
+
+.vl-chords-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.vl-chord-card {
+  background: var(--vl-panel-2);
+  border-radius: 10px;
+  padding: 14px 8px;
+  text-align: center;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.15s;
+  user-select: none;
+}
+.vl-chord-card:hover {
+  background: #2d2d2d;
+  transform: translateY(-1px);
+}
+.vl-chord-card.selected {
+  border-color: var(--vl-accent);
+  background: #3a2828;
+}
+.vl-chord-card.playing {
+  border-color: var(--vl-highlight);
+  background: #3a3528;
+  box-shadow: 0 0 14px rgba(255, 235, 59, 0.35);
+}
+.vl-chord-symbol {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.vl-chord-roman {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--vl-common);
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-style: italic;
+}
+.vl-chord-degrees {
+  font-size: 10px;
+  color: var(--vl-text-dim);
+  letter-spacing: 0.05em;
+}
+
+.vl-detail {
+  background: var(--vl-panel);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid var(--vl-border);
+}
+.vl-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.vl-detail-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.vl-chord-name {
+  font-size: 38px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.vl-roman-large {
+  font-size: 24px;
+  color: var(--vl-common);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-style: italic;
+  font-weight: 600;
+}
+.vl-symbol-large {
+  font-size: 38px;
+}
+.vl-chord-degrees-large {
+  color: var(--vl-text-dim);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+}
+.vl-chord-meta {
+  color: var(--vl-text-dim);
+  font-size: 12px;
+  text-align: right;
+}
+.vl-chord-meta div { margin-bottom: 2px; }
+.vl-lh-label { color: var(--vl-lh); font-weight: 500; }
+.vl-rh-label { color: var(--vl-rh); font-weight: 500; }
+
+.vl-keyboard-wrap {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 8px 0;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+  background: linear-gradient(
+    to right,
+    var(--vl-panel) 0%,
+    transparent 5%,
+    transparent 95%,
+    var(--vl-panel) 100%
+  );
+}
+.vl-keyboard {
+  position: relative;
+  height: 200px;
+  display: flex;
+  min-width: 960px;
+  user-select: none;
+}
+.vl-scroll-hint {
+  text-align: center;
+  color: var(--vl-text-dim);
+  font-size: 11px;
+  margin-top: 4px;
+  opacity: 0.6;
+}
+.vl-key-white {
+  flex: 1;
+  background: linear-gradient(to bottom, #fafafa, #e8e8e8);
+  border: 1px solid #888;
+  border-radius: 0 0 4px 4px;
+  position: relative;
+  margin-right: -1px;
+}
+.vl-key-white.lh-active {
+  background: linear-gradient(to bottom, #6ba3e8, #4a90e2);
+  box-shadow: inset 0 -8px 12px rgba(0, 0, 0, 0.2);
+}
+.vl-key-white.rh-active {
+  background: linear-gradient(to bottom, #ff8a8a, #ff6b6b);
+  box-shadow: inset 0 -8px 12px rgba(0, 0, 0, 0.2);
+}
+.vl-key-white.common-active {
+  background: linear-gradient(to bottom, #ffe066, #ffd54a);
+  box-shadow: inset 0 -8px 12px rgba(0, 0, 0, 0.25),
+    0 0 12px rgba(255, 213, 74, 0.4);
+}
+.vl-key-black {
+  position: absolute;
+  height: 60%;
+  background: linear-gradient(to bottom, #1a1a1a, #000);
+  border: 1px solid #000;
+  border-radius: 0 0 3px 3px;
+  z-index: 2;
+  pointer-events: none;
+}
+.vl-key-black.lh-active {
+  background: linear-gradient(to bottom, #4a90e2, #2a70c2);
+}
+.vl-key-black.rh-active {
+  background: linear-gradient(to bottom, #ff6b6b, #df4b4b);
+}
+.vl-key-black.common-active {
+  background: linear-gradient(to bottom, #ffd54a, #e0b020);
+  box-shadow: 0 0 8px rgba(255, 213, 74, 0.5);
+}
+.vl-note-label {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+  text-align: center;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.vl-note-label .vl-degree {
+  display: block;
+  font-size: 11px;
+  color: #ffe066;
+  margin-top: 1px;
+}
+.vl-key-black .vl-note-label {
+  bottom: 6px;
+  font-size: 9px;
+}
+.vl-key-black .vl-note-label .vl-degree { font-size: 9px; }
+.vl-key-white.common-active .vl-note-label,
+.vl-key-black.common-active .vl-note-label {
+  color: #1a1a1a;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.4);
+}
+.vl-key-white.common-active .vl-note-label .vl-degree,
+.vl-key-black.common-active .vl-note-label .vl-degree {
+  color: #6b4500;
+}
+
+.vl-controls {
+  background: var(--vl-panel);
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid var(--vl-border);
+}
+.vl-controls-section { margin-bottom: 14px; }
+.vl-controls-section:last-child { margin-bottom: 0; }
+.vl-controls-label {
+  color: var(--vl-text-dim);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.vl-button-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.vl-btn {
+  background: #2d2d2d;
+  color: var(--vl-text);
+  border: 1px solid var(--vl-border);
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.15s;
+  font-family: inherit;
+  flex: 1;
+  min-width: 80px;
+}
+.vl-btn:hover { background: #3a3a3a; }
+.vl-btn:active { transform: scale(0.97); }
+.vl-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+.vl-btn-primary {
+  background: var(--vl-accent);
+  border-color: var(--vl-accent);
+  color: #fff;
+}
+.vl-btn-primary:hover { background: #ff5252; }
+.vl-btn-lh {
+  border-color: var(--vl-lh);
+  color: #6ba3e8;
+}
+.vl-btn-rh {
+  border-color: var(--vl-rh);
+  color: #ff8a8a;
+}
+
+.vl-toggle-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.vl-toggle-item {
+  background: var(--vl-panel-2);
+  color: var(--vl-text-dim);
+  border: 1px solid var(--vl-border);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: inherit;
+  font-weight: 500;
+  user-select: none;
+  transition: all 0.15s;
+  flex: 1;
+  min-width: 130px;
+}
+.vl-toggle-item:hover { background: #2d2d2d; }
+.vl-toggle-item.active {
+  background: rgba(255, 107, 107, 0.1);
+  border-color: var(--vl-accent);
+  color: var(--vl-accent);
+}
+
+/* Theory Lab back-link inside the voicing-lab page — make sure the
+   shared LabHeader still reads cleanly on this darker palette. */
+.vl-page .lab-back-link {
+  color: rgba(245, 245, 245, 0.55);
+}
+.vl-page .lab-back-link:hover {
+  color: var(--vl-accent);
+}
+
+@media (max-width: 767px) {
+  .vl-page { padding: 12px; }
+  .vl-chord-name { font-size: 28px; gap: 10px; }
+  .vl-roman-large { font-size: 18px; }
+  .vl-symbol-large { font-size: 28px; }
+  .vl-chord-symbol { font-size: 14px; }
+  .vl-chord-roman { font-size: 10px; }
+  .vl-chord-card { padding: 10px 4px; }
+  .vl-chord-degrees { font-size: 9px; }
+  .vl-chords-row { gap: 4px; }
+  .vl-btn { font-size: 12px; padding: 8px 10px; min-width: 60px; }
+  .vl-toggle-item { min-width: 110px; font-size: 11px; }
+  .vl-header-subtitle { font-size: 11px; }
+}

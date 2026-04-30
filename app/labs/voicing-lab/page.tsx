@@ -1,6 +1,14 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import LabHeader from '@/components/LabHeader';
 import { normalizeNote } from '@/lib/chord-theory';
 import {
@@ -9,19 +17,36 @@ import {
   playSustained,
   releaseAllNotes,
 } from '@/lib/audio';
-import VoicingCard from './components/VoicingCard';
 import VoicingKeyboard from './components/VoicingKeyboard';
+import ProgressionSelector from './components/ProgressionSelector';
+import ChordsRow from './components/ChordsRow';
+import BarsGrid from './components/BarsGrid';
 import {
-  minorTurnaround,
-  type ChordVoicing,
-} from './data/minor-turnaround';
+  PROGRESSIONS,
+  DEFAULT_PROGRESSION_ID,
+  buildSequence,
+} from './data';
 
 type LoadState = 'loading' | 'ready' | 'error';
 
-export default function VoicingLabPage() {
-  const progression = minorTurnaround;
-  const [selectedId, setSelectedId] = useState<string>(progression.chords[0].id);
-  const [playingId, setPlayingId] = useState<string | null>(null);
+function VoicingLabInner() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // URL is the source of truth for which progression is active.
+  // Anything else (selectedItemId, playingItemId, isWalking) is local state.
+  const urlProgId = searchParams.get('p');
+  const progressionId =
+    urlProgId && PROGRESSIONS[urlProgId] ? urlProgId : DEFAULT_PROGRESSION_ID;
+  const progression = PROGRESSIONS[progressionId];
+
+  const sequence = useMemo(() => buildSequence(progression), [progression]);
+
+  const [selectedItemId, setSelectedItemId] = useState<string>(
+    () => sequence[0]?.itemId ?? ''
+  );
+  const [playingItemId, setPlayingItemId] = useState<string | null>(null);
   const [showDegrees, setShowDegrees] = useState(true);
   const [showCommon, setShowCommon] = useState(false);
   const [loadState, setLoadState] = useState<LoadState>('loading');
@@ -30,6 +55,15 @@ export default function VoicingLabPage() {
 
   const ready = loadState === 'ready';
 
+  const stopWalk = useCallback(() => {
+    timeoutsRef.current.forEach(clearTimeout);
+    timeoutsRef.current = [];
+    releaseAllNotes();
+    setPlayingItemId(null);
+    setIsWalking(false);
+  }, []);
+
+  // Piano load
   useEffect(() => {
     let cancelled = false;
     initPiano()
@@ -46,84 +80,101 @@ export default function VoicingLabPage() {
     };
   }, []);
 
-  const selected: ChordVoicing = useMemo(
-    () =>
-      progression.chords.find((c) => c.id === selectedId) ?? progression.chords[0],
-    [selectedId, progression.chords]
-  );
-  const selectedIdx = progression.chords.findIndex((c) => c.id === selected.id);
-  const prevChord: ChordVoicing | null =
-    selectedIdx > 0 ? progression.chords[selectedIdx - 1] : null;
+  // When the progression changes (URL nav, dropdown, browser back/forward),
+  // stop any in-flight walk-through and snap selection to the new sequence's
+  // first item so we don't show stale highlights.
+  useEffect(() => {
+    stopWalk();
+    if (sequence.length > 0) {
+      setSelectedItemId(sequence[0].itemId);
+    }
+  }, [progressionId, sequence, stopWalk]);
 
+  const handleProgressionChange = (newId: string) => {
+    if (newId === progressionId) return;
+    stopWalk();
+    // router.push triggers a Next.js client-side navigation; useSearchParams
+    // updates and the effect above re-syncs selection. pushState (not
+    // replaceState) so browser Back returns to the previous progression.
+    router.push(`${pathname}?p=${newId}`, { scroll: false });
+  };
+
+  // Resolve current item with a fallback in case selectedItemId is briefly
+  // stale right after a progression switch (before the effect fires).
+  const selectedItem =
+    sequence.find((s) => s.itemId === selectedItemId) ?? sequence[0] ?? null;
+  const effectiveSelectedId = selectedItem?.itemId ?? null;
+  const selectedIdx = selectedItem
+    ? sequence.findIndex((s) => s.itemId === selectedItem.itemId)
+    : -1;
+  const voicing = selectedItem?.voicing ?? null;
+  const prevVoicing =
+    selectedIdx > 0 ? sequence[selectedIdx - 1].voicing : null;
+
+  // Common notes: any RH pitch class shared with the previous chord's RH.
   const commonNotes = useMemo(() => {
-    if (!showCommon || !prevChord) return new Set<string>();
+    if (!showCommon || !prevVoicing || !voicing) return new Set<string>();
     const prevPCs = new Set(
-      prevChord.rh.map((n) => normalizeNote(n.note).replace(/\d+/, ''))
+      prevVoicing.rh.map((n) => normalizeNote(n.note).replace(/\d+/, ''))
     );
     const result = new Set<string>();
-    selected.rh.forEach((n) => {
+    voicing.rh.forEach((n) => {
       const pc = normalizeNote(n.note).replace(/\d+/, '');
       if (prevPCs.has(pc)) result.add(normalizeNote(n.note));
     });
     return result;
-  }, [showCommon, prevChord, selected]);
+  }, [showCommon, prevVoicing, voicing]);
 
-  const allToneNotes = useMemo(
-    () => [
-      ...selected.lh.map(normalizeNote),
-      ...selected.rh.map((n) => normalizeNote(n.note)),
-    ],
-    [selected]
-  );
+  const allToneNotes = useMemo(() => {
+    if (!voicing) return [];
+    return [
+      ...voicing.lh.map(normalizeNote),
+      ...voicing.rh.map((n) => normalizeNote(n.note)),
+    ];
+  }, [voicing]);
 
   const onPlayLH = () => {
-    void playNotes(selected.lh.map(normalizeNote), 'block');
+    if (!voicing) return;
+    void playNotes(voicing.lh.map(normalizeNote), 'block');
   };
   const onPlayRH = () => {
-    void playNotes(selected.rh.map((n) => normalizeNote(n.note)), 'block');
+    if (!voicing) return;
+    void playNotes(voicing.rh.map((n) => normalizeNote(n.note)), 'block');
   };
   const onPlayBoth = () => {
+    if (allToneNotes.length === 0) return;
     void playNotes(allToneNotes, 'block');
   };
   const onPlayArp = () => {
+    if (allToneNotes.length === 0) return;
     void playNotes(allToneNotes, 'broken');
   };
 
   const walkThrough = async () => {
-    if (isWalking || !ready) return;
+    if (isWalking || !ready || sequence.length === 0) return;
     setIsWalking(true);
     const beatSec = 60 / progression.tempo;
-    const chordDurationSec = beatSec * 4;
     let cumMs = 0;
-    progression.chords.forEach((chord) => {
+    sequence.forEach((item) => {
+      const durationSec = item.beats * beatSec;
       const t = setTimeout(() => {
-        setSelectedId(chord.id);
-        setPlayingId(chord.id);
+        setSelectedItemId(item.itemId);
+        setPlayingItemId(item.itemId);
         const notes = [
-          ...chord.lh.map(normalizeNote),
-          ...chord.rh.map((n) => normalizeNote(n.note)),
+          ...item.voicing.lh.map(normalizeNote),
+          ...item.voicing.rh.map((n) => normalizeNote(n.note)),
         ];
-        void playSustained(notes, chordDurationSec * 0.95);
+        void playSustained(notes, durationSec * 0.95);
       }, cumMs);
       timeoutsRef.current.push(t);
-      cumMs += chordDurationSec * 1000;
+      cumMs += durationSec * 1000;
     });
     const finalT = setTimeout(() => {
-      setPlayingId(null);
+      setPlayingItemId(null);
       setIsWalking(false);
     }, cumMs);
     timeoutsRef.current.push(finalT);
   };
-
-  const stopWalk = () => {
-    timeoutsRef.current.forEach(clearTimeout);
-    timeoutsRef.current = [];
-    releaseAllNotes();
-    setPlayingId(null);
-    setIsWalking(false);
-  };
-
-  const romanLine = progression.chords.map((c) => c.roman).join(' - ');
 
   return (
     <div className="vl-page">
@@ -133,56 +184,71 @@ export default function VoicingLabPage() {
         <header className="vl-header">
           <h1>Voicing Lab</h1>
           <div className="vl-header-subtitle">
-            {progression.title} in {progression.key} —{' '}
-            <span className="vl-subtitle-roman">{romanLine}</span>
+            {progression.label} —{' '}
+            <span className="vl-subtitle-roman">{progression.subtitle}</span>
           </div>
         </header>
+
+        <ProgressionSelector
+          value={progressionId}
+          onChange={handleProgressionChange}
+        />
 
         <section className="vl-progression">
           <div className="vl-progression-header">
             <div className="vl-progression-label">
-              Progression — {progression.chords.length} chords
+              {progression.progressionLabel}
             </div>
             <div className="vl-tempo-display">
               ♩=<strong>{progression.tempo}</strong>
             </div>
           </div>
-          <div className="vl-chords-row">
-            {progression.chords.map((chord) => (
-              <VoicingCard
-                key={chord.id}
-                chord={chord}
-                selected={chord.id === selectedId}
-                playing={chord.id === playingId}
-                onClick={() => setSelectedId(chord.id)}
-              />
-            ))}
-          </div>
+          {progression.displayMode === 'chords-row' ? (
+            <ChordsRow
+              chords={progression.chords}
+              selectedItemId={effectiveSelectedId}
+              playingItemId={playingItemId}
+              onSelect={setSelectedItemId}
+            />
+          ) : (
+            <BarsGrid
+              progression={progression}
+              selectedItemId={effectiveSelectedId}
+              playingItemId={playingItemId}
+              onSelect={setSelectedItemId}
+            />
+          )}
         </section>
 
-        <section className="vl-detail">
-          <div className="vl-detail-header">
-            <div className="vl-detail-left">
-              <div className="vl-chord-name">
-                <span className="vl-roman-large">{selected.roman}</span>
-                <span className="vl-symbol-large">{selected.symbol}</span>
+        {voicing ? (
+          <section className="vl-detail">
+            <div className="vl-detail-header">
+              <div className="vl-detail-left">
+                <div className="vl-chord-name">
+                  <span className="vl-roman-large">{voicing.roman}</span>
+                  <span className="vl-symbol-large">{voicing.symbol}</span>
+                </div>
+                <div className="vl-chord-degrees-large">
+                  {voicing.degreesLabel}
+                </div>
               </div>
-              <div className="vl-chord-degrees-large">{selected.degreesLabel}</div>
-            </div>
-            <div className="vl-chord-meta">
-              <div className="vl-lh-label">L.H.: {selected.lh.join(', ')}</div>
-              <div className="vl-rh-label">
-                R.H.: {selected.rh.map((n) => n.note).join(', ')}
+              <div className="vl-chord-meta">
+                <div className="vl-lh-label">
+                  L.H.: {voicing.lh.join(', ')}
+                </div>
+                <div className="vl-rh-label">
+                  R.H.: {voicing.rh.map((n) => n.note).join(', ')}
+                </div>
               </div>
             </div>
-          </div>
 
-          <VoicingKeyboard
-            rhNotes={selected.rh}
-            commonNotes={commonNotes}
-            showDegrees={showDegrees}
-          />
-        </section>
+            <VoicingKeyboard
+              rhNotes={voicing.rh}
+              commonNotes={commonNotes}
+              showDegrees={showDegrees}
+            />
+          </section>
+        ) : null}
 
         <section className="vl-controls">
           <div className="vl-controls-section">
@@ -254,7 +320,7 @@ export default function VoicingLabPage() {
                   void walkThrough();
                 }}
               >
-                ▶ {progression.chords.length}コードを再生
+                ▶ 再生
               </button>
               <button
                 type="button"
@@ -269,5 +335,16 @@ export default function VoicingLabPage() {
         </section>
       </div>
     </div>
+  );
+}
+
+// useSearchParams forces opt-out of static rendering unless wrapped in a
+// Suspense boundary; the fallback renders during SSR while client-side
+// hydration takes over for the actual searchParams read.
+export default function VoicingLabPage() {
+  return (
+    <Suspense fallback={null}>
+      <VoicingLabInner />
+    </Suspense>
   );
 }

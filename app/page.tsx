@@ -24,7 +24,7 @@ const LABS: Lab[] = [
     title: 'Voicing Lab',
     subtitle: 'プロのボイシングを体験する',
     description:
-      'コードネームだけでは押さえにくいコードのボイシングを、音度・ローマ数字・鍵盤で同時に体験する',
+      'プロのボイシングを進行ごとに体験する図鑑。Minor Turnaround、F Blues Rootless など複数の進行を切り替えて学べる。',
     status: 'active',
   },
 ];

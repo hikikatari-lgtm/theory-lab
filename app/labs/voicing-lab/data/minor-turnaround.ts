@@ -1,23 +1,13 @@
-export type ChordVoicing = {
-  id: string;
-  symbol: string;
-  roman: string;
-  degreesLabel: string;
-  lh: string[];
-  rh: { note: string; degree: string }[];
-};
+import type { ChordsRowProgression } from './types';
 
-export type Progression = {
-  title: string;
-  key: string;
-  tempo: number;
-  chords: ChordVoicing[];
-};
-
-export const minorTurnaround: Progression = {
-  title: 'Minor Turnaround',
-  key: 'Cm',
+export const minorTurnaround: ChordsRowProgression = {
+  id: 'minor-turnaround',
+  label: 'Minor Turnaround in Cm',
+  subtitle: 'Im - VIm7♭5 - II7 - V7',
+  progressionLabel: 'Progression — 4 chords',
+  displayMode: 'chords-row',
   tempo: 64,
+  key: 'Cm',
   chords: [
     {
       id: 'cm69',

@@ -1,9 +1,9 @@
 'use client';
 
-import type { ChordVoicing } from '../data/minor-turnaround';
+import type { ChordsRowChord } from '../data/types';
 
 type Props = {
-  chord: ChordVoicing;
+  chord: ChordsRowChord;
   selected: boolean;
   playing: boolean;
   onClick: () => void;

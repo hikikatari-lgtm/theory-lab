@@ -12,6 +12,7 @@ import {
   getUpperTriadName,
   midiToName,
   midiToToneName,
+  computeMobileRange,
   type ChordMode,
 } from '@/lib/chord-theory';
 import {
@@ -70,6 +71,11 @@ export default function UpperTriadPage() {
     triadDegrees: currentStructure.degrees.map((d) => d.deg),
     useFlats: currentKey.useFlats,
   };
+
+  const mobileRange = useMemo(
+    () => computeMobileRange([currentChord.rootMidi, ...currentChord.triadMidis]),
+    [currentChord.rootMidi, currentChord.triadMidis]
+  );
 
   const handleModeChange = (m: ChordMode) => {
     setMode(m);
@@ -159,79 +165,94 @@ export default function UpperTriadPage() {
         ))}
       </div>
 
-      <div className="grid-cards">
-        {CHORD_STRUCTURES[mode].map((s, i) => {
-          const u = getUpperTriadName(s, currentKey.rootMidi, currentKey.useFlats);
-          const r = getResultChordName(s, currentKey.display);
-          return (
-            <ChordCard
-              key={`${mode}-${i}`}
-              keyDisplay={currentKey.display}
-              upperName={u}
-              resultName={r}
-              degrees={s.degrees.map((d) => d.deg)}
-              active={i === chordIndex}
-              disabled={!ready}
-              onClick={() => setChordIndex(i)}
-              delaySec={i * 0.04}
-            />
-          );
-        })}
-      </div>
-
-      <div className="detail">
-        <div className="detail-header">
-          <div className="detail-title-block">
-            <div className="label">Resulting Chord</div>
-            <div className="detail-title">{resultName}</div>
-            <div className="detail-formula">
-              <span className="left">{currentKey.display}</span>{' '}
-              <span style={{ color: 'var(--gold)' }}>+</span>{' '}
-              <span className="right">{upperName}</span>{' '}
-              <span style={{ color: 'var(--muted)' }}>
-                → {currentStructure.degrees.map((d) => d.deg).join(', ')}
+      <div className="ust-main">
+        <div className="ust-pane">
+          <div className="detail-header">
+            <div className="detail-title-block">
+              <div className="label">Resulting Chord</div>
+              <div className="detail-title">{resultName}</div>
+              <div className="detail-formula">
+                <span className="left">{currentKey.display}</span>{' '}
+                <span style={{ color: 'var(--gold)' }}>+</span>{' '}
+                <span className="right">{upperName}</span>{' '}
+                <span style={{ color: 'var(--muted)' }}>
+                  → {currentStructure.degrees.map((d) => d.deg).join(', ')}
+                </span>
+              </div>
+            </div>
+            <div className="hand-legend">
+              <span className="hand-tag left">
+                左手 L.H. <span className="notes">{lhDispName}</span>
+              </span>
+              <span className="hand-tag right">
+                右手 R.H. <span className="notes">{rhDispNames.join(' - ')}</span>
               </span>
             </div>
           </div>
-          <div className="hand-legend">
-            <span className="hand-tag left">
-              左手 L.H. <span className="notes">{lhDispName}</span>
-            </span>
-            <span className="hand-tag right">
-              右手 R.H. <span className="notes">{rhDispNames.join(' - ')}</span>
-            </span>
+
+          <div className="controls">
+            <button className="play-btn left-only" disabled={!ready} onClick={onPlayLeft}>
+              <span className="icon" />
+              左手のみ
+            </button>
+            <button className="play-btn right-only" disabled={!ready} onClick={onPlayRight}>
+              <span className="icon" />
+              右手のみ
+            </button>
+            <button className="play-btn" disabled={!ready} onClick={onPlayBroken}>
+              <span className="icon" />
+              分散
+            </button>
+            <button className="play-btn" disabled={!ready} onClick={onPlayBlock}>
+              <span className="icon" />
+              同時
+            </button>
+            <button className="play-btn secondary" disabled={!ready} onClick={onPlayCompare}>
+              Compare L → R → Full
+            </button>
+          </div>
+
+          <div className="ust-piano-desktop">
+            <Piano
+              highlight={highlight}
+              disabled={!ready}
+              onKeyClick={(toneName) => {
+                if (ready) playSingleNote(toneName);
+              }}
+            />
+          </div>
+          <div className="ust-piano-mobile">
+            <Piano
+              highlight={highlight}
+              disabled={!ready}
+              range={mobileRange}
+              variant="compact"
+              onKeyClick={(toneName) => {
+                if (ready) playSingleNote(toneName);
+              }}
+            />
           </div>
         </div>
 
-        <div className="controls">
-          <button className="play-btn left-only" disabled={!ready} onClick={onPlayLeft}>
-            <span className="icon" />
-            左手のみ
-          </button>
-          <button className="play-btn right-only" disabled={!ready} onClick={onPlayRight}>
-            <span className="icon" />
-            右手のみ
-          </button>
-          <button className="play-btn" disabled={!ready} onClick={onPlayBroken}>
-            <span className="icon" />
-            分散
-          </button>
-          <button className="play-btn" disabled={!ready} onClick={onPlayBlock}>
-            <span className="icon" />
-            同時
-          </button>
-          <button className="play-btn secondary" disabled={!ready} onClick={onPlayCompare}>
-            Compare L → R → Full
-          </button>
+        <div className="grid-cards">
+          {CHORD_STRUCTURES[mode].map((s, i) => {
+            const u = getUpperTriadName(s, currentKey.rootMidi, currentKey.useFlats);
+            const r = getResultChordName(s, currentKey.display);
+            return (
+              <ChordCard
+                key={`${mode}-${i}`}
+                keyDisplay={currentKey.display}
+                upperName={u}
+                resultName={r}
+                degrees={s.degrees.map((d) => d.deg)}
+                active={i === chordIndex}
+                disabled={!ready}
+                onClick={() => setChordIndex(i)}
+                delaySec={i * 0.04}
+              />
+            );
+          })}
         </div>
-
-        <Piano
-          highlight={highlight}
-          disabled={!ready}
-          onKeyClick={(toneName) => {
-            if (ready) playSingleNote(toneName);
-          }}
-        />
 
         <div className="breakdown">
           <div className="breakdown-block left">

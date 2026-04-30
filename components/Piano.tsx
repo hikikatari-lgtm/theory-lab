@@ -1,52 +1,55 @@
 'use client';
 
 import { useMemo } from 'react';
-import { midiToName, midiToToneName } from '@/lib/chord-theory';
+import {
+  isWhiteKey,
+  midiToName,
+  midiToToneName,
+  type PianoRange,
+} from '@/lib/chord-theory';
 
-const WHITE_NOTES = ['C', 'D', 'E', 'F', 'G', 'A', 'B'] as const;
+const SHARP_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
 type WhiteKey = { note: string; midi: number };
+type BlackKey = { note: string; midi: number; leftPct: number; widthPct: number };
 
-function buildKeys(startOctave: number, endOctave: number) {
+function buildKeysFromRange(startMidi: number, endMidi: number) {
   const whites: WhiteKey[] = [];
-  for (let oct = startOctave; oct <= endOctave + 1; oct++) {
-    for (const n of WHITE_NOTES) {
-      if (oct === endOctave + 1 && n !== 'C') break;
-      const note = n + oct;
-      const midi = noteToMidi(n, oct);
-      whites.push({ note, midi });
+  for (let m = startMidi; m <= endMidi; m++) {
+    if (isWhiteKey(m)) {
+      const oct = Math.floor(m / 12) - 1;
+      const i = m % 12;
+      whites.push({ note: SHARP_NAMES[i] + oct, midi: m });
     }
   }
-  const blackPattern: { after: string; name: string }[] = [
-    { after: 'C', name: 'C#' },
-    { after: 'D', name: 'D#' },
-    { after: 'F', name: 'F#' },
-    { after: 'G', name: 'G#' },
-    { after: 'A', name: 'A#' },
-  ];
-  type BlackKey = { note: string; midi: number; leftPct: number };
+  const total = whites.length || 1;
+  const blackWidthPct = (100 / total) * 0.6;
+
   const blacks: BlackKey[] = [];
-  const total = whites.length;
   whites.forEach((wk, idx) => {
-    if (idx >= total - 1) return;
-    const noteName = wk.note.replace(/\d/, '');
-    const oct = parseInt(wk.note.match(/\d+/)![0]);
-    const bp = blackPattern.find((b) => b.after === noteName);
-    if (!bp) return;
-    const blackNote = bp.name + oct;
-    const blackMidi = noteToMidi(bp.name, oct);
-    const leftPct = ((idx + 1) / total) * 100 - 1.35;
-    blacks.push({ note: blackNote, midi: blackMidi, leftPct });
+    if (idx >= whites.length - 1) return;
+    const next = whites[idx + 1];
+    if (next.midi - wk.midi !== 2) return;
+    const blackMidi = wk.midi + 1;
+    const oct = Math.floor(blackMidi / 12) - 1;
+    const i = blackMidi % 12;
+    const centerPct = ((idx + 1) / total) * 100;
+    blacks.push({
+      note: SHARP_NAMES[i] + oct,
+      midi: blackMidi,
+      leftPct: centerPct - blackWidthPct / 2,
+      widthPct: blackWidthPct,
+    });
   });
+
   return { whites, blacks };
 }
 
-function noteToMidi(name: string, oct: number): number {
-  const map: Record<string, number> = {
-    C: 0, 'C#': 1, D: 2, 'D#': 3, E: 4, F: 5,
-    'F#': 6, G: 7, 'G#': 8, A: 9, 'A#': 10, B: 11,
+function octavesToRange(startOctave: number, endOctave: number): PianoRange {
+  return {
+    startMidi: (startOctave + 1) * 12,
+    endMidi: (endOctave + 2) * 12,
   };
-  return (oct + 1) * 12 + map[name];
 }
 
 export type PianoHighlight = {
@@ -60,44 +63,48 @@ type Props = {
   highlight: PianoHighlight;
   disabled: boolean;
   onKeyClick?: (toneName: string) => void;
+  range?: PianoRange;
   startOctave?: number;
   endOctave?: number;
+  variant?: 'default' | 'compact';
 };
 
 export default function Piano({
   highlight,
   disabled,
   onKeyClick,
+  range,
   startOctave = 3,
   endOctave = 5,
+  variant = 'default',
 }: Props) {
+  const effectiveRange = range ?? octavesToRange(startOctave, endOctave);
+
   const { whites, blacks } = useMemo(
-    () => buildKeys(startOctave, endOctave),
-    [startOctave, endOctave]
+    () => buildKeysFromRange(effectiveRange.startMidi, effectiveRange.endMidi),
+    [effectiveRange.startMidi, effectiveRange.endMidi]
   );
 
   const triadIndex = (midi: number): number =>
     highlight.triadMidis.findIndex((m) => m === midi);
 
-  const renderKey = (note: string, midi: number, isBlack: boolean, leftPct?: number) => {
+  const renderWhite = (note: string, midi: number) => {
     const isLeft = highlight.rootMidi === midi;
     const ti = triadIndex(midi);
     const isRight = ti >= 0;
     const cls =
-      'key ' +
-      (isBlack ? 'black' : 'white') +
+      'key white' +
       (isLeft ? ' highlight-left' : '') +
       (isRight ? ' highlight-right' : '');
     const dispName = isLeft || isRight ? midiToName(midi, highlight.useFlats) : '';
     const degree = isLeft ? '1' : isRight ? highlight.triadDegrees[ti] ?? '' : '';
-    const isC = !isBlack && note.startsWith('C');
+    const isC = note.startsWith('C');
 
     return (
       <div
         key={note}
         className={cls}
         data-note={note}
-        style={isBlack && leftPct !== undefined ? { left: `${leftPct}%` } : undefined}
         onClick={() => {
           if (disabled) return;
           onKeyClick?.(midiToToneName(midi));
@@ -110,15 +117,48 @@ export default function Piano({
     );
   };
 
+  const renderBlack = (b: BlackKey) => {
+    const isLeft = highlight.rootMidi === b.midi;
+    const ti = triadIndex(b.midi);
+    const isRight = ti >= 0;
+    const cls =
+      'key black' +
+      (isLeft ? ' highlight-left' : '') +
+      (isRight ? ' highlight-right' : '');
+    const dispName = isLeft || isRight ? midiToName(b.midi, highlight.useFlats) : '';
+    const degree = isLeft ? '1' : isRight ? highlight.triadDegrees[ti] ?? '' : '';
+
+    return (
+      <div
+        key={b.note}
+        className={cls}
+        data-note={b.note}
+        style={{ left: `${b.leftPct}%`, width: `${b.widthPct}%` }}
+        onClick={() => {
+          if (disabled) return;
+          onKeyClick?.(midiToToneName(b.midi));
+        }}
+      >
+        <span className="degree-label">{degree}</span>
+        <span className="note-name">{dispName}</span>
+      </div>
+    );
+  };
+
+  const wrapClass =
+    'piano-wrap' +
+    (variant === 'compact' ? ' piano-wrap-compact' : '') +
+    (disabled ? ' disabled' : '');
+
   return (
-    <div className={'piano-wrap' + (disabled ? ' disabled' : '')}>
+    <div className={wrapClass}>
       <div className="piano-axis-labels">
         <span className="left">← 左手 (Root)</span>
         <span className="right">右手 (Triad) →</span>
       </div>
       <div className="piano">
-        {whites.map((w) => renderKey(w.note, w.midi, false))}
-        {blacks.map((b) => renderKey(b.note, b.midi, true, b.leftPct))}
+        {whites.map((w) => renderWhite(w.note, w.midi))}
+        {blacks.map((b) => renderBlack(b))}
       </div>
     </div>
   );

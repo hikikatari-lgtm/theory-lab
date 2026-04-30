@@ -182,3 +182,33 @@ export function getUpperTriadName(
 export function getResultChordName(structure: ChordStructure, keyDisplay: string): string {
   return keyDisplay + structure.result;
 }
+
+const WHITE_PCS = new Set([0, 2, 4, 5, 7, 9, 11]);
+
+export function isWhiteKey(midi: number): boolean {
+  return WHITE_PCS.has(((midi % 12) + 12) % 12);
+}
+
+export function ceilToWhite(midi: number): number {
+  let m = midi;
+  while (!isWhiteKey(m)) m++;
+  return m;
+}
+
+export type PianoRange = { startMidi: number; endMidi: number };
+
+// Snap to white-key boundaries with small buffer above/below the chord notes.
+// Asymmetric on purpose: lower bound nudges into the chord by ~1 semitone (less wasted
+// space on the bass side), upper bound is forced one white past maxMidi+2 (always extra
+// air above the highest tension). Min span 1.5 octaves so white keys stay tappable.
+export function computeMobileRange(midis: number[]): PianoRange {
+  if (midis.length === 0) return { startMidi: 48, endMidi: 72 };
+  const minNote = Math.min(...midis);
+  const maxNote = Math.max(...midis);
+  const startMidi = ceilToWhite(minNote - 2);
+  let endMidi = ceilToWhite(maxNote + 3);
+  while (endMidi - startMidi < 18) {
+    endMidi = ceilToWhite(endMidi + 1);
+  }
+  return { startMidi, endMidi };
+}

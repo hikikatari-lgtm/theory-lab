@@ -915,6 +915,82 @@ footer {
   color: var(--vl-text);
   margin-left: 4px;
 }
+.vl-progression-header-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.vl-variant-toggle {
+  display: inline-flex;
+  background: var(--vl-panel-2);
+  border: 1px solid var(--vl-border);
+  border-radius: 6px;
+  padding: 2px;
+  gap: 2px;
+}
+.vl-variant-btn {
+  background: transparent;
+  color: var(--vl-text-dim);
+  border: 0;
+  padding: 5px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: inherit;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.vl-variant-btn:hover { color: var(--vl-text); }
+.vl-variant-btn.active {
+  background: rgba(255, 107, 107, 0.15);
+  color: var(--vl-accent);
+}
+
+.vl-key-switch {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  background: var(--vl-panel-2);
+  border: 1px solid var(--vl-border);
+  border-radius: 8px;
+}
+.vl-key-switch-btn {
+  background: var(--vl-panel);
+  color: var(--vl-text);
+  border: 1px solid var(--vl-border);
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  min-width: 80px;
+}
+.vl-key-switch-btn:hover {
+  background: #2d2d2d;
+  border-color: var(--vl-accent);
+  color: var(--vl-accent);
+}
+.vl-key-switch-btn:active { transform: scale(0.97); }
+.vl-key-switch-display {
+  flex: 1;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--vl-text-dim);
+  letter-spacing: 0.04em;
+}
+.vl-key-switch-display strong {
+  color: var(--vl-accent);
+  margin-left: 6px;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
 
 .vl-chords-row {
   display: grid;
@@ -1342,4 +1418,9 @@ footer {
   .vl-header-subtitle { font-size: 11px; }
   .vl-selector { padding: 10px 12px; gap: 8px; }
   .vl-selector-select { font-size: 13px; padding: 9px 12px; padding-right: 32px; }
+  .vl-key-switch { padding: 8px 10px; gap: 8px; }
+  .vl-key-switch-btn { padding: 7px 10px; font-size: 12px; min-width: 56px; }
+  .vl-key-switch-display { font-size: 12px; }
+  .vl-key-switch-display strong { font-size: 16px; }
+  .vl-variant-btn { padding: 5px 10px; font-size: 11px; }
 }

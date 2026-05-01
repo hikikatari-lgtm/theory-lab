@@ -85,11 +85,23 @@ export default function VoicingKeyboard({
     return { whiteKeys: whites, blackKeys: blacks };
   }, [rhNotes]);
 
+  // Map keys are normalized (sharp) so they line up with the keyboard's own
+  // sharp-form iteration. `displayName` preserves the original spelling
+  // from rhNotes — which transposeChord set per the current key's notation
+  // (Eb in flat keys, D# in sharp keys) — so rendered labels follow the key
+  // signature instead of always showing sharps.
   const rhMap = useMemo(() => {
-    const m = new Map<string, { degree: string; isCommon: boolean }>();
+    const m = new Map<
+      string,
+      { displayName: string; degree: string; isCommon: boolean }
+    >();
     rhNotes.forEach((n) => {
       const norm = normalizeNote(n.note);
-      m.set(norm, { degree: n.degree, isCommon: commonNotes.has(norm) });
+      m.set(norm, {
+        displayName: n.note,
+        degree: n.degree,
+        isCommon: commonNotes.has(norm),
+      });
     });
     return m;
   }, [rhNotes, commonNotes]);
@@ -109,10 +121,14 @@ export default function VoicingKeyboard({
   const renderLabel = (note: string) => {
     const rhInfo = rhMap.get(note);
     if (!rhInfo) return null;
-    const noteLetter = note.replace(/\d+/, '');
+    // Pretty-print accidentals (Eb → E♭, F# → F♯) for display.
+    const letter = rhInfo.displayName
+      .replace(/-?\d+$/, '')
+      .replace('b', '♭')
+      .replace('#', '♯');
     return (
       <span className="vl-note-label">
-        {noteLetter}
+        {letter}
         {showDegrees ? <span className="vl-degree">{rhInfo.degree}</span> : null}
       </span>
     );

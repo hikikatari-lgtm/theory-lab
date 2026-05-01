@@ -1,15 +1,25 @@
 import { minorTurnaround } from './minor-turnaround';
 import { fBlues } from './f-blues';
-import type { Progression, SequenceItem } from './types';
+import { twoFiveOne } from './two-five-one';
+import type { Progression, ProgressionGroup, SequenceItem } from './types';
 
 export const PROGRESSIONS: Record<string, Progression> = {
+  'two-five-one': twoFiveOne,
   'minor-turnaround': minorTurnaround,
   'f-blues': fBlues,
 };
 
-export const PROGRESSION_LIST = [
-  { id: 'minor-turnaround', label: 'Minor Turnaround in Cm' },
-  { id: 'f-blues',          label: 'F Blues Rootless' },
+// Order matters: structural progressions first, then song-style. Group
+// is surfaced for the dropdown's <optgroup>; entries without an explicit
+// group default to '楽曲系' at the UI layer.
+export const PROGRESSION_LIST: ReadonlyArray<{
+  id: string;
+  label: string;
+  group: ProgressionGroup;
+}> = [
+  { id: 'two-five-one',     label: '251 Voicing',            group: '構造系' },
+  { id: 'minor-turnaround', label: 'Minor Turnaround in Cm', group: '楽曲系' },
+  { id: 'f-blues',          label: 'F Blues Rootless',       group: '楽曲系' },
 ];
 
 export const DEFAULT_PROGRESSION_ID = 'minor-turnaround';
@@ -48,6 +58,7 @@ export type {
   ChordsRowProgression,
   BarsGridProgression,
   Progression,
+  ProgressionGroup,
   Bar,
   SequenceItem,
 } from './types';

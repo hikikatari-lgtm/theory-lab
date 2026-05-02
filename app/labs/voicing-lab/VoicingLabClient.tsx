@@ -289,14 +289,14 @@ export default function VoicingLabClient({
   const allToneNotes = useMemo(() => {
     if (!voicing) return [];
     return [
-      ...voicing.lh.map(normalizeNote),
+      ...voicing.lh.map((n) => normalizeNote(n.note)),
       ...voicing.rh.map((n) => normalizeNote(n.note)),
     ];
   }, [voicing]);
 
   const onPlayLH = () => {
     if (!voicing) return;
-    void playNotes(voicing.lh.map(normalizeNote), 'block');
+    void playNotes(voicing.lh.map((n) => normalizeNote(n.note)), 'block');
   };
   const onPlayRH = () => {
     if (!voicing) return;
@@ -322,7 +322,7 @@ export default function VoicingLabClient({
         setSelectedItemId(item.itemId);
         setPlayingItemId(item.itemId);
         const notes = [
-          ...item.voicing.lh.map(normalizeNote),
+          ...item.voicing.lh.map((n) => normalizeNote(n.note)),
           ...item.voicing.rh.map((n) => normalizeNote(n.note)),
         ];
         void playSustained(notes, durationSec * 0.95);
@@ -451,7 +451,7 @@ export default function VoicingLabClient({
               </div>
               <div className="vl-chord-meta">
                 <div className="vl-lh-label">
-                  L.H.: {voicing.lh.join(', ')}
+                  L.H.: {voicing.lh.map((n) => n.note).join(', ')}
                 </div>
                 <div className="vl-rh-label">
                   R.H.: {voicing.rh.map((n) => n.note).join(', ')}
@@ -460,6 +460,7 @@ export default function VoicingLabClient({
             </div>
 
             <VoicingKeyboard
+              lhNotes={voicing.lh}
               rhNotes={voicing.rh}
               commonNotes={commonNotes}
               showDegrees={showDegrees}

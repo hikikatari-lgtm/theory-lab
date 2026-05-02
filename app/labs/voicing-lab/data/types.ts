@@ -1,9 +1,15 @@
+// LH and RH share the same shape so the keyboard can render both with
+// note name + degree label. Existing single-bass-note voicings (251,
+// minor turnaround, F blues) use [{ note: 'C2', degree: 'R' }]; the new
+// multi-note LH voicings (Maj9, m11) carry full chord-tone degrees.
+export type VoicingNote = { note: string; degree: string };
+
 export type Voicing = {
   symbol: string;
   roman: string;
   degreesLabel: string;
-  lh: string[];
-  rh: { note: string; degree: string }[];
+  lh: VoicingNote[];
+  rh: VoicingNote[];
 };
 
 export type ChordsRowChord = Voicing & { id: string };

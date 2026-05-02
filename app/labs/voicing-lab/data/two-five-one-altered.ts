@@ -10,7 +10,7 @@ const chords: ChordsRowChord[] = [
     symbol: 'Dm7',
     roman: 'IIm7',
     degreesLabel: '♭3, 5, ♭7, 9',
-    lh: ['D2'],
+    lh: [{ note: 'D2', degree: 'R' }],
     rh: [
       { note: 'F4', degree: '♭3' },
       { note: 'A4', degree: '5'  },
@@ -23,7 +23,7 @@ const chords: ChordsRowChord[] = [
     symbol: 'G7(♯9♯5)',
     roman: 'V7(♯9♯5)',
     degreesLabel: '♭7, ♯9, 3, ♯5',
-    lh: ['G2'],
+    lh: [{ note: 'G2', degree: 'R' }],
     rh: [
       { note: 'F4',  degree: '♭7' },
       { note: 'Bb4', degree: '♯9' },
@@ -36,7 +36,7 @@ const chords: ChordsRowChord[] = [
     symbol: 'CM7',
     roman: 'IM7',
     degreesLabel: '3, 5, M7, 9',
-    lh: ['C2'],
+    lh: [{ note: 'C2', degree: 'R' }],
     rh: [
       { note: 'E4', degree: '3'  },
       { note: 'G4', degree: '5'  },

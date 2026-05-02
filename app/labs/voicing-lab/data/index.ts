@@ -1,12 +1,14 @@
 import { minorTurnaround } from './minor-turnaround';
 import { fBlues } from './f-blues';
 import { twoFiveOne } from './two-five-one';
+import { over } from './over';
 import type { Progression, ProgressionGroup, SequenceItem } from './types';
 
 export const PROGRESSIONS: Record<string, Progression> = {
   'two-five-one': twoFiveOne,
   'minor-turnaround': minorTurnaround,
   'f-blues': fBlues,
+  'over': over,
 };
 
 // Order matters: structural progressions first, then song-style. Group
@@ -20,6 +22,7 @@ export const PROGRESSION_LIST: ReadonlyArray<{
   { id: 'two-five-one',     label: '251 Voicing',            group: '構造系' },
   { id: 'minor-turnaround', label: 'Minor Turnaround in Cm', group: '楽曲系' },
   { id: 'f-blues',          label: 'F Blues Rootless',       group: '楽曲系' },
+  { id: 'over',             label: 'Over / Robert Glasper',  group: '楽曲系' },
 ];
 
 export const DEFAULT_PROGRESSION_ID = 'minor-turnaround';

@@ -3,10 +3,7 @@ import type { ChordsRowChord, ChordsRowProgression } from './types';
 // maj7's 9-3-M7 voicing: LH plays root + 5, RH plays 9, 3, M7.
 // Defined as a single chord on the I, transposed to all 12 keys via
 // the standard pipeline so the same shape can be studied on every root.
-//
-// NOTE: VoicingKeyboard only renders RH notes — the LH (root + 5) plays
-// in audio and is shown in the L.H. text label, but doesn't get its own
-// keyboard markers.
+// The keyboard renders LH in blue and RH in red.
 
 const chords: ChordsRowChord[] = [
   {
@@ -14,7 +11,10 @@ const chords: ChordsRowChord[] = [
     symbol: 'CM9',
     roman: 'IM9',
     degreesLabel: 'L.H. R, 5 / R.H. 9, 3, M7',
-    lh: ['C3', 'G3'],
+    lh: [
+      { note: 'C3', degree: 'R' },
+      { note: 'G3', degree: '5' },
+    ],
     rh: [
       { note: 'D4', degree: '9'  },
       { note: 'E4', degree: '3'  },

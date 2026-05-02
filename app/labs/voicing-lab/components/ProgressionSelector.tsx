@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { PROGRESSION_LIST } from '../data';
 import type { ProgressionGroup } from '../data';
 
@@ -16,12 +17,19 @@ const GROUP_ORDER: ReadonlyArray<{ key: ProgressionGroup; label: string }> = [
   { key: '楽曲系', label: '🎵 楽曲系' },
 ];
 
-const GROUPED_PROGRESSIONS = GROUP_ORDER.map(({ key, label }) => ({
-  label,
-  items: PROGRESSION_LIST.filter((p) => p.group === key),
-})).filter((g) => g.items.length > 0);
-
 export default function ProgressionSelector({ value, onChange }: Props) {
+  // Bucketing happens inside the component (not at module top-level) so
+  // Next.js HMR picks up new entries in PROGRESSION_LIST without needing
+  // a manual restart of the dev server / re-import of this file.
+  const groupedProgressions = useMemo(
+    () =>
+      GROUP_ORDER.map(({ key, label }) => ({
+        label,
+        items: PROGRESSION_LIST.filter((p) => p.group === key),
+      })).filter((g) => g.items.length > 0),
+    []
+  );
+
   return (
     <section className="vl-selector">
       <span className="vl-selector-label">進行を選ぶ</span>
@@ -30,7 +38,7 @@ export default function ProgressionSelector({ value, onChange }: Props) {
         value={value}
         onChange={(e) => onChange(e.target.value)}
       >
-        {GROUPED_PROGRESSIONS.map((g) => (
+        {groupedProgressions.map((g) => (
           <optgroup key={g.label} label={g.label}>
             {g.items.map((p) => (
               <option key={p.id} value={p.id}>

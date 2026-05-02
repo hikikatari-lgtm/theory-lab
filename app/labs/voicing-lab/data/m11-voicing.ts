@@ -5,11 +5,8 @@ import type { ChordsRowChord, ChordsRowProgression } from './types';
 // (B♭, D, F), which spells out ♭7, 9, 11 over the m11 root.
 //
 // Single chord on the Im11, transposed to all 12 keys via the standard
-// pipeline so the same shape is studied on every root.
-//
-// NOTE: VoicingKeyboard only renders RH notes — the LH triad plays in
-// audio and is shown in the L.H. text label, but doesn't get its own
-// keyboard markers.
+// pipeline so the same shape is studied on every root. The keyboard
+// renders LH in blue and RH in red.
 
 const chords: ChordsRowChord[] = [
   {
@@ -17,7 +14,11 @@ const chords: ChordsRowChord[] = [
     symbol: 'Cm11',
     roman: 'Im11',
     degreesLabel: 'L.H. R, ♭3, 5 / R.H. ♭7, 9, 11 (全音下のメジャー)',
-    lh: ['C3', 'Eb3', 'G3'],
+    lh: [
+      { note: 'C3',  degree: 'R'  },
+      { note: 'Eb3', degree: '♭3' },
+      { note: 'G3',  degree: '5'  },
+    ],
     rh: [
       { note: 'Bb3', degree: '♭7' },
       { note: 'D4',  degree: '9'  },

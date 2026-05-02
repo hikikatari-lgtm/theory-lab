@@ -93,9 +93,11 @@ function transposeNote(note: string, semitones: number, toKey: string): string {
 
 // Minimal contract a chord must satisfy to be transposable. Generic
 // `transposeChord` preserves any extra fields (id, roman, degreesLabel, ...).
+// Both LH and RH carry the same { note, degree } shape so transposition
+// rewrites the pitch and leaves the degree label untouched.
 export type TransposableChord = {
   symbol: string;
-  lh: string[];
+  lh: { note: string; degree: string }[];
   rh: { note: string; degree: string }[];
 };
 
@@ -153,7 +155,10 @@ export function transposeChord<T extends TransposableChord>(
   return {
     ...chord,
     symbol: newSymbol,
-    lh: chord.lh.map((n) => transposeNote(n, semitones, toKey)),
+    lh: chord.lh.map((lh) => ({
+      ...lh,
+      note: transposeNote(lh.note, semitones, toKey),
+    })),
     rh: chord.rh.map((rh) => ({
       ...rh,
       note: transposeNote(rh.note, semitones, toKey),

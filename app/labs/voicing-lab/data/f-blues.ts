@@ -13,7 +13,7 @@ export const fBlues: BarsGridProgression = {
       symbol: 'F7',
       roman: 'I7',
       degreesLabel: '♭7, 3, 13',
-      lh: ['F2'],
+      lh: [{ note: 'F2', degree: 'R' }],
       rh: [
         { note: 'Eb4', degree: '♭7' },
         { note: 'A4',  degree: '3' },
@@ -24,7 +24,7 @@ export const fBlues: BarsGridProgression = {
       symbol: 'B♭7',
       roman: 'IV7',
       degreesLabel: '3, ♭7, 9',
-      lh: ['Bb2'],
+      lh: [{ note: 'Bb2', degree: 'R' }],
       rh: [
         { note: 'D4',  degree: '3' },
         { note: 'Ab4', degree: '♭7' },
@@ -35,7 +35,7 @@ export const fBlues: BarsGridProgression = {
       symbol: 'D7',
       roman: 'VI7',
       degreesLabel: '3, ♭7, ♭9',
-      lh: ['D2'],
+      lh: [{ note: 'D2', degree: 'R' }],
       rh: [
         { note: 'F#4', degree: '3' },
         { note: 'C5',  degree: '♭7' },
@@ -46,7 +46,7 @@ export const fBlues: BarsGridProgression = {
       symbol: 'Gm7',
       roman: 'IIm7',
       degreesLabel: '♭7, 9, ♭3, 5',
-      lh: ['G2'],
+      lh: [{ note: 'G2', degree: 'R' }],
       rh: [
         { note: 'F4',  degree: '♭7' },
         { note: 'A4',  degree: '9' },
@@ -58,7 +58,7 @@ export const fBlues: BarsGridProgression = {
       symbol: 'C7',
       roman: 'V7',
       degreesLabel: '3, 13, ♭7, 9',
-      lh: ['C2'],
+      lh: [{ note: 'C2', degree: 'R' }],
       rh: [
         { note: 'E4',  degree: '3' },
         { note: 'A4',  degree: '13' },

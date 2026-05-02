@@ -1,8 +1,9 @@
 import type { ChordsRowProgression } from './types';
 
-// Glasper-style "Over" voicings: RH plays the close chord-tone triad
-// (R, 3, 5 or R, 5, 7) in the mid–high register; LH plays the upper
-// extensions (7, 9, 11, 13) clustered just below.
+// Glasper-style "Over" voicings: LH plays the chord-tone triad
+// (R, 3, 5 etc.) in the mid LH register; RH plays the upper extensions
+// (M7, 9, 11, 13) immediately above so the two hands sit in adjacent
+// octaves (no large gap).
 
 export const over: ChordsRowProgression = {
   id: 'over',
@@ -14,49 +15,49 @@ export const over: ChordsRowProgression = {
   key: 'F',
   chords: [
     {
-      id: 'dbmaj9',
-      symbol: 'D♭M9',
-      roman: '♭VIM9',
-      degreesLabel: 'L.H. M7, 9 / R.H. R, 3, 5',
+      id: 'bbmaj7',
+      symbol: 'B♭M7',
+      roman: 'IVM7',
+      degreesLabel: 'L.H. R, 3, 5 / R.H. M7, 9',
       lh: [
-        { note: 'C3',  degree: 'M7' },
-        { note: 'Eb3', degree: '9'  },
+        { note: 'Bb3', degree: 'R' },
+        { note: 'D4',  degree: '3' },
+        { note: 'F4',  degree: '5' },
       ],
       rh: [
-        { note: 'Db4', degree: 'R' },
-        { note: 'F4',  degree: '3' },
-        { note: 'Ab4', degree: '5' },
+        { note: 'A4', degree: 'M7' },
+        { note: 'C5', degree: '9'  },
       ],
     },
     {
       id: 'dm11',
       symbol: 'Dm11',
       roman: 'VIm11',
-      degreesLabel: 'L.H. ♭7, 9, 11 / R.H. R, ♭3, 5',
+      degreesLabel: 'L.H. R, ♭3, 5 / R.H. ♭7, 9, 11',
       lh: [
-        { note: 'C3', degree: '♭7' },
-        { note: 'E3', degree: '9'  },
-        { note: 'G3', degree: '11' },
+        { note: 'D3', degree: 'R'  },
+        { note: 'F3', degree: '♭3' },
+        { note: 'A3', degree: '5'  },
       ],
       rh: [
-        { note: 'D4', degree: 'R'  },
-        { note: 'F4', degree: '♭3' },
-        { note: 'A4', degree: '5'  },
+        { note: 'C4', degree: '♭7' },
+        { note: 'E4', degree: '9'  },
+        { note: 'G4', degree: '11' },
       ],
     },
     {
       id: 'fmaj7',
       symbol: 'FM7',
       roman: 'IM7',
-      degreesLabel: 'L.H. M7, 3 / R.H. R, 3, 5',
+      degreesLabel: 'L.H. R, 3, 5 / R.H. M7, 3',
       lh: [
-        { note: 'E3', degree: 'M7' },
-        { note: 'A3', degree: '3'  },
+        { note: 'F3', degree: 'R' },
+        { note: 'A3', degree: '3' },
+        { note: 'C4', degree: '5' },
       ],
       rh: [
-        { note: 'F4', degree: 'R' },
-        { note: 'A4', degree: '3' },
-        { note: 'C5', degree: '5' },
+        { note: 'E4', degree: 'M7' },
+        { note: 'A4', degree: '3'  },
       ],
     },
     {
@@ -75,7 +76,7 @@ export const over: ChordsRowProgression = {
       ],
     },
     {
-      id: 'bbmaj7',
+      id: 'bbmaj7-tbd',
       symbol: 'B♭M7',
       roman: 'IVM7',
       degreesLabel: 'L.H. 9, 3, 13 / R.H. R, 5, M7',

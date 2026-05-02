@@ -14,7 +14,7 @@ export const minorTurnaround: ChordsRowProgression = {
       symbol: 'Cm69',
       roman: 'Im',
       degreesLabel: '♭3, 5, 6, 9',
-      lh: ['C2'],
+      lh: [{ note: 'C2', degree: 'R' }],
       rh: [
         { note: 'Eb4', degree: '♭3' },
         { note: 'G4',  degree: '5' },
@@ -27,7 +27,7 @@ export const minorTurnaround: ChordsRowProgression = {
       symbol: 'Am7♭5',
       roman: 'VIm7♭5',
       degreesLabel: '7, R, ♭3, ♭5',
-      lh: ['A2'],
+      lh: [{ note: 'A2', degree: 'R' }],
       rh: [
         { note: 'G4',  degree: '7' },
         { note: 'A4',  degree: 'R' },
@@ -40,7 +40,7 @@ export const minorTurnaround: ChordsRowProgression = {
       symbol: 'D7alt',
       roman: 'II7',
       degreesLabel: '3, ♭13, 7, #9',
-      lh: ['D2'],
+      lh: [{ note: 'D2', degree: 'R' }],
       rh: [
         { note: 'F#4', degree: '3' },
         { note: 'Bb4', degree: '♭13' },
@@ -53,7 +53,7 @@ export const minorTurnaround: ChordsRowProgression = {
       symbol: 'G7alt',
       roman: 'V7',
       degreesLabel: '7, #9, 3, ♭13',
-      lh: ['G2'],
+      lh: [{ note: 'G2', degree: 'R' }],
       rh: [
         { note: 'F4',  degree: '7' },
         { note: 'Bb4', degree: '#9' },

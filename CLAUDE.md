@@ -70,24 +70,26 @@ Bars-grid progressions pass through unchanged.
   (A/Bb/B) push notes up an octave; the `VoicingKeyboard` auto-range
   absorbs this.
 - `transposeChord<T>` is generic — preserves `id`, `roman`,
-  `degreesLabel`, etc. Only `symbol`, `lh`, and `rh[].note` are
-  rewritten. Roman numerals and degree labels never change.
+  `degreesLabel`, etc. Only `symbol`, `lh[].note`, and `rh[].note` are
+  rewritten. Roman numerals and per-note degree labels never change.
 
 ### Two-layer note-name convention
 
 This is load-bearing. Don't collapse the layers.
 
-- **Display layer**: `voicing.lh` / `voicing.rh[].note` use ASCII flats
-  (`'Eb4'`, `'Ab5'`) chosen by `KEY_NOTATION`. Chord symbols use Unicode
+- **Display layer**: `voicing.lh[].note` / `voicing.rh[].note` use ASCII
+  flats (`'Eb4'`, `'Ab5'`) chosen by `KEY_NOTATION`. Both hands share
+  the same `{ note, degree }` shape — single-bass-note voicings just
+  carry one entry with `degree: 'R'`. Chord symbols use Unicode
   (`'B♭7'`, `'C♯m7'`) for visual polish, matching pre-existing data.
-  The keyboard's per-key labels go through `VoicingKeyboard.rhMap`'s
-  `displayName` field (the original from `voicing.rh`), then ASCII →
-  Unicode for rendering.
+  The keyboard's per-key labels go through `VoicingKeyboard.rhMap`/
+  `lhMap`'s `displayName` field (the original from `voicing.lh`/`.rh`),
+  then ASCII → Unicode for rendering.
 - **Audio/keyboard-matching layer**: notes pass through `normalizeNote`
   (`Eb → D#`) before reaching Tone.Sampler or being used as
   `data-note` map keys. The keyboard generates white/black keys from a
-  sharp-only `NOTE_ORDER`, so `rhMap` is keyed by the normalized form
-  to line up with iteration.
+  sharp-only `NOTE_ORDER`, so `rhMap`/`lhMap` are keyed by the normalized
+  form to line up with iteration.
 
 ### URL is the single source of truth
 

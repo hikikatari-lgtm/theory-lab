@@ -28,16 +28,18 @@ function isBlackKey(note: string): boolean {
   return note.includes('#');
 }
 
-// Range = right hand min - 2 ... max + 2, then expand outward so the
-// start is a C (pc 0) and the end is either a C or an F (pc 0 or 5) —
-// gives a clean white-key boundary at both edges.
+// Range = (min of LH+RH) - 2 ... (max of LH+RH) + 2, then expand outward
+// so the start is a C (pc 0) and the end is either a C or an F (pc 0 or
+// 5) — gives a clean white-key boundary at both edges. Including LH
+// matters for the new multi-note LH voicings (Maj9, m11) where the LH
+// triad sits a couple octaves below RH and would be cut off otherwise.
 function computeVoicingRange(
-  rhNotes: { note: string }[]
+  notes: { note: string }[]
 ): { startIdx: number; endIdx: number } {
-  if (rhNotes.length === 0) {
+  if (notes.length === 0) {
     return { startIdx: noteToIndex('C4'), endIdx: noteToIndex('C6') };
   }
-  const indices = rhNotes.map((n) => noteToIndex(normalizeNote(n.note)));
+  const indices = notes.map((n) => noteToIndex(normalizeNote(n.note)));
   const minIdx = Math.min(...indices);
   const maxIdx = Math.max(...indices);
 
@@ -48,19 +50,30 @@ function computeVoicingRange(
   return { startIdx, endIdx };
 }
 
+type VoicingNote = { note: string; degree: string };
+
 type Props = {
-  rhNotes: { note: string; degree: string }[];
+  lhNotes: VoicingNote[];
+  rhNotes: VoicingNote[];
   commonNotes: Set<string>;
   showDegrees: boolean;
 };
 
+// Visual hand assignment for a key. RH wins ties: if the same pitch
+// somehow appears in both hands (very unusual, but possible if a future
+// voicing doubles a note across hands), the RH color/label takes
+// precedence so the chord-tone degree is the one shown.
+type Hand = 'lh' | 'rh' | null;
+
 export default function VoicingKeyboard({
+  lhNotes,
   rhNotes,
   commonNotes,
   showDegrees,
 }: Props) {
   const { whiteKeys, blackKeys } = useMemo(() => {
-    const { startIdx, endIdx } = computeVoicingRange(rhNotes);
+    const allNotes = [...lhNotes, ...rhNotes];
+    const { startIdx, endIdx } = computeVoicingRange(allNotes);
 
     const whites: { idx: number; note: string }[] = [];
     for (let i = startIdx; i <= endIdx; i++) {
@@ -83,13 +96,17 @@ export default function VoicingKeyboard({
       });
     }
     return { whiteKeys: whites, blackKeys: blacks };
-  }, [rhNotes]);
+  }, [lhNotes, rhNotes]);
 
   // Map keys are normalized (sharp) so they line up with the keyboard's own
   // sharp-form iteration. `displayName` preserves the original spelling
-  // from rhNotes — which transposeChord set per the current key's notation
-  // (Eb in flat keys, D# in sharp keys) — so rendered labels follow the key
-  // signature instead of always showing sharps.
+  // from the source notes — which transposeChord set per the current key's
+  // notation (Eb in flat keys, D# in sharp keys) — so rendered labels
+  // follow the key signature instead of always showing sharps.
+  //
+  // The two maps share the same shape; `commonNotes` highlighting is
+  // RH-only (it tracks shared chord tones with the previous chord, which
+  // is a right-hand voice-leading concern).
   const rhMap = useMemo(() => {
     const m = new Map<
       string,
@@ -106,30 +123,50 @@ export default function VoicingKeyboard({
     return m;
   }, [rhNotes, commonNotes]);
 
+  const lhMap = useMemo(() => {
+    const m = new Map<string, { displayName: string; degree: string }>();
+    lhNotes.forEach((n) => {
+      const norm = normalizeNote(n.note);
+      m.set(norm, { displayName: n.note, degree: n.degree });
+    });
+    return m;
+  }, [lhNotes]);
+
+  const handFor = (note: string): Hand => {
+    if (rhMap.has(note)) return 'rh';
+    if (lhMap.has(note)) return 'lh';
+    return null;
+  };
+
   const keyClass = (note: string) => {
-    const rhInfo = rhMap.get(note);
-    const isRH = !!rhInfo && !rhInfo.isCommon;
-    const isCommon = !!rhInfo && rhInfo.isCommon;
+    const hand = handFor(note);
+    const rhInfo = hand === 'rh' ? rhMap.get(note) : undefined;
+    const isCommon = !!rhInfo?.isCommon;
+    const isRH = hand === 'rh' && !isCommon;
+    const isLH = hand === 'lh';
     return (
       'vl-' +
       (isBlackKey(note) ? 'key-black' : 'key-white') +
+      (isLH ? ' lh-active' : '') +
       (isRH ? ' rh-active' : '') +
       (isCommon ? ' common-active' : '')
     );
   };
 
   const renderLabel = (note: string) => {
-    const rhInfo = rhMap.get(note);
-    if (!rhInfo) return null;
+    const hand = handFor(note);
+    if (!hand) return null;
+    const info = hand === 'rh' ? rhMap.get(note) : lhMap.get(note);
+    if (!info) return null;
     // Pretty-print accidentals (Eb → E♭, F# → F♯) for display.
-    const letter = rhInfo.displayName
+    const letter = info.displayName
       .replace(/-?\d+$/, '')
       .replace('b', '♭')
       .replace('#', '♯');
     return (
       <span className="vl-note-label">
         {letter}
-        {showDegrees ? <span className="vl-degree">{rhInfo.degree}</span> : null}
+        {showDegrees ? <span className="vl-degree">{info.degree}</span> : null}
       </span>
     );
   };

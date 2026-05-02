@@ -10,7 +10,7 @@ const variantA: ChordsRowChord[] = [
     symbol: 'Dm7',
     roman: 'IIm7',
     degreesLabel: '♭3, 5, ♭7, 9',
-    lh: ['D2'],
+    lh: [{ note: 'D2', degree: 'R' }],
     rh: [
       { note: 'F4', degree: '♭3' },
       { note: 'A4', degree: '5'  },
@@ -23,7 +23,7 @@ const variantA: ChordsRowChord[] = [
     symbol: 'G7',
     roman: 'V7',
     degreesLabel: '♭7, 9, 3, 13',
-    lh: ['G2'],
+    lh: [{ note: 'G2', degree: 'R' }],
     rh: [
       { note: 'F4', degree: '♭7' },
       { note: 'A4', degree: '9'  },
@@ -36,7 +36,7 @@ const variantA: ChordsRowChord[] = [
     symbol: 'CM7',
     roman: 'IM7',
     degreesLabel: '3, 5, M7, 9',
-    lh: ['C2'],
+    lh: [{ note: 'C2', degree: 'R' }],
     rh: [
       { note: 'E4', degree: '3'  },
       { note: 'G4', degree: '5'  },
@@ -52,7 +52,7 @@ const variantB: ChordsRowChord[] = [
     symbol: 'Dm7',
     roman: 'IIm7',
     degreesLabel: '♭7, 9, ♭3, 5',
-    lh: ['D2'],
+    lh: [{ note: 'D2', degree: 'R' }],
     rh: [
       { note: 'C5', degree: '♭7' },
       { note: 'E5', degree: '9'  },
@@ -65,7 +65,7 @@ const variantB: ChordsRowChord[] = [
     symbol: 'G7',
     roman: 'V7',
     degreesLabel: '3, 13, ♭7, 9',
-    lh: ['G2'],
+    lh: [{ note: 'G2', degree: 'R' }],
     rh: [
       { note: 'B4', degree: '3'  },
       { note: 'E5', degree: '13' },
@@ -78,7 +78,7 @@ const variantB: ChordsRowChord[] = [
     symbol: 'CM7',
     roman: 'IM7',
     degreesLabel: 'M7, 9, 3, 5',
-    lh: ['C2'],
+    lh: [{ note: 'C2', degree: 'R' }],
     rh: [
       { note: 'B4', degree: 'M7' },
       { note: 'D5', degree: '9'  },

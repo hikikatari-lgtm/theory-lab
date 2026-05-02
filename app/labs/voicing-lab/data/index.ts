@@ -5,6 +5,7 @@ import { twoFiveOneAltered } from './two-five-one-altered';
 import { maj9Voicing } from './maj9-voicing';
 import { m11Voicing } from './m11-voicing';
 import { over } from './over';
+import { virtualInsanity } from './virtual-insanity';
 import type { Progression, ProgressionGroup, SequenceItem } from './types';
 
 export const PROGRESSIONS: Record<string, Progression> = {
@@ -15,6 +16,7 @@ export const PROGRESSIONS: Record<string, Progression> = {
   'minor-turnaround': minorTurnaround,
   'f-blues': fBlues,
   'over': over,
+  'virtual-insanity': virtualInsanity,
 };
 
 // Order matters: structural progressions first, then song-style. Group
@@ -31,7 +33,8 @@ export const PROGRESSION_LIST: ReadonlyArray<{
   { id: 'm11-voicing',          label: 'm11 Voicing',            group: '構造系' },
   { id: 'minor-turnaround',     label: 'Minor Turnaround in Cm', group: '楽曲系' },
   { id: 'f-blues',              label: 'F Blues Rootless',       group: '楽曲系' },
-  { id: 'over',                 label: 'Over / Robert Glasper',  group: '楽曲系' },
+  { id: 'over',                 label: 'Over / Robert Glasper',     group: '楽曲系' },
+  { id: 'virtual-insanity',     label: 'Virtual Insanity / Jamiroquai', group: '楽曲系' },
 ];
 
 export const DEFAULT_PROGRESSION_ID = 'minor-turnaround';

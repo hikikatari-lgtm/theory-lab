@@ -61,18 +61,18 @@ export const over: ChordsRowProgression = {
       ],
     },
     {
-      id: 'gm9',
-      symbol: 'Gm9',
-      roman: 'IIm9',
-      degreesLabel: 'L.H. ♭7, 9 / R.H. R, ♭3, 5',
+      id: 'gm-maj9',
+      symbol: 'GmM9',
+      roman: 'IImM9',
+      degreesLabel: 'L.H. R, ♭3, 5 / R.H. M7, 9',
       lh: [
-        { note: 'F3', degree: '♭7' },
-        { note: 'A3', degree: '9'  },
+        { note: 'G3',  degree: 'R'  },
+        { note: 'Bb3', degree: '♭3' },
+        { note: 'D4',  degree: '5'  },
       ],
       rh: [
-        { note: 'G4',  degree: 'R'  },
-        { note: 'Bb4', degree: '♭3' },
-        { note: 'D5',  degree: '5'  },
+        { note: 'F#4', degree: 'M7' },
+        { note: 'A4',  degree: '9'  },
       ],
     },
     {

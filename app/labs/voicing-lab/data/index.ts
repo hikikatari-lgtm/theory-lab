@@ -1,5 +1,6 @@
 import { minorTurnaround } from './minor-turnaround';
 import { minorCadenceCycle } from './minor-cadence-cycle';
+import { minorCadenceCycleExtended } from './minor-cadence-cycle-extended';
 import { blueBossa } from './blue-bossa';
 import { autumnLeaves } from './autumn-leaves';
 import { bodyAndSoul } from './body-and-soul';
@@ -28,6 +29,7 @@ export const PROGRESSIONS: Record<string, Progression> = {
   'm11-voicing': m11Voicing,
   'minor-turnaround': minorTurnaround,
   'minor-cadence-cycle': minorCadenceCycle,
+  'minor-cadence-cycle-extended': minorCadenceCycleExtended,
   'blue-bossa': blueBossa,
   'autumn-leaves': autumnLeaves,
   'body-and-soul': bodyAndSoul,
@@ -61,6 +63,7 @@ export const PROGRESSION_LIST: ReadonlyArray<{
   { id: 'minor-two-five-one-altered', label: 'Minor 251 Altered Voicing', group: 'progression' },
   { id: 'minor-turnaround',     label: 'Minor Turnaround in Cm', group: 'progression' },
   { id: 'minor-cadence-cycle',  label: 'Minor Cadence Cycle',    group: 'progression' },
+  { id: 'minor-cadence-cycle-extended', label: 'Minor Cadence Cycle Extended', group: 'progression' },
   { id: 'f-blues',              label: 'F Blues Rootless',       group: 'progression' },
   // tune — full transcribed standards
   { id: 'autumn-leaves',        label: 'Autumn Leaves',          group: 'tune' },

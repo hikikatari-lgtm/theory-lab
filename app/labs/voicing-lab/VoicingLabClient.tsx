@@ -29,6 +29,19 @@ import {
 
 type LoadState = 'loading' | 'ready' | 'error';
 
+// Phase 6: playback mode controls how Walk Through schedules notes.
+//   voicing-only: legacy behavior — LH+RH sustained for the full chord
+//                 duration, one attack per chord.
+//   walking-bass: if the chord carries `walkingBass.notes`, the LH plays
+//                 each note one-per-beat. RH unchanged.
+//   rhythm:       if the chord carries `rhythm.hits`, the RH fires a
+//                 short staccato attack at each hit position. LH unchanged.
+//   both:         walking-bass + rhythm combined.
+// When the selected mode requires data that's missing on a given chord,
+// that hand falls back to the sustained behavior — so existing
+// progressions without rhythm/walkingBass data play identically.
+type PlaybackMode = 'voicing-only' | 'walking-bass' | 'rhythm' | 'both';
+
 type Props = {
   initialProgressionId: string;
   initialVariantType: 'a' | 'b';
@@ -91,6 +104,7 @@ export default function VoicingLabClient({
   const [showCommon, setShowCommon] = useState(false);
   const [loadState, setLoadState] = useState<LoadState>('loading');
   const [isWalking, setIsWalking] = useState(false);
+  const [playbackMode, setPlaybackMode] = useState<PlaybackMode>('voicing-only');
   const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   const showVariantToggle =
@@ -316,20 +330,62 @@ export default function VoicingLabClient({
     setIsWalking(true);
     const beatSec = 60 / progression.tempo;
     let cumMs = 0;
+
+    const wantWalkingBass =
+      playbackMode === 'walking-bass' || playbackMode === 'both';
+    const wantRhythm = playbackMode === 'rhythm' || playbackMode === 'both';
+
     sequence.forEach((item) => {
       const durationSec = item.beats * beatSec;
-      const t = setTimeout(() => {
+      const startMs = cumMs;
+      const lhNotes = item.voicing.lh.map((n) => normalizeNote(n.note));
+      const rhNotes = item.voicing.rh.map((n) => normalizeNote(n.note));
+
+      // Selection / playing highlight at chord start (independent of how
+      // LH/RH are scheduled — even with rhythm/walking-bass, the cell
+      // lights up once per chord change).
+      const tHighlight = setTimeout(() => {
         setSelectedItemId(item.itemId);
         setPlayingItemId(item.itemId);
-        const notes = [
-          ...item.voicing.lh.map((n) => normalizeNote(n.note)),
-          ...item.voicing.rh.map((n) => normalizeNote(n.note)),
-        ];
-        void playSustained(notes, durationSec * 0.95);
-      }, cumMs);
-      timeoutsRef.current.push(t);
+      }, startMs);
+      timeoutsRef.current.push(tHighlight);
+
+      // LH: walking-bass note-per-beat, otherwise one sustained attack.
+      if (wantWalkingBass && item.walkingBass) {
+        item.walkingBass.notes.forEach((noteName, beatIdx) => {
+          const t = setTimeout(() => {
+            void playSustained([normalizeNote(noteName)], beatSec * 0.95);
+          }, startMs + beatIdx * beatSec * 1000);
+          timeoutsRef.current.push(t);
+        });
+      } else {
+        const tLh = setTimeout(() => {
+          void playSustained(lhNotes, durationSec * 0.95);
+        }, startMs);
+        timeoutsRef.current.push(tLh);
+      }
+
+      // RH: rhythm-driven staccato hits, otherwise one sustained attack.
+      // Each hit is ~half a beat long — long enough to ring through a
+      // typical comping figure, short enough to feel articulated.
+      if (wantRhythm && item.rhythm) {
+        const hitDurSec = beatSec * 0.5;
+        item.rhythm.hits.forEach((hitBeat) => {
+          const t = setTimeout(() => {
+            void playSustained(rhNotes, hitDurSec);
+          }, startMs + hitBeat * beatSec * 1000);
+          timeoutsRef.current.push(t);
+        });
+      } else {
+        const tRh = setTimeout(() => {
+          void playSustained(rhNotes, durationSec * 0.95);
+        }, startMs);
+        timeoutsRef.current.push(tRh);
+      }
+
       cumMs += durationSec * 1000;
     });
+
     const finalT = setTimeout(() => {
       setPlayingItemId(null);
       setIsWalking(false);
@@ -548,6 +604,20 @@ export default function VoicingLabClient({
               >
                 ■ 停止
               </button>
+              <select
+                className="vl-mode-select"
+                value={playbackMode}
+                onChange={(e) =>
+                  setPlaybackMode(e.target.value as PlaybackMode)
+                }
+                disabled={isWalking}
+                aria-label="再生モード"
+              >
+                <option value="voicing-only">コードのみ</option>
+                <option value="walking-bass">+ Walking Bass</option>
+                <option value="rhythm">+ Rhythm</option>
+                <option value="both">+ Walking Bass + Rhythm</option>
+              </select>
             </div>
           </div>
         </section>

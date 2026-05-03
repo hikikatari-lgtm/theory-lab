@@ -3,6 +3,7 @@ import { minorCadenceCycle } from './minor-cadence-cycle';
 import { blueBossa } from './blue-bossa';
 import { autumnLeaves } from './autumn-leaves';
 import { bodyAndSoul } from './body-and-soul';
+import { blueInGreen } from './blue-in-green';
 import { fBlues } from './f-blues';
 import { twoFiveOne } from './two-five-one';
 import { twoFiveOneAltered } from './two-five-one-altered';
@@ -26,6 +27,7 @@ export const PROGRESSIONS: Record<string, Progression> = {
   'blue-bossa': blueBossa,
   'autumn-leaves': autumnLeaves,
   'body-and-soul': bodyAndSoul,
+  'blue-in-green': blueInGreen,
   'f-blues': fBlues,
   'over': over,
   'virtual-insanity': virtualInsanity,
@@ -50,6 +52,7 @@ export const PROGRESSION_LIST: ReadonlyArray<{
   { id: 'blue-bossa',           label: 'Blue Bossa',             group: '楽曲系' },
   { id: 'autumn-leaves',        label: 'Autumn Leaves',          group: '楽曲系' },
   { id: 'body-and-soul',        label: 'Body And Soul',          group: '楽曲系' },
+  { id: 'blue-in-green',        label: 'Blue In Green - Bill Evans', group: '楽曲系' },
   { id: 'f-blues',              label: 'F Blues Rootless',       group: '楽曲系' },
   { id: 'over',                 label: 'Over / Robert Glasper',     group: '楽曲系' },
   { id: 'virtual-insanity',     label: 'Virtual Insanity / Jamiroquai', group: '楽曲系' },

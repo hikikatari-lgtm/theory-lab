@@ -95,10 +95,16 @@ function transposeNote(note: string, semitones: number, toKey: string): string {
 // `transposeChord` preserves any extra fields (id, roman, degreesLabel, ...).
 // Both LH and RH carry the same { note, degree } shape so transposition
 // rewrites the pitch and leaves the degree label untouched.
+//
+// Phase 6: optional `walkingBass.notes` is also re-spelled per-key when
+// present. The note strings here use the same ASCII format as lh/rh
+// (e.g. "C2", "F#3"); the player normalizes via normalizeNote at
+// playback time.
 export type TransposableChord = {
   symbol: string;
   lh: { note: string; degree: string }[];
   rh: { note: string; degree: string }[];
+  walkingBass?: { pattern: string; notes: string[] };
 };
 
 function semitoneDelta(fromKey: string, toKey: string): number {
@@ -163,6 +169,14 @@ export function transposeChord<T extends TransposableChord>(
       ...rh,
       note: transposeNote(rh.note, semitones, toKey),
     })),
+    ...(chord.walkingBass && {
+      walkingBass: {
+        ...chord.walkingBass,
+        notes: chord.walkingBass.notes.map((n) =>
+          transposeNote(n, semitones, toKey)
+        ),
+      },
+    }),
   } as T;
 }
 

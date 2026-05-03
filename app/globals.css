@@ -1138,7 +1138,7 @@ footer {
   border-color: var(--vl-accent);
 }
 
-/* ---------- 12-bar grid ---------- */
+/* ---------- bars grid (4 cols, any number of rows) ---------- */
 .vl-bars-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

@@ -6,6 +6,7 @@ import { autumnLeaves } from './autumn-leaves';
 import { bodyAndSoul } from './body-and-soul';
 import { blueInGreen } from './blue-in-green';
 import { soWhat } from './so-what';
+import { solar } from './solar';
 import { misty } from './misty';
 import { flyMeToTheMoon } from './fly-me-to-the-moon';
 import { takeFive } from './take-five';
@@ -35,6 +36,7 @@ export const PROGRESSIONS: Record<string, Progression> = {
   'body-and-soul': bodyAndSoul,
   'blue-in-green': blueInGreen,
   'so-what': soWhat,
+  'solar': solar,
   'misty': misty,
   'fly-me-to-the-moon': flyMeToTheMoon,
   'take-five': takeFive,
@@ -74,6 +76,7 @@ export const PROGRESSION_LIST: ReadonlyArray<{
   { id: 'misty',                label: 'Misty - Erroll Garner',  group: 'tune' },
   { id: 'over',                 label: 'Over / Robert Glasper',  group: 'tune' },
   { id: 'so-what',              label: 'So What - Miles Davis',  group: 'tune' },
+  { id: 'solar',                label: 'Solar - Miles Davis',    group: 'tune' },
   { id: 'take-five',            label: 'Take Five - Paul Desmond (5/4)', group: 'tune' },
   { id: 'virtual-insanity',     label: 'Virtual Insanity / Jamiroquai',  group: 'tune' },
 ];

@@ -1,5 +1,8 @@
 import { minorTurnaround } from './minor-turnaround';
 import { minorCadenceCycle } from './minor-cadence-cycle';
+import { blueBossa } from './blue-bossa';
+import { autumnLeaves } from './autumn-leaves';
+import { bodyAndSoul } from './body-and-soul';
 import { fBlues } from './f-blues';
 import { twoFiveOne } from './two-five-one';
 import { twoFiveOneAltered } from './two-five-one-altered';
@@ -20,6 +23,9 @@ export const PROGRESSIONS: Record<string, Progression> = {
   'm11-voicing': m11Voicing,
   'minor-turnaround': minorTurnaround,
   'minor-cadence-cycle': minorCadenceCycle,
+  'blue-bossa': blueBossa,
+  'autumn-leaves': autumnLeaves,
+  'body-and-soul': bodyAndSoul,
   'f-blues': fBlues,
   'over': over,
   'virtual-insanity': virtualInsanity,
@@ -41,6 +47,9 @@ export const PROGRESSION_LIST: ReadonlyArray<{
   { id: 'm11-voicing',          label: 'm11 Voicing',            group: '構造系' },
   { id: 'minor-turnaround',     label: 'Minor Turnaround in Cm', group: '楽曲系' },
   { id: 'minor-cadence-cycle',  label: 'Minor Cadence Cycle',    group: '楽曲系' },
+  { id: 'blue-bossa',           label: 'Blue Bossa',             group: '楽曲系' },
+  { id: 'autumn-leaves',        label: 'Autumn Leaves',          group: '楽曲系' },
+  { id: 'body-and-soul',        label: 'Body And Soul',          group: '楽曲系' },
   { id: 'f-blues',              label: 'F Blues Rootless',       group: '楽曲系' },
   { id: 'over',                 label: 'Over / Robert Glasper',     group: '楽曲系' },
   { id: 'virtual-insanity',     label: 'Virtual Insanity / Jamiroquai', group: '楽曲系' },

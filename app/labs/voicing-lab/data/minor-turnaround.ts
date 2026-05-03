@@ -62,4 +62,5 @@ export const minorTurnaround: ChordsRowProgression = {
       ],
     },
   ],
+  group: 'progression',
 };

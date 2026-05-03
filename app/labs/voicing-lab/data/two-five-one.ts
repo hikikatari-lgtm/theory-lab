@@ -100,7 +100,7 @@ export const twoFiveOne: ChordsRowProgression = {
   // re-derives the displayed sequence from `variants[type]` + currentKey
   // once variant/key state is wired up.
   chords: variantA,
-  group: '構造系',
+  group: 'progression',
   supportsAllKeys: true,
   hasVariants: true,
   baseKey: 'C',

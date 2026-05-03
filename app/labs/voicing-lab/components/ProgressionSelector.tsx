@@ -11,10 +11,13 @@ type Props = {
 
 // Display order and label for the dropdown's <optgroup>s. Entries from
 // PROGRESSION_LIST are bucketed by their `group` field; empty groups are
-// dropped so adding a new structural progression "just works."
+// dropped so adding a new structural progression "just works." Items
+// inside each group are sorted alphabetically (locale-aware, numeric so
+// "251" sorts as a number rather than character-by-character).
 const GROUP_ORDER: ReadonlyArray<{ key: ProgressionGroup; label: string }> = [
-  { key: '構造系', label: '🔧 構造系' },
-  { key: '楽曲系', label: '🎵 楽曲系' },
+  { key: 'structure',   label: '🔧 構造系' },
+  { key: 'progression', label: '🔁 進行系' },
+  { key: 'tune',        label: '🎵 楽曲系' },
 ];
 
 export default function ProgressionSelector({ value, onChange }: Props) {
@@ -25,7 +28,12 @@ export default function ProgressionSelector({ value, onChange }: Props) {
     () =>
       GROUP_ORDER.map(({ key, label }) => ({
         label,
-        items: PROGRESSION_LIST.filter((p) => p.group === key),
+        items: PROGRESSION_LIST
+          .filter((p) => p.group === key)
+          .slice()
+          .sort((a, b) =>
+            a.label.localeCompare(b.label, 'en', { numeric: true })
+          ),
       })).filter((g) => g.items.length > 0),
     []
   );

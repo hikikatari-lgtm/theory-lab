@@ -134,4 +134,5 @@ export const virtualInsanity: ChordsRowProgression = {
       ],
     },
   ],
+  group: 'tune',
 };

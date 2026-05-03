@@ -14,7 +14,14 @@ export type Voicing = {
 
 export type ChordsRowChord = Voicing & { id: string };
 
-export type ProgressionGroup = '構造系' | '楽曲系';
+// Three buckets for the progression dropdown:
+//   - structure:   single-chord voicings (Maj9, m11) — "1 コードの響き"
+//   - progression: generic jazz patterns not tied to a specific tune
+//                  (251 family, blues, turnarounds, cadence cycles)
+//   - tune:        full transcribed pieces from the standards repertoire
+// The strings are English keys for code; the Japanese display labels
+// (🔧 構造系 / 🔁 進行系 / 🎵 楽曲系) live in ProgressionSelector.tsx.
+export type ProgressionGroup = 'structure' | 'progression' | 'tune';
 
 export type ChordsRowProgression = {
   id: string;

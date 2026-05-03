@@ -66,5 +66,5 @@ export const soWhat: BarsGridProgression = {
     { number: 15, chords: [{ key: 'Ebm11', beats: 4 }] },
     { number: 16, chords: [{ key: 'Ebm11', beats: 4 }] },
   ],
-  group: '楽曲系',
+  group: 'tune',
 };

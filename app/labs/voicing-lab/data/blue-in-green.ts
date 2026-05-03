@@ -134,5 +134,5 @@ export const blueInGreen: BarsGridProgression = {
     { number: 9,  chords: [{ key: 'Dm69', beats: 2 }, { key: 'EbM7', beats: 2 }] },
     { number: 10, chords: [{ key: 'Dm69', beats: 4 }] },
   ],
-  group: '楽曲系',
+  group: 'tune',
 };

@@ -57,7 +57,7 @@ export const minorTwoFiveOne: ChordsRowProgression = {
   tempo: 80,
   key: 'Cm',
   chords,
-  group: '構造系',
+  group: 'progression',
   supportsAllKeys: true,
   baseKey: 'C',
 };

@@ -55,7 +55,7 @@ export const twoFiveOneAltered: ChordsRowProgression = {
   tempo: 80,
   key: 'C',
   chords,
-  group: '構造系',
+  group: 'progression',
   supportsAllKeys: true,
   baseKey: 'C',
 };

@@ -127,5 +127,5 @@ export const flyMeToTheMoon: BarsGridProgression = {
     { number: 15, chords: [{ key: 'E7',    beats: 4 }] },
     { number: 16, chords: [{ key: 'Am7',   beats: 4 }] },
   ],
-  group: '楽曲系',
+  group: 'tune',
 };

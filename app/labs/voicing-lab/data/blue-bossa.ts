@@ -124,5 +124,5 @@ export const blueBossa: BarsGridProgression = {
     { number: 15, chords: [{ key: 'Cm7',    beats: 4 }] },
     { number: 16, chords: [{ key: 'Cm7',    beats: 4 }] },
   ],
-  group: '楽曲系',
+  group: 'tune',
 };

@@ -175,5 +175,5 @@ export const misty: BarsGridProgression = {
     { number: 15, chords: [{ key: 'Gm7',  beats: 2 }, { key: 'C7',  beats: 2 }] },
     { number: 16, chords: [{ key: 'Fm7',  beats: 2 }, { key: 'Bb7', beats: 2 }] },
   ],
-  group: '楽曲系',
+  group: 'tune',
 };

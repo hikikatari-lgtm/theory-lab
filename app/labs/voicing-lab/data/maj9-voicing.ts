@@ -32,7 +32,7 @@ export const maj9Voicing: ChordsRowProgression = {
   tempo: 80,
   key: 'C',
   chords,
-  group: '構造系',
+  group: 'structure',
   supportsAllKeys: true,
   baseKey: 'C',
 };

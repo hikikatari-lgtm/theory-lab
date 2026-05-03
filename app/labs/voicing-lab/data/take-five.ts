@@ -97,5 +97,5 @@ export const takeFive: BarsGridProgression = {
     { number: 15, chords: [{ key: 'Fs7', beats: 5 }] },
     { number: 16, chords: [{ key: 'Fs7', beats: 5 }] },
   ],
-  group: '楽曲系',
+  group: 'tune',
 };

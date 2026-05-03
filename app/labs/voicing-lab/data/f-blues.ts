@@ -81,4 +81,5 @@ export const fBlues: BarsGridProgression = {
     { number: 11, chords: [{ key: 'F7',  beats: 2 }, { key: 'D7', beats: 2 }] },
     { number: 12, chords: [{ key: 'Gm7', beats: 2 }, { key: 'C7', beats: 2 }] },
   ],
+  group: 'progression',
 };

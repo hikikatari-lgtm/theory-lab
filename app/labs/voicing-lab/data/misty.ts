@@ -1,4 +1,4 @@
-import type { BarsGridProgression, RhythmInfo } from './types';
+import type { BarsGridProgression, RhythmInfo, WalkingBassInfo } from './types';
 
 // Phase 6-C: Rhythm A = downbeat + upbeat-of-2 ([0, 1.5]). The
 // canonical "dotted-quarter + eighth" jazz comping figure. Both hits
@@ -6,6 +6,25 @@ import type { BarsGridProgression, RhythmInfo } from './types';
 // same RhythmInfo applies uniformly to all chord events — full bars
 // (1, 3, 9, 11) and the many half-bar splits alike.
 const RHYTHM_A: RhythmInfo = { pattern: 'A', hits: [0, 1.5] };
+
+// Phase 6-D: Ascending walking bass — 4 chord-tones for full bars
+// (1-3-5-M7 / 1-♭3-5-♭7 / 1-3-5-♭7), R-3 (or R-♭3) for half bars.
+// Dominants with ♭9 / ♯11 / etc. use natural chord tones in the bass.
+// A♭m7's ♭3 is C♭ enharmonically, written as B3 to keep the audio
+// pipeline (sharp pitch classes) consistent — same convention used
+// elsewhere in the data.
+const WB_EbM7_FULL:  WalkingBassInfo = { pattern: 'ascending', notes: ['Eb2', 'G2',  'Bb2', 'D3']  };
+const WB_EbM7_HALF:  WalkingBassInfo = { pattern: 'ascending', notes: ['Eb2', 'G2']  };
+const WB_Bbm7_HALF:  WalkingBassInfo = { pattern: 'ascending', notes: ['Bb2', 'Db3'] };
+const WB_Eb7_HALF:   WalkingBassInfo = { pattern: 'ascending', notes: ['Eb2', 'G2']  };
+const WB_AbM7_FULL:  WalkingBassInfo = { pattern: 'ascending', notes: ['Ab2', 'C3',  'Eb3', 'G3']  };
+const WB_Abm7_HALF:  WalkingBassInfo = { pattern: 'ascending', notes: ['Ab2', 'B2']  };
+const WB_Db7_HALF:   WalkingBassInfo = { pattern: 'ascending', notes: ['Db2', 'F2']  };
+const WB_Cm7_HALF:   WalkingBassInfo = { pattern: 'ascending', notes: ['C2',  'Eb2'] };
+const WB_Fm7_HALF:   WalkingBassInfo = { pattern: 'ascending', notes: ['F2',  'Ab2'] };
+const WB_Bb7_HALF:   WalkingBassInfo = { pattern: 'ascending', notes: ['Bb2', 'D3']  };
+const WB_Gm7_HALF:   WalkingBassInfo = { pattern: 'ascending', notes: ['G2',  'Bb2'] };
+const WB_C7_HALF:    WalkingBassInfo = { pattern: 'ascending', notes: ['C2',  'E2']  };
 
 // Misty (Erroll Garner, 1954) — Eb-major ballad. 16-bar version of the
 // 32-bar AABA form: A1 (8 bars) + A2 (same 8 bars), no bridge. The A
@@ -164,58 +183,58 @@ export const misty: BarsGridProgression = {
   },
   bars: [
     // A1 (1-8)
-    { number: 1,  chords: [{ key: 'EbM7', beats: 4, rhythm: RHYTHM_A }] },
+    { number: 1,  chords: [{ key: 'EbM7', beats: 4, walkingBass: WB_EbM7_FULL, rhythm: RHYTHM_A }] },
     { number: 2,  chords: [
-      { key: 'Bbm7', beats: 2, rhythm: RHYTHM_A },
-      { key: 'Eb7',  beats: 2, rhythm: RHYTHM_A },
+      { key: 'Bbm7', beats: 2, walkingBass: WB_Bbm7_HALF, rhythm: RHYTHM_A },
+      { key: 'Eb7',  beats: 2, walkingBass: WB_Eb7_HALF,  rhythm: RHYTHM_A },
     ] },
-    { number: 3,  chords: [{ key: 'AbM7', beats: 4, rhythm: RHYTHM_A }] },
+    { number: 3,  chords: [{ key: 'AbM7', beats: 4, walkingBass: WB_AbM7_FULL, rhythm: RHYTHM_A }] },
     { number: 4,  chords: [
-      { key: 'Abm7', beats: 2, rhythm: RHYTHM_A },
-      { key: 'Db7',  beats: 2, rhythm: RHYTHM_A },
+      { key: 'Abm7', beats: 2, walkingBass: WB_Abm7_HALF, rhythm: RHYTHM_A },
+      { key: 'Db7',  beats: 2, walkingBass: WB_Db7_HALF,  rhythm: RHYTHM_A },
     ] },
     { number: 5,  chords: [
-      { key: 'EbM7', beats: 2, rhythm: RHYTHM_A },
-      { key: 'Cm7',  beats: 2, rhythm: RHYTHM_A },
+      { key: 'EbM7', beats: 2, walkingBass: WB_EbM7_HALF, rhythm: RHYTHM_A },
+      { key: 'Cm7',  beats: 2, walkingBass: WB_Cm7_HALF,  rhythm: RHYTHM_A },
     ] },
     { number: 6,  chords: [
-      { key: 'Fm7',  beats: 2, rhythm: RHYTHM_A },
-      { key: 'Bb7',  beats: 2, rhythm: RHYTHM_A },
+      { key: 'Fm7',  beats: 2, walkingBass: WB_Fm7_HALF,  rhythm: RHYTHM_A },
+      { key: 'Bb7',  beats: 2, walkingBass: WB_Bb7_HALF,  rhythm: RHYTHM_A },
     ] },
     { number: 7,  chords: [
-      { key: 'Gm7',  beats: 2, rhythm: RHYTHM_A },
-      { key: 'C7',   beats: 2, rhythm: RHYTHM_A },
+      { key: 'Gm7',  beats: 2, walkingBass: WB_Gm7_HALF,  rhythm: RHYTHM_A },
+      { key: 'C7',   beats: 2, walkingBass: WB_C7_HALF,   rhythm: RHYTHM_A },
     ] },
     { number: 8,  chords: [
-      { key: 'Fm7',  beats: 2, rhythm: RHYTHM_A },
-      { key: 'Bb7',  beats: 2, rhythm: RHYTHM_A },
+      { key: 'Fm7',  beats: 2, walkingBass: WB_Fm7_HALF,  rhythm: RHYTHM_A },
+      { key: 'Bb7',  beats: 2, walkingBass: WB_Bb7_HALF,  rhythm: RHYTHM_A },
     ] },
     // A2 (9-16) — identical to A1
-    { number: 9,  chords: [{ key: 'EbM7', beats: 4, rhythm: RHYTHM_A }] },
+    { number: 9,  chords: [{ key: 'EbM7', beats: 4, walkingBass: WB_EbM7_FULL, rhythm: RHYTHM_A }] },
     { number: 10, chords: [
-      { key: 'Bbm7', beats: 2, rhythm: RHYTHM_A },
-      { key: 'Eb7',  beats: 2, rhythm: RHYTHM_A },
+      { key: 'Bbm7', beats: 2, walkingBass: WB_Bbm7_HALF, rhythm: RHYTHM_A },
+      { key: 'Eb7',  beats: 2, walkingBass: WB_Eb7_HALF,  rhythm: RHYTHM_A },
     ] },
-    { number: 11, chords: [{ key: 'AbM7', beats: 4, rhythm: RHYTHM_A }] },
+    { number: 11, chords: [{ key: 'AbM7', beats: 4, walkingBass: WB_AbM7_FULL, rhythm: RHYTHM_A }] },
     { number: 12, chords: [
-      { key: 'Abm7', beats: 2, rhythm: RHYTHM_A },
-      { key: 'Db7',  beats: 2, rhythm: RHYTHM_A },
+      { key: 'Abm7', beats: 2, walkingBass: WB_Abm7_HALF, rhythm: RHYTHM_A },
+      { key: 'Db7',  beats: 2, walkingBass: WB_Db7_HALF,  rhythm: RHYTHM_A },
     ] },
     { number: 13, chords: [
-      { key: 'EbM7', beats: 2, rhythm: RHYTHM_A },
-      { key: 'Cm7',  beats: 2, rhythm: RHYTHM_A },
+      { key: 'EbM7', beats: 2, walkingBass: WB_EbM7_HALF, rhythm: RHYTHM_A },
+      { key: 'Cm7',  beats: 2, walkingBass: WB_Cm7_HALF,  rhythm: RHYTHM_A },
     ] },
     { number: 14, chords: [
-      { key: 'Fm7',  beats: 2, rhythm: RHYTHM_A },
-      { key: 'Bb7',  beats: 2, rhythm: RHYTHM_A },
+      { key: 'Fm7',  beats: 2, walkingBass: WB_Fm7_HALF,  rhythm: RHYTHM_A },
+      { key: 'Bb7',  beats: 2, walkingBass: WB_Bb7_HALF,  rhythm: RHYTHM_A },
     ] },
     { number: 15, chords: [
-      { key: 'Gm7',  beats: 2, rhythm: RHYTHM_A },
-      { key: 'C7',   beats: 2, rhythm: RHYTHM_A },
+      { key: 'Gm7',  beats: 2, walkingBass: WB_Gm7_HALF,  rhythm: RHYTHM_A },
+      { key: 'C7',   beats: 2, walkingBass: WB_C7_HALF,   rhythm: RHYTHM_A },
     ] },
     { number: 16, chords: [
-      { key: 'Fm7',  beats: 2, rhythm: RHYTHM_A },
-      { key: 'Bb7',  beats: 2, rhythm: RHYTHM_A },
+      { key: 'Fm7',  beats: 2, walkingBass: WB_Fm7_HALF,  rhythm: RHYTHM_A },
+      { key: 'Bb7',  beats: 2, walkingBass: WB_Bb7_HALF,  rhythm: RHYTHM_A },
     ] },
   ],
   group: 'tune',

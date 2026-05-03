@@ -1,4 +1,23 @@
-import type { BarsGridProgression, WalkingBassInfo } from './types';
+import type { BarsGridProgression, RhythmInfo, WalkingBassInfo } from './types';
+
+// Phase 6-D: Rhythm D applied per its design intent — the half-bar
+// chord-change-pickup version of Rhythm C. Bar-level pattern is
+// [0.5, 2, 2.5, 3.5] (four hits at upbeat-of-1, downbeat-of-3,
+// upbeat-of-3, upbeat-of-4). For full-bar chords the four hits go on
+// one chord; for the many half-bar pairs in this piece the pattern is
+// SPLIT across the two chord events so the hit at beat 3 (local
+// position 0 of the second-half chord) lands ON the chord change —
+// which is the whole point of Rhythm D vs Rhythm C.
+//
+//   Full bar (4 beats):           hits = [0.5, 2, 2.5, 3.5]
+//   First half (beats 0-2):       hits = [0.5]
+//   Second half (beats 2-4):      hits = [0, 0.5, 1.5]    (= bar [2, 2.5, 3.5])
+//
+// The combined audible result for a half-bar pair is identical to a
+// single Rhythm D bar, but each hit plays the correct chord's voicing.
+const RHYTHM_D_FULL:  RhythmInfo = { pattern: 'D', hits: [0.5, 2, 2.5, 3.5] };
+const RHYTHM_D_HALF1: RhythmInfo = { pattern: 'D', hits: [0.5] };
+const RHYTHM_D_HALF2: RhythmInfo = { pattern: 'D', hits: [0, 0.5, 1.5] };
 
 // Phase 6-B: Ascending walking bass per Rule 3a. Some chords appear
 // in both 4-beat (FULL: 1-3-5-7 chord tones) and 2-beat (HALF: 1-3
@@ -325,69 +344,69 @@ export const bodyAndSoul: BarsGridProgression = {
   },
   bars: [
     // A (1-8): ii-V-I cycle establishing D♭, ii-V/iii to Fm, ii-V/ii back
-    { number: 1,  chords: [{ key: 'Ebm7',  beats: 4, walkingBass: WB_Ebm7_FULL }] },
-    { number: 2,  chords: [{ key: 'Ab7',   beats: 4, walkingBass: WB_Ab7_FULL  }] },
-    { number: 3,  chords: [{ key: 'DbM7',  beats: 4, walkingBass: WB_DbM7_FULL }] },
-    { number: 4,  chords: [{ key: 'DbM7',  beats: 4, walkingBass: WB_DbM7_FULL }] },
-    { number: 5,  chords: [{ key: 'Gm7',   beats: 4, walkingBass: WB_Gm7_FULL  }] },
-    { number: 6,  chords: [{ key: 'C7',    beats: 4, walkingBass: WB_C7_FULL   }] },
-    { number: 7,  chords: [{ key: 'Fm7',   beats: 4, walkingBass: WB_Fm7_FULL  }] },
-    { number: 8,  chords: [{ key: 'Bb7',   beats: 4, walkingBass: WB_Bb7_FULL  }] },
+    { number: 1,  chords: [{ key: 'Ebm7',  beats: 4, walkingBass: WB_Ebm7_FULL, rhythm: RHYTHM_D_FULL }] },
+    { number: 2,  chords: [{ key: 'Ab7',   beats: 4, walkingBass: WB_Ab7_FULL,  rhythm: RHYTHM_D_FULL }] },
+    { number: 3,  chords: [{ key: 'DbM7',  beats: 4, walkingBass: WB_DbM7_FULL, rhythm: RHYTHM_D_FULL }] },
+    { number: 4,  chords: [{ key: 'DbM7',  beats: 4, walkingBass: WB_DbM7_FULL, rhythm: RHYTHM_D_FULL }] },
+    { number: 5,  chords: [{ key: 'Gm7',   beats: 4, walkingBass: WB_Gm7_FULL,  rhythm: RHYTHM_D_FULL }] },
+    { number: 6,  chords: [{ key: 'C7',    beats: 4, walkingBass: WB_C7_FULL,   rhythm: RHYTHM_D_FULL }] },
+    { number: 7,  chords: [{ key: 'Fm7',   beats: 4, walkingBass: WB_Fm7_FULL,  rhythm: RHYTHM_D_FULL }] },
+    { number: 8,  chords: [{ key: 'Bb7',   beats: 4, walkingBass: WB_Bb7_FULL,  rhythm: RHYTHM_D_FULL }] },
     // A' (9-16): variation with ii-V/vi tonicization (Cm7♭5 F7 → B♭m7),
     //           bar 16 Em7 A7 prepares the D-major bridge
-    { number: 9,  chords: [{ key: 'Ebm7',  beats: 4, walkingBass: WB_Ebm7_FULL }] },
-    { number: 10, chords: [{ key: 'Ab7',   beats: 4, walkingBass: WB_Ab7_FULL  }] },
-    { number: 11, chords: [{ key: 'DbM7',  beats: 4, walkingBass: WB_DbM7_FULL }] },
+    { number: 9,  chords: [{ key: 'Ebm7',  beats: 4, walkingBass: WB_Ebm7_FULL, rhythm: RHYTHM_D_FULL }] },
+    { number: 10, chords: [{ key: 'Ab7',   beats: 4, walkingBass: WB_Ab7_FULL,  rhythm: RHYTHM_D_FULL }] },
+    { number: 11, chords: [{ key: 'DbM7',  beats: 4, walkingBass: WB_DbM7_FULL, rhythm: RHYTHM_D_FULL }] },
     { number: 12, chords: [
-      { key: 'Cm7b5', beats: 2, walkingBass: WB_Cm7b5_HALF },
-      { key: 'F7',    beats: 2, walkingBass: WB_F7_HALF    },
+      { key: 'Cm7b5', beats: 2, walkingBass: WB_Cm7b5_HALF, rhythm: RHYTHM_D_HALF1 },
+      { key: 'F7',    beats: 2, walkingBass: WB_F7_HALF,    rhythm: RHYTHM_D_HALF2 },
     ] },
-    { number: 13, chords: [{ key: 'Bbm7',  beats: 4, walkingBass: WB_Bbm7_FULL }] },
+    { number: 13, chords: [{ key: 'Bbm7',  beats: 4, walkingBass: WB_Bbm7_FULL, rhythm: RHYTHM_D_FULL }] },
     { number: 14, chords: [
-      { key: 'Ebm7',  beats: 2, walkingBass: WB_Ebm7_HALF },
-      { key: 'Ab7',   beats: 2, walkingBass: WB_Ab7_HALF  },
+      { key: 'Ebm7',  beats: 2, walkingBass: WB_Ebm7_HALF, rhythm: RHYTHM_D_HALF1 },
+      { key: 'Ab7',   beats: 2, walkingBass: WB_Ab7_HALF,  rhythm: RHYTHM_D_HALF2 },
     ] },
-    { number: 15, chords: [{ key: 'DbM7',  beats: 4, walkingBass: WB_DbM7_FULL }] },
+    { number: 15, chords: [{ key: 'DbM7',  beats: 4, walkingBass: WB_DbM7_FULL, rhythm: RHYTHM_D_FULL }] },
     { number: 16, chords: [
-      { key: 'Em7',   beats: 2, walkingBass: WB_Em7_HALF },
-      { key: 'A7',    beats: 2, walkingBass: WB_A7_HALF  },
+      { key: 'Em7',   beats: 2, walkingBass: WB_Em7_HALF, rhythm: RHYTHM_D_HALF1 },
+      { key: 'A7',    beats: 2, walkingBass: WB_A7_HALF,  rhythm: RHYTHM_D_HALF2 },
     ] },
     // B (17-24): the famous modulating bridge — D → A♭ → B → E key centers
     //           via ii-V-I tonicizations, then Em7 A7 prepares return
-    { number: 17, chords: [{ key: 'DM7',   beats: 4, walkingBass: WB_DM7_FULL  }] },
+    { number: 17, chords: [{ key: 'DM7',   beats: 4, walkingBass: WB_DM7_FULL,  rhythm: RHYTHM_D_FULL }] },
     { number: 18, chords: [
-      { key: 'Bbm7',  beats: 2, walkingBass: WB_Bbm7_HALF },
-      { key: 'Eb7',   beats: 2, walkingBass: WB_Eb7_HALF  },
+      { key: 'Bbm7',  beats: 2, walkingBass: WB_Bbm7_HALF, rhythm: RHYTHM_D_HALF1 },
+      { key: 'Eb7',   beats: 2, walkingBass: WB_Eb7_HALF,  rhythm: RHYTHM_D_HALF2 },
     ] },
-    { number: 19, chords: [{ key: 'AbM7',  beats: 4, walkingBass: WB_AbM7_FULL }] },
+    { number: 19, chords: [{ key: 'AbM7',  beats: 4, walkingBass: WB_AbM7_FULL, rhythm: RHYTHM_D_FULL }] },
     { number: 20, chords: [
-      { key: 'Csm7',  beats: 2, walkingBass: WB_Csm7_HALF },
-      { key: 'Fs7',   beats: 2, walkingBass: WB_Fs7_HALF  },
+      { key: 'Csm7',  beats: 2, walkingBass: WB_Csm7_HALF, rhythm: RHYTHM_D_HALF1 },
+      { key: 'Fs7',   beats: 2, walkingBass: WB_Fs7_HALF,  rhythm: RHYTHM_D_HALF2 },
     ] },
-    { number: 21, chords: [{ key: 'BM7',   beats: 4, walkingBass: WB_BM7_FULL  }] },
+    { number: 21, chords: [{ key: 'BM7',   beats: 4, walkingBass: WB_BM7_FULL,  rhythm: RHYTHM_D_FULL }] },
     { number: 22, chords: [
-      { key: 'Fsm7',  beats: 2, walkingBass: WB_Fsm7_HALF },
-      { key: 'B7',    beats: 2, walkingBass: WB_B7_HALF   },
+      { key: 'Fsm7',  beats: 2, walkingBass: WB_Fsm7_HALF, rhythm: RHYTHM_D_HALF1 },
+      { key: 'B7',    beats: 2, walkingBass: WB_B7_HALF,   rhythm: RHYTHM_D_HALF2 },
     ] },
-    { number: 23, chords: [{ key: 'EM7',   beats: 4, walkingBass: WB_EM7_FULL  }] },
+    { number: 23, chords: [{ key: 'EM7',   beats: 4, walkingBass: WB_EM7_FULL,  rhythm: RHYTHM_D_FULL }] },
     { number: 24, chords: [
-      { key: 'Em7',   beats: 2, walkingBass: WB_Em7_HALF },
-      { key: 'A7',    beats: 2, walkingBass: WB_A7_HALF  },
+      { key: 'Em7',   beats: 2, walkingBass: WB_Em7_HALF, rhythm: RHYTHM_D_HALF1 },
+      { key: 'A7',    beats: 2, walkingBass: WB_A7_HALF,  rhythm: RHYTHM_D_HALF2 },
     ] },
     // A'' (25-32): final A with extended ending (bars 31-32 split for turnaround)
-    { number: 25, chords: [{ key: 'Ebm7',  beats: 4, walkingBass: WB_Ebm7_FULL }] },
-    { number: 26, chords: [{ key: 'Ab7',   beats: 4, walkingBass: WB_Ab7_FULL  }] },
-    { number: 27, chords: [{ key: 'DbM7',  beats: 4, walkingBass: WB_DbM7_FULL }] },
-    { number: 28, chords: [{ key: 'DbM7',  beats: 4, walkingBass: WB_DbM7_FULL }] },
-    { number: 29, chords: [{ key: 'Gm7',   beats: 4, walkingBass: WB_Gm7_FULL  }] },
-    { number: 30, chords: [{ key: 'C7',    beats: 4, walkingBass: WB_C7_FULL   }] },
+    { number: 25, chords: [{ key: 'Ebm7',  beats: 4, walkingBass: WB_Ebm7_FULL, rhythm: RHYTHM_D_FULL }] },
+    { number: 26, chords: [{ key: 'Ab7',   beats: 4, walkingBass: WB_Ab7_FULL,  rhythm: RHYTHM_D_FULL }] },
+    { number: 27, chords: [{ key: 'DbM7',  beats: 4, walkingBass: WB_DbM7_FULL, rhythm: RHYTHM_D_FULL }] },
+    { number: 28, chords: [{ key: 'DbM7',  beats: 4, walkingBass: WB_DbM7_FULL, rhythm: RHYTHM_D_FULL }] },
+    { number: 29, chords: [{ key: 'Gm7',   beats: 4, walkingBass: WB_Gm7_FULL,  rhythm: RHYTHM_D_FULL }] },
+    { number: 30, chords: [{ key: 'C7',    beats: 4, walkingBass: WB_C7_FULL,   rhythm: RHYTHM_D_FULL }] },
     { number: 31, chords: [
-      { key: 'Fm7',   beats: 2, walkingBass: WB_Fm7_HALF },
-      { key: 'Bb7',   beats: 2, walkingBass: WB_Bb7_HALF },
+      { key: 'Fm7',   beats: 2, walkingBass: WB_Fm7_HALF, rhythm: RHYTHM_D_HALF1 },
+      { key: 'Bb7',   beats: 2, walkingBass: WB_Bb7_HALF, rhythm: RHYTHM_D_HALF2 },
     ] },
     { number: 32, chords: [
-      { key: 'Ebm7',  beats: 2, walkingBass: WB_Ebm7_HALF },
-      { key: 'Ab7',   beats: 2, walkingBass: WB_Ab7_HALF  },
+      { key: 'Ebm7',  beats: 2, walkingBass: WB_Ebm7_HALF, rhythm: RHYTHM_D_HALF1 },
+      { key: 'Ab7',   beats: 2, walkingBass: WB_Ab7_HALF,  rhythm: RHYTHM_D_HALF2 },
     ] },
   ],
   group: 'tune',

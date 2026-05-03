@@ -1,6 +1,7 @@
 import type {
   ChordsRowChord,
   ChordsRowProgression,
+  RhythmInfo,
   WalkingBassInfo,
 } from './types';
 
@@ -19,6 +20,10 @@ const WB_DM7B5_ASC: WalkingBassInfo = { pattern: 'ascending', notes: ['D2', 'F2'
 const WB_G7B9_ASC:  WalkingBassInfo = { pattern: 'ascending', notes: ['G2', 'B2', 'D3', 'F3'] };
 const WB_CM7M_ASC:  WalkingBassInfo = { pattern: 'ascending', notes: ['C2', 'Eb2', 'G2', 'Bb2'] };
 
+// Phase 6-D: pair the existing walking bass with Rhythm A so the
+// "+ Walking Bass + Rhythm" mode works end-to-end on this progression.
+const RHYTHM_A: RhythmInfo = { pattern: 'A', hits: [0, 1.5] };
+
 const chords: ChordsRowChord[] = [
   {
     id: 'iim7b5',
@@ -33,6 +38,7 @@ const chords: ChordsRowChord[] = [
       { note: 'Eb5', degree: '♭9' },
     ],
     walkingBass: WB_DM7B5_ASC,
+    rhythm: RHYTHM_A,
   },
   {
     id: 'v7b9',
@@ -47,6 +53,7 @@ const chords: ChordsRowChord[] = [
       { note: 'E5',  degree: '13' },
     ],
     walkingBass: WB_G7B9_ASC,
+    rhythm: RHYTHM_A,
   },
   {
     id: 'im7',
@@ -61,6 +68,7 @@ const chords: ChordsRowChord[] = [
       { note: 'D5',  degree: '9'  },
     ],
     walkingBass: WB_CM7M_ASC,
+    rhythm: RHYTHM_A,
   },
 ];
 

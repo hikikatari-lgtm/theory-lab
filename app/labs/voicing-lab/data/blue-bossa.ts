@@ -1,10 +1,22 @@
-import type { BarsGridProgression, RhythmInfo } from './types';
+import type { BarsGridProgression, RhythmInfo, WalkingBassInfo } from './types';
 
 // Phase 6-C: Rhythm C = all-upbeat hits per bar [0.5, 1.5, 2.5, 3.5].
 // All 16 bars are full 4-beat, so the same RhythmInfo applies uniformly.
 // The dense upbeat-only pattern gives a syncopated bossa-leaning comping
 // feel that contrasts with Misty's Rhythm A and Fly Me's Rhythm B.
 const RHYTHM_C: RhythmInfo = { pattern: 'C', hits: [0.5, 1.5, 2.5, 3.5] };
+
+// Phase 6-D: Ascending walking bass per Rule 3a so the "+ Walking Bass"
+// and "+ Walking Bass + Rhythm" modes work end-to-end. G7♭9 / Ab7 use
+// natural 5 in the bass even with ♭9 in the upper voicing — walking
+// lines trace the unaltered chord tones. All 16 bars are full 4-beat.
+const WB_Cm7:    WalkingBassInfo = { pattern: 'ascending', notes: ['C2',  'Eb2', 'G2',  'Bb2'] };
+const WB_Fm7:    WalkingBassInfo = { pattern: 'ascending', notes: ['F2',  'Ab2', 'C3',  'Eb3'] };
+const WB_Dm7b5:  WalkingBassInfo = { pattern: 'ascending', notes: ['D2',  'F2',  'Ab2', 'C3']  };
+const WB_G7b9:   WalkingBassInfo = { pattern: 'ascending', notes: ['G2',  'B2',  'D3',  'F3']  };
+const WB_Ebm7:   WalkingBassInfo = { pattern: 'ascending', notes: ['Eb2', 'Gb2', 'Bb2', 'Db3'] };
+const WB_Ab7:    WalkingBassInfo = { pattern: 'ascending', notes: ['Ab2', 'C3',  'Eb3', 'Gb3'] };
+const WB_DbMaj7: WalkingBassInfo = { pattern: 'ascending', notes: ['Db2', 'F2',  'Ab2', 'C3']  };
 
 // Blue Bossa (Kenny Dorham, 1963) — 16-bar AA' minor jazz standard in
 // Cm with a brief modulation to D♭ major in bars 9-12 (♭IIΔ Neapolitan
@@ -113,22 +125,22 @@ export const blueBossa: BarsGridProgression = {
     },
   },
   bars: [
-    { number: 1,  chords: [{ key: 'Cm7',    beats: 4, rhythm: RHYTHM_C }] },
-    { number: 2,  chords: [{ key: 'Cm7',    beats: 4, rhythm: RHYTHM_C }] },
-    { number: 3,  chords: [{ key: 'Fm7',    beats: 4, rhythm: RHYTHM_C }] },
-    { number: 4,  chords: [{ key: 'Fm7',    beats: 4, rhythm: RHYTHM_C }] },
-    { number: 5,  chords: [{ key: 'Dm7b5',  beats: 4, rhythm: RHYTHM_C }] },
-    { number: 6,  chords: [{ key: 'G7b9',   beats: 4, rhythm: RHYTHM_C }] },
-    { number: 7,  chords: [{ key: 'Cm7',    beats: 4, rhythm: RHYTHM_C }] },
-    { number: 8,  chords: [{ key: 'Cm7',    beats: 4, rhythm: RHYTHM_C }] },
-    { number: 9,  chords: [{ key: 'Ebm7',   beats: 4, rhythm: RHYTHM_C }] },
-    { number: 10, chords: [{ key: 'Ab7',    beats: 4, rhythm: RHYTHM_C }] },
-    { number: 11, chords: [{ key: 'DbMaj7', beats: 4, rhythm: RHYTHM_C }] },
-    { number: 12, chords: [{ key: 'DbMaj7', beats: 4, rhythm: RHYTHM_C }] },
-    { number: 13, chords: [{ key: 'Dm7b5',  beats: 4, rhythm: RHYTHM_C }] },
-    { number: 14, chords: [{ key: 'G7b9',   beats: 4, rhythm: RHYTHM_C }] },
-    { number: 15, chords: [{ key: 'Cm7',    beats: 4, rhythm: RHYTHM_C }] },
-    { number: 16, chords: [{ key: 'Cm7',    beats: 4, rhythm: RHYTHM_C }] },
+    { number: 1,  chords: [{ key: 'Cm7',    beats: 4, walkingBass: WB_Cm7,    rhythm: RHYTHM_C }] },
+    { number: 2,  chords: [{ key: 'Cm7',    beats: 4, walkingBass: WB_Cm7,    rhythm: RHYTHM_C }] },
+    { number: 3,  chords: [{ key: 'Fm7',    beats: 4, walkingBass: WB_Fm7,    rhythm: RHYTHM_C }] },
+    { number: 4,  chords: [{ key: 'Fm7',    beats: 4, walkingBass: WB_Fm7,    rhythm: RHYTHM_C }] },
+    { number: 5,  chords: [{ key: 'Dm7b5',  beats: 4, walkingBass: WB_Dm7b5,  rhythm: RHYTHM_C }] },
+    { number: 6,  chords: [{ key: 'G7b9',   beats: 4, walkingBass: WB_G7b9,   rhythm: RHYTHM_C }] },
+    { number: 7,  chords: [{ key: 'Cm7',    beats: 4, walkingBass: WB_Cm7,    rhythm: RHYTHM_C }] },
+    { number: 8,  chords: [{ key: 'Cm7',    beats: 4, walkingBass: WB_Cm7,    rhythm: RHYTHM_C }] },
+    { number: 9,  chords: [{ key: 'Ebm7',   beats: 4, walkingBass: WB_Ebm7,   rhythm: RHYTHM_C }] },
+    { number: 10, chords: [{ key: 'Ab7',    beats: 4, walkingBass: WB_Ab7,    rhythm: RHYTHM_C }] },
+    { number: 11, chords: [{ key: 'DbMaj7', beats: 4, walkingBass: WB_DbMaj7, rhythm: RHYTHM_C }] },
+    { number: 12, chords: [{ key: 'DbMaj7', beats: 4, walkingBass: WB_DbMaj7, rhythm: RHYTHM_C }] },
+    { number: 13, chords: [{ key: 'Dm7b5',  beats: 4, walkingBass: WB_Dm7b5,  rhythm: RHYTHM_C }] },
+    { number: 14, chords: [{ key: 'G7b9',   beats: 4, walkingBass: WB_G7b9,   rhythm: RHYTHM_C }] },
+    { number: 15, chords: [{ key: 'Cm7',    beats: 4, walkingBass: WB_Cm7,    rhythm: RHYTHM_C }] },
+    { number: 16, chords: [{ key: 'Cm7',    beats: 4, walkingBass: WB_Cm7,    rhythm: RHYTHM_C }] },
   ],
   group: 'tune',
 };

@@ -1,10 +1,22 @@
-import type { BarsGridProgression, RhythmInfo } from './types';
+import type { BarsGridProgression, RhythmInfo, WalkingBassInfo } from './types';
 
 // Phase 6-C: Rhythm B = upbeat-of-1 + beat 3 ([0.5, 2]). Two short hits
 // per bar — the "Charleston" / Freddie Green-flavored alternative to
 // Rhythm A's downbeat figure. All 16 bars are full 4-beat so the same
 // RhythmInfo applies uniformly through the Circle of Fifths cycle.
 const RHYTHM_B: RhythmInfo = { pattern: 'B', hits: [0.5, 2] };
+
+// Phase 6-D: Ascending walking bass per Rule 3a so the "+ Walking Bass"
+// and "+ Walking Bass + Rhythm" modes work on this Circle-of-Fifths
+// piece. Pairs the existing Rhythm B comping with one chord-tone per
+// beat in the LH.
+const WB_Am7:   WalkingBassInfo = { pattern: 'ascending', notes: ['A2', 'C3',  'E3',  'G3']  };
+const WB_Dm7:   WalkingBassInfo = { pattern: 'ascending', notes: ['D2', 'F2',  'A2',  'C3']  };
+const WB_G7:    WalkingBassInfo = { pattern: 'ascending', notes: ['G2', 'B2',  'D3',  'F3']  };
+const WB_CM7:   WalkingBassInfo = { pattern: 'ascending', notes: ['C2', 'E2',  'G2',  'B2']  };
+const WB_FM7:   WalkingBassInfo = { pattern: 'ascending', notes: ['F2', 'A2',  'C3',  'E3']  };
+const WB_Bm7b5: WalkingBassInfo = { pattern: 'ascending', notes: ['B2', 'D3',  'F3',  'A3']  };
+const WB_E7:    WalkingBassInfo = { pattern: 'ascending', notes: ['E2', 'G#2', 'B2',  'D3']  };
 
 // Fly Me To The Moon (Bart Howard, 1954) — C-major standard built
 // almost entirely on the Circle of Fifths: Am7 → Dm7 → G7 → CM7 →
@@ -115,23 +127,23 @@ export const flyMeToTheMoon: BarsGridProgression = {
   },
   bars: [
     // A1 (1-8): Circle of Fifths — vi → ii → V → I → IV → vii♭5 → V/vi → vi
-    { number: 1,  chords: [{ key: 'Am7',   beats: 4, rhythm: RHYTHM_B }] },
-    { number: 2,  chords: [{ key: 'Dm7',   beats: 4, rhythm: RHYTHM_B }] },
-    { number: 3,  chords: [{ key: 'G7',    beats: 4, rhythm: RHYTHM_B }] },
-    { number: 4,  chords: [{ key: 'CM7',   beats: 4, rhythm: RHYTHM_B }] },
-    { number: 5,  chords: [{ key: 'FM7',   beats: 4, rhythm: RHYTHM_B }] },
-    { number: 6,  chords: [{ key: 'Bm7b5', beats: 4, rhythm: RHYTHM_B }] },
-    { number: 7,  chords: [{ key: 'E7',    beats: 4, rhythm: RHYTHM_B }] },
-    { number: 8,  chords: [{ key: 'Am7',   beats: 4, rhythm: RHYTHM_B }] },
+    { number: 1,  chords: [{ key: 'Am7',   beats: 4, walkingBass: WB_Am7,   rhythm: RHYTHM_B }] },
+    { number: 2,  chords: [{ key: 'Dm7',   beats: 4, walkingBass: WB_Dm7,   rhythm: RHYTHM_B }] },
+    { number: 3,  chords: [{ key: 'G7',    beats: 4, walkingBass: WB_G7,    rhythm: RHYTHM_B }] },
+    { number: 4,  chords: [{ key: 'CM7',   beats: 4, walkingBass: WB_CM7,   rhythm: RHYTHM_B }] },
+    { number: 5,  chords: [{ key: 'FM7',   beats: 4, walkingBass: WB_FM7,   rhythm: RHYTHM_B }] },
+    { number: 6,  chords: [{ key: 'Bm7b5', beats: 4, walkingBass: WB_Bm7b5, rhythm: RHYTHM_B }] },
+    { number: 7,  chords: [{ key: 'E7',    beats: 4, walkingBass: WB_E7,    rhythm: RHYTHM_B }] },
+    { number: 8,  chords: [{ key: 'Am7',   beats: 4, walkingBass: WB_Am7,   rhythm: RHYTHM_B }] },
     // A2 (9-16) — identical, plays the cycle a second time
-    { number: 9,  chords: [{ key: 'Am7',   beats: 4, rhythm: RHYTHM_B }] },
-    { number: 10, chords: [{ key: 'Dm7',   beats: 4, rhythm: RHYTHM_B }] },
-    { number: 11, chords: [{ key: 'G7',    beats: 4, rhythm: RHYTHM_B }] },
-    { number: 12, chords: [{ key: 'CM7',   beats: 4, rhythm: RHYTHM_B }] },
-    { number: 13, chords: [{ key: 'FM7',   beats: 4, rhythm: RHYTHM_B }] },
-    { number: 14, chords: [{ key: 'Bm7b5', beats: 4, rhythm: RHYTHM_B }] },
-    { number: 15, chords: [{ key: 'E7',    beats: 4, rhythm: RHYTHM_B }] },
-    { number: 16, chords: [{ key: 'Am7',   beats: 4, rhythm: RHYTHM_B }] },
+    { number: 9,  chords: [{ key: 'Am7',   beats: 4, walkingBass: WB_Am7,   rhythm: RHYTHM_B }] },
+    { number: 10, chords: [{ key: 'Dm7',   beats: 4, walkingBass: WB_Dm7,   rhythm: RHYTHM_B }] },
+    { number: 11, chords: [{ key: 'G7',    beats: 4, walkingBass: WB_G7,    rhythm: RHYTHM_B }] },
+    { number: 12, chords: [{ key: 'CM7',   beats: 4, walkingBass: WB_CM7,   rhythm: RHYTHM_B }] },
+    { number: 13, chords: [{ key: 'FM7',   beats: 4, walkingBass: WB_FM7,   rhythm: RHYTHM_B }] },
+    { number: 14, chords: [{ key: 'Bm7b5', beats: 4, walkingBass: WB_Bm7b5, rhythm: RHYTHM_B }] },
+    { number: 15, chords: [{ key: 'E7',    beats: 4, walkingBass: WB_E7,    rhythm: RHYTHM_B }] },
+    { number: 16, chords: [{ key: 'Am7',   beats: 4, walkingBass: WB_Am7,   rhythm: RHYTHM_B }] },
   ],
   group: 'tune',
 };

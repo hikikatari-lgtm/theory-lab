@@ -182,5 +182,5 @@ export const autumnLeaves: BarsGridProgression = {
     { number: 31, chords: [{ key: 'EbM7',   beats: 4 }] },
     { number: 32, chords: [{ key: 'D7b9',   beats: 4 }] },
   ],
-  group: '楽曲系',
+  group: 'tune',
 };

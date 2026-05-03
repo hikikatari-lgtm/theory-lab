@@ -41,33 +41,38 @@ export const PROGRESSIONS: Record<string, Progression> = {
   'virtual-insanity': virtualInsanity,
 };
 
-// Order matters: structural progressions first, then song-style. Group
-// is surfaced for the dropdown's <optgroup>; entries without an explicit
-// group default to '楽曲系' at the UI layer.
+// Source-of-truth list for the dropdown. The display order in the UI is
+// derived from this list's `group` field plus an alphabetical sort
+// inside each group (handled by ProgressionSelector); list order here is
+// not what the user sees, so entries are grouped only for code-reading
+// clarity.
 export const PROGRESSION_LIST: ReadonlyArray<{
   id: string;
   label: string;
   group: ProgressionGroup;
 }> = [
-  { id: 'two-five-one',         label: '251 Voicing',            group: '構造系' },
-  { id: 'two-five-one-altered', label: '251 Altered Voicing',    group: '構造系' },
-  { id: 'minor-two-five-one',         label: 'Minor 251 Voicing',         group: '構造系' },
-  { id: 'minor-two-five-one-altered', label: 'Minor 251 Altered Voicing', group: '構造系' },
-  { id: 'maj9-voicing',         label: 'Maj9 Voicing',           group: '構造系' },
-  { id: 'm11-voicing',          label: 'm11 Voicing',            group: '構造系' },
-  { id: 'minor-turnaround',     label: 'Minor Turnaround in Cm', group: '楽曲系' },
-  { id: 'minor-cadence-cycle',  label: 'Minor Cadence Cycle',    group: '楽曲系' },
-  { id: 'blue-bossa',           label: 'Blue Bossa',             group: '楽曲系' },
-  { id: 'autumn-leaves',        label: 'Autumn Leaves',          group: '楽曲系' },
-  { id: 'body-and-soul',        label: 'Body And Soul',          group: '楽曲系' },
-  { id: 'blue-in-green',        label: 'Blue In Green - Bill Evans', group: '楽曲系' },
-  { id: 'so-what',              label: 'So What - Miles Davis',  group: '楽曲系' },
-  { id: 'misty',                label: 'Misty - Erroll Garner',  group: '楽曲系' },
-  { id: 'fly-me-to-the-moon',   label: 'Fly Me To The Moon',     group: '楽曲系' },
-  { id: 'take-five',            label: 'Take Five - Paul Desmond (5/4)', group: '楽曲系' },
-  { id: 'f-blues',              label: 'F Blues Rootless',       group: '楽曲系' },
-  { id: 'over',                 label: 'Over / Robert Glasper',     group: '楽曲系' },
-  { id: 'virtual-insanity',     label: 'Virtual Insanity / Jamiroquai', group: '楽曲系' },
+  // structure — single-chord voicings
+  { id: 'maj9-voicing',         label: 'Maj9 Voicing',           group: 'structure' },
+  { id: 'm11-voicing',          label: 'm11 Voicing',            group: 'structure' },
+  // progression — generic jazz patterns (251 family, blues, turnarounds)
+  { id: 'two-five-one',               label: '251 Voicing',               group: 'progression' },
+  { id: 'two-five-one-altered',       label: '251 Altered Voicing',       group: 'progression' },
+  { id: 'minor-two-five-one',         label: 'Minor 251 Voicing',         group: 'progression' },
+  { id: 'minor-two-five-one-altered', label: 'Minor 251 Altered Voicing', group: 'progression' },
+  { id: 'minor-turnaround',     label: 'Minor Turnaround in Cm', group: 'progression' },
+  { id: 'minor-cadence-cycle',  label: 'Minor Cadence Cycle',    group: 'progression' },
+  { id: 'f-blues',              label: 'F Blues Rootless',       group: 'progression' },
+  // tune — full transcribed standards
+  { id: 'autumn-leaves',        label: 'Autumn Leaves',          group: 'tune' },
+  { id: 'blue-bossa',           label: 'Blue Bossa',             group: 'tune' },
+  { id: 'blue-in-green',        label: 'Blue In Green - Bill Evans',     group: 'tune' },
+  { id: 'body-and-soul',        label: 'Body And Soul',          group: 'tune' },
+  { id: 'fly-me-to-the-moon',   label: 'Fly Me To The Moon',     group: 'tune' },
+  { id: 'misty',                label: 'Misty - Erroll Garner',  group: 'tune' },
+  { id: 'over',                 label: 'Over / Robert Glasper',  group: 'tune' },
+  { id: 'so-what',              label: 'So What - Miles Davis',  group: 'tune' },
+  { id: 'take-five',            label: 'Take Five - Paul Desmond (5/4)', group: 'tune' },
+  { id: 'virtual-insanity',     label: 'Virtual Insanity / Jamiroquai',  group: 'tune' },
 ];
 
 export const DEFAULT_PROGRESSION_ID = 'minor-turnaround';

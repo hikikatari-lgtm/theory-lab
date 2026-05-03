@@ -166,5 +166,5 @@ export const minorCadenceCycle: BarsGridProgression = {
     { number: 15, chords: [{ key: 'Dm7b5',  beats: 2 }, { key: 'G7b9', beats: 2 }] },
     { number: 16, chords: [{ key: 'Cm6',    beats: 4 }] },
   ],
-  group: '楽曲系',
+  group: 'progression',
 };

@@ -328,5 +328,5 @@ export const bodyAndSoul: BarsGridProgression = {
     { number: 31, chords: [{ key: 'Fm7',   beats: 2 }, { key: 'Bb7', beats: 2 }] },
     { number: 32, chords: [{ key: 'Ebm7',  beats: 2 }, { key: 'Ab7', beats: 2 }] },
   ],
-  group: '楽曲系',
+  group: 'tune',
 };

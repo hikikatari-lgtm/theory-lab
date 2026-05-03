@@ -92,4 +92,5 @@ export const over: ChordsRowProgression = {
       ],
     },
   ],
+  group: 'tune',
 };

@@ -1,4 +1,11 @@
-import type { BarsGridProgression } from './types';
+import type { BarsGridProgression, RhythmInfo } from './types';
+
+// Phase 6-C: Rhythm A = downbeat + upbeat-of-2 ([0, 1.5]). The
+// canonical "dotted-quarter + eighth" jazz comping figure. Both hits
+// fit inside a 2-beat half-bar (positions 0 and 1.5 are < 2), so the
+// same RhythmInfo applies uniformly to all chord events — full bars
+// (1, 3, 9, 11) and the many half-bar splits alike.
+const RHYTHM_A: RhythmInfo = { pattern: 'A', hits: [0, 1.5] };
 
 // Misty (Erroll Garner, 1954) — Eb-major ballad. 16-bar version of the
 // 32-bar AABA form: A1 (8 bars) + A2 (same 8 bars), no bridge. The A
@@ -157,23 +164,59 @@ export const misty: BarsGridProgression = {
   },
   bars: [
     // A1 (1-8)
-    { number: 1,  chords: [{ key: 'EbM7', beats: 4 }] },
-    { number: 2,  chords: [{ key: 'Bbm7', beats: 2 }, { key: 'Eb7', beats: 2 }] },
-    { number: 3,  chords: [{ key: 'AbM7', beats: 4 }] },
-    { number: 4,  chords: [{ key: 'Abm7', beats: 2 }, { key: 'Db7', beats: 2 }] },
-    { number: 5,  chords: [{ key: 'EbM7', beats: 2 }, { key: 'Cm7', beats: 2 }] },
-    { number: 6,  chords: [{ key: 'Fm7',  beats: 2 }, { key: 'Bb7', beats: 2 }] },
-    { number: 7,  chords: [{ key: 'Gm7',  beats: 2 }, { key: 'C7',  beats: 2 }] },
-    { number: 8,  chords: [{ key: 'Fm7',  beats: 2 }, { key: 'Bb7', beats: 2 }] },
+    { number: 1,  chords: [{ key: 'EbM7', beats: 4, rhythm: RHYTHM_A }] },
+    { number: 2,  chords: [
+      { key: 'Bbm7', beats: 2, rhythm: RHYTHM_A },
+      { key: 'Eb7',  beats: 2, rhythm: RHYTHM_A },
+    ] },
+    { number: 3,  chords: [{ key: 'AbM7', beats: 4, rhythm: RHYTHM_A }] },
+    { number: 4,  chords: [
+      { key: 'Abm7', beats: 2, rhythm: RHYTHM_A },
+      { key: 'Db7',  beats: 2, rhythm: RHYTHM_A },
+    ] },
+    { number: 5,  chords: [
+      { key: 'EbM7', beats: 2, rhythm: RHYTHM_A },
+      { key: 'Cm7',  beats: 2, rhythm: RHYTHM_A },
+    ] },
+    { number: 6,  chords: [
+      { key: 'Fm7',  beats: 2, rhythm: RHYTHM_A },
+      { key: 'Bb7',  beats: 2, rhythm: RHYTHM_A },
+    ] },
+    { number: 7,  chords: [
+      { key: 'Gm7',  beats: 2, rhythm: RHYTHM_A },
+      { key: 'C7',   beats: 2, rhythm: RHYTHM_A },
+    ] },
+    { number: 8,  chords: [
+      { key: 'Fm7',  beats: 2, rhythm: RHYTHM_A },
+      { key: 'Bb7',  beats: 2, rhythm: RHYTHM_A },
+    ] },
     // A2 (9-16) — identical to A1
-    { number: 9,  chords: [{ key: 'EbM7', beats: 4 }] },
-    { number: 10, chords: [{ key: 'Bbm7', beats: 2 }, { key: 'Eb7', beats: 2 }] },
-    { number: 11, chords: [{ key: 'AbM7', beats: 4 }] },
-    { number: 12, chords: [{ key: 'Abm7', beats: 2 }, { key: 'Db7', beats: 2 }] },
-    { number: 13, chords: [{ key: 'EbM7', beats: 2 }, { key: 'Cm7', beats: 2 }] },
-    { number: 14, chords: [{ key: 'Fm7',  beats: 2 }, { key: 'Bb7', beats: 2 }] },
-    { number: 15, chords: [{ key: 'Gm7',  beats: 2 }, { key: 'C7',  beats: 2 }] },
-    { number: 16, chords: [{ key: 'Fm7',  beats: 2 }, { key: 'Bb7', beats: 2 }] },
+    { number: 9,  chords: [{ key: 'EbM7', beats: 4, rhythm: RHYTHM_A }] },
+    { number: 10, chords: [
+      { key: 'Bbm7', beats: 2, rhythm: RHYTHM_A },
+      { key: 'Eb7',  beats: 2, rhythm: RHYTHM_A },
+    ] },
+    { number: 11, chords: [{ key: 'AbM7', beats: 4, rhythm: RHYTHM_A }] },
+    { number: 12, chords: [
+      { key: 'Abm7', beats: 2, rhythm: RHYTHM_A },
+      { key: 'Db7',  beats: 2, rhythm: RHYTHM_A },
+    ] },
+    { number: 13, chords: [
+      { key: 'EbM7', beats: 2, rhythm: RHYTHM_A },
+      { key: 'Cm7',  beats: 2, rhythm: RHYTHM_A },
+    ] },
+    { number: 14, chords: [
+      { key: 'Fm7',  beats: 2, rhythm: RHYTHM_A },
+      { key: 'Bb7',  beats: 2, rhythm: RHYTHM_A },
+    ] },
+    { number: 15, chords: [
+      { key: 'Gm7',  beats: 2, rhythm: RHYTHM_A },
+      { key: 'C7',   beats: 2, rhythm: RHYTHM_A },
+    ] },
+    { number: 16, chords: [
+      { key: 'Fm7',  beats: 2, rhythm: RHYTHM_A },
+      { key: 'Bb7',  beats: 2, rhythm: RHYTHM_A },
+    ] },
   ],
   group: 'tune',
 };

@@ -1,4 +1,10 @@
-import type { BarsGridProgression } from './types';
+import type { BarsGridProgression, RhythmInfo } from './types';
+
+// Phase 6-C: Rhythm B = upbeat-of-1 + beat 3 ([0.5, 2]). Two short hits
+// per bar — the "Charleston" / Freddie Green-flavored alternative to
+// Rhythm A's downbeat figure. All 16 bars are full 4-beat so the same
+// RhythmInfo applies uniformly through the Circle of Fifths cycle.
+const RHYTHM_B: RhythmInfo = { pattern: 'B', hits: [0.5, 2] };
 
 // Fly Me To The Moon (Bart Howard, 1954) — C-major standard built
 // almost entirely on the Circle of Fifths: Am7 → Dm7 → G7 → CM7 →
@@ -109,23 +115,23 @@ export const flyMeToTheMoon: BarsGridProgression = {
   },
   bars: [
     // A1 (1-8): Circle of Fifths — vi → ii → V → I → IV → vii♭5 → V/vi → vi
-    { number: 1,  chords: [{ key: 'Am7',   beats: 4 }] },
-    { number: 2,  chords: [{ key: 'Dm7',   beats: 4 }] },
-    { number: 3,  chords: [{ key: 'G7',    beats: 4 }] },
-    { number: 4,  chords: [{ key: 'CM7',   beats: 4 }] },
-    { number: 5,  chords: [{ key: 'FM7',   beats: 4 }] },
-    { number: 6,  chords: [{ key: 'Bm7b5', beats: 4 }] },
-    { number: 7,  chords: [{ key: 'E7',    beats: 4 }] },
-    { number: 8,  chords: [{ key: 'Am7',   beats: 4 }] },
+    { number: 1,  chords: [{ key: 'Am7',   beats: 4, rhythm: RHYTHM_B }] },
+    { number: 2,  chords: [{ key: 'Dm7',   beats: 4, rhythm: RHYTHM_B }] },
+    { number: 3,  chords: [{ key: 'G7',    beats: 4, rhythm: RHYTHM_B }] },
+    { number: 4,  chords: [{ key: 'CM7',   beats: 4, rhythm: RHYTHM_B }] },
+    { number: 5,  chords: [{ key: 'FM7',   beats: 4, rhythm: RHYTHM_B }] },
+    { number: 6,  chords: [{ key: 'Bm7b5', beats: 4, rhythm: RHYTHM_B }] },
+    { number: 7,  chords: [{ key: 'E7',    beats: 4, rhythm: RHYTHM_B }] },
+    { number: 8,  chords: [{ key: 'Am7',   beats: 4, rhythm: RHYTHM_B }] },
     // A2 (9-16) — identical, plays the cycle a second time
-    { number: 9,  chords: [{ key: 'Am7',   beats: 4 }] },
-    { number: 10, chords: [{ key: 'Dm7',   beats: 4 }] },
-    { number: 11, chords: [{ key: 'G7',    beats: 4 }] },
-    { number: 12, chords: [{ key: 'CM7',   beats: 4 }] },
-    { number: 13, chords: [{ key: 'FM7',   beats: 4 }] },
-    { number: 14, chords: [{ key: 'Bm7b5', beats: 4 }] },
-    { number: 15, chords: [{ key: 'E7',    beats: 4 }] },
-    { number: 16, chords: [{ key: 'Am7',   beats: 4 }] },
+    { number: 9,  chords: [{ key: 'Am7',   beats: 4, rhythm: RHYTHM_B }] },
+    { number: 10, chords: [{ key: 'Dm7',   beats: 4, rhythm: RHYTHM_B }] },
+    { number: 11, chords: [{ key: 'G7',    beats: 4, rhythm: RHYTHM_B }] },
+    { number: 12, chords: [{ key: 'CM7',   beats: 4, rhythm: RHYTHM_B }] },
+    { number: 13, chords: [{ key: 'FM7',   beats: 4, rhythm: RHYTHM_B }] },
+    { number: 14, chords: [{ key: 'Bm7b5', beats: 4, rhythm: RHYTHM_B }] },
+    { number: 15, chords: [{ key: 'E7',    beats: 4, rhythm: RHYTHM_B }] },
+    { number: 16, chords: [{ key: 'Am7',   beats: 4, rhythm: RHYTHM_B }] },
   ],
   group: 'tune',
 };

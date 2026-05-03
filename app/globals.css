@@ -1046,6 +1046,19 @@ footer {
   padding: 20px;
   margin-bottom: 20px;
   border: 1px solid var(--vl-border);
+  /* UX: keep the keyboard visible at viewport bottom while scrolling
+     through long progressions (Autumn Leaves / Body And Soul / ATTYA
+     etc.). Background is already opaque (--vl-panel); z-index = 10
+     lifts above the .vl-progression chord grid (max existing z-index
+     in the lab is 2). The top-edge shadow gives a subtle separation
+     from the scrolling chord grid above when the keyboard is stuck.
+     For short progressions (4–16 bars) there's nothing to scroll, so
+     the keyboard sits at its natural position and the sticky has no
+     visible effect. */
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  box-shadow: 0 -4px 12px -4px rgba(0, 0, 0, 0.4);
 }
 .vl-detail-header {
   display: flex;

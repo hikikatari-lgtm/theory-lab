@@ -1,8 +1,15 @@
-import type { ChordsRowChord, ChordsRowProgression } from './types';
+import type { ChordsRowChord, ChordsRowProgression, RhythmInfo } from './types';
 
 // 251 voicings are defined in C and transposed at render time. IDs are
 // Roman-numeral based (not C-key chord names) so that selection persists
 // across A/B variant flips and 12-key cycling.
+//
+// Phase 6-A: Rhythm A is attached to every chord (both variants). Hits
+// at beats [0, 1.5] = downbeat + upbeat-of-2, the canonical "dotted
+// quarter + eighth" jazz comping figure. Beat positions are key- and
+// variant-independent so the same RhythmInfo object is reused across
+// all chords. Activated by the player's "+ Rhythm" mode.
+const RHYTHM_A: RhythmInfo = { pattern: 'A', hits: [0, 1.5] };
 
 const variantA: ChordsRowChord[] = [
   {
@@ -17,6 +24,7 @@ const variantA: ChordsRowChord[] = [
       { note: 'C5', degree: '♭7' },
       { note: 'E5', degree: '9'  },
     ],
+    rhythm: RHYTHM_A,
   },
   {
     id: 'v7',
@@ -30,6 +38,7 @@ const variantA: ChordsRowChord[] = [
       { note: 'B4', degree: '3'  },
       { note: 'E5', degree: '13' },
     ],
+    rhythm: RHYTHM_A,
   },
   {
     id: 'imaj7',
@@ -43,6 +52,7 @@ const variantA: ChordsRowChord[] = [
       { note: 'B4', degree: 'M7' },
       { note: 'D5', degree: '9'  },
     ],
+    rhythm: RHYTHM_A,
   },
 ];
 
@@ -59,6 +69,7 @@ const variantB: ChordsRowChord[] = [
       { note: 'F5', degree: '♭3' },
       { note: 'A5', degree: '5'  },
     ],
+    rhythm: RHYTHM_A,
   },
   {
     id: 'v7',
@@ -72,6 +83,7 @@ const variantB: ChordsRowChord[] = [
       { note: 'F5', degree: '♭7' },
       { note: 'A5', degree: '9'  },
     ],
+    rhythm: RHYTHM_A,
   },
   {
     id: 'imaj7',
@@ -85,6 +97,7 @@ const variantB: ChordsRowChord[] = [
       { note: 'E5', degree: '3'  },
       { note: 'G5', degree: '5'  },
     ],
+    rhythm: RHYTHM_A,
   },
 ];
 

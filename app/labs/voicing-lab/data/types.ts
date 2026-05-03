@@ -12,7 +12,35 @@ export type Voicing = {
   rh: VoicingNote[];
 };
 
-export type ChordsRowChord = Voicing & { id: string };
+// Phase 6: optional playback enrichment attached per chord-event.
+// `pattern` is a pedagogical label (so the UI can describe what's
+// playing); `notes` / `hits` are the explicit data the player consumes.
+//
+// Walking bass: one bass note per beat for the duration of this chord
+// event. The player overrides the LH with these notes when the
+// "Walking Bass" mode is on.
+export type WalkingBassPattern = 'ascending' | 'broken_1_5_8' | 'approach';
+export type WalkingBassInfo = {
+  pattern: WalkingBassPattern;
+  notes: string[];
+};
+
+// Rhythm: 0-indexed beat positions where the RH chord is struck.
+// Example: hits = [0, 1.5] in a 4-beat bar means strike on beat 1
+// (downbeat) and on the upbeat of beat 2 — Rhythm A from the spec.
+// The player fires a short staccato attack at each position when the
+// "Rhythm" mode is on.
+export type RhythmPattern = 'A' | 'B' | 'C' | 'D';
+export type RhythmInfo = {
+  pattern: RhythmPattern;
+  hits: number[];
+};
+
+export type ChordsRowChord = Voicing & {
+  id: string;
+  walkingBass?: WalkingBassInfo;
+  rhythm?: RhythmInfo;
+};
 
 // Three buckets for the progression dropdown:
 //   - structure:   single-chord voicings (Maj9, m11) — "1 コードの響き"
@@ -41,9 +69,16 @@ export type ChordsRowProgression = {
   variants?: { a: ChordsRowChord[]; b: ChordsRowChord[] };
 };
 
+export type BarChord = {
+  key: string;
+  beats: number;
+  walkingBass?: WalkingBassInfo;
+  rhythm?: RhythmInfo;
+};
+
 export type Bar = {
   number: number;
-  chords: { key: string; beats: number }[];
+  chords: BarChord[];
 };
 
 export type BarsGridProgression = {
@@ -68,4 +103,6 @@ export type SequenceItem = {
   itemId: string;
   voicing: Voicing;
   beats: number;
+  walkingBass?: WalkingBassInfo;
+  rhythm?: RhythmInfo;
 };

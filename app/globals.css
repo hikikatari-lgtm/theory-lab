@@ -1138,6 +1138,34 @@ footer {
   border-color: var(--vl-accent);
 }
 
+/* ---------- Phase 6 playback-mode select (sits inline with Walk Through) ---------- */
+.vl-mode-select {
+  background: var(--vl-panel-2);
+  color: var(--vl-text);
+  border: 1px solid var(--vl-border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3e%3cpath fill='%23888' d='M6 8L0 0h12z'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 28px;
+}
+.vl-mode-select:hover { background-color: #2d2d2d; }
+.vl-mode-select:focus {
+  outline: none;
+  border-color: var(--vl-accent);
+}
+.vl-mode-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* ---------- bars grid (4 cols, any number of rows) ---------- */
 .vl-bars-grid {
   display: grid;

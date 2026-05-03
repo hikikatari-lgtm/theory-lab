@@ -81,13 +81,16 @@ export const DEFAULT_PROGRESSION_ID = 'minor-turnaround';
 // Walk Through and the keyboard's prev-chord lookup. For chords-row each
 // chord becomes one item (4 beats); for bars-grid each cell becomes an item
 // with the cell's own beat count, so a 1-bar 2-chord measure expands to
-// two items with beats=2 each.
+// two items with beats=2 each. Phase 6 adds optional walkingBass / rhythm
+// pass-through for the player's mode-aware playback.
 export function buildSequence(prog: Progression): SequenceItem[] {
   if (prog.displayMode === 'chords-row') {
     return prog.chords.map((c) => ({
       itemId: c.id,
       voicing: c,
       beats: 4,
+      walkingBass: c.walkingBass,
+      rhythm: c.rhythm,
     }));
   }
   const seq: SequenceItem[] = [];
@@ -99,6 +102,8 @@ export function buildSequence(prog: Progression): SequenceItem[] {
         itemId: `bar${bar.number}-${idx}`,
         voicing,
         beats: c.beats,
+        walkingBass: c.walkingBass,
+        rhythm: c.rhythm,
       });
     });
   });
@@ -113,5 +118,10 @@ export type {
   Progression,
   ProgressionGroup,
   Bar,
+  BarChord,
   SequenceItem,
+  WalkingBassInfo,
+  WalkingBassPattern,
+  RhythmInfo,
+  RhythmPattern,
 } from './types';

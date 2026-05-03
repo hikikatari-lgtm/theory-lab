@@ -71,24 +71,33 @@ export default function VoicingLabClient({
   const [variantType, setVariantType] = useState<'a' | 'b'>(initialVariantType);
   const [currentKey, setCurrentKey] = useState<string>(initialKey);
 
-  // For chords-row progressions, derive the displayed chord set by:
-  //  1. picking the active variant when hasVariants (251 Type A/B), and
-  //  2. transposing from baseKey → currentKey when supportsAllKeys.
-  // Bars-grid progressions pass through unchanged.
+  // Derive the displayed progression by:
+  //  - chords-row: picking the active variant when hasVariants (251
+  //    Type A/B) + transposing baseKey → currentKey when supportsAllKeys
+  //  - bars-grid: picking the active variant when hasVariants (MCC
+  //    Extended Voicing 1/2) — swaps both the voicings dict and the
+  //    bars array, so each variant can introduce its own chord keys
   const viewProgression = useMemo(() => {
-    if (progression.displayMode !== 'chords-row') return progression;
-    let chords = progression.chords;
-    if (progression.hasVariants && progression.variants) {
-      chords = progression.variants[variantType];
-    }
-    if (progression.supportsAllKeys) {
-      const baseKey = progression.baseKey ?? 'C';
-      if (currentKey !== baseKey) {
-        chords = transposeChords(chords, baseKey, currentKey);
+    if (progression.displayMode === 'chords-row') {
+      let chords = progression.chords;
+      if (progression.hasVariants && progression.variants) {
+        chords = progression.variants[variantType];
       }
+      if (progression.supportsAllKeys) {
+        const baseKey = progression.baseKey ?? 'C';
+        if (currentKey !== baseKey) {
+          chords = transposeChords(chords, baseKey, currentKey);
+        }
+      }
+      if (chords === progression.chords) return progression;
+      return { ...progression, chords };
     }
-    if (chords === progression.chords) return progression;
-    return { ...progression, chords };
+    // bars-grid
+    if (progression.hasVariants && progression.variants) {
+      const variant = progression.variants[variantType];
+      return { ...progression, voicings: variant.voicings, bars: variant.bars };
+    }
+    return progression;
   }, [progression, variantType, currentKey]);
 
   const sequence = useMemo(
@@ -108,9 +117,7 @@ export default function VoicingLabClient({
   const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   const showVariantToggle =
-    progression.displayMode === 'chords-row' &&
-    !!progression.hasVariants &&
-    !!progression.variants;
+    !!progression.hasVariants && !!progression.variants;
   const showKeySwitch =
     progression.displayMode === 'chords-row' &&
     !!progression.supportsAllKeys;
@@ -153,7 +160,6 @@ export default function VoicingLabClient({
       const params = new URLSearchParams();
       params.set('p', pid);
       if (
-        prog.displayMode === 'chords-row' &&
         !!prog.hasVariants &&
         vType === 'b'
       ) {
@@ -184,7 +190,6 @@ export default function VoicingLabClient({
 
     const urlType = searchParams.get('type');
     const validType: 'a' | 'b' =
-      prog.displayMode === 'chords-row' &&
       !!prog.hasVariants &&
       (urlType === 'a' || urlType === 'b')
         ? urlType

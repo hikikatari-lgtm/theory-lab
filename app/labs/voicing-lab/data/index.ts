@@ -124,6 +124,7 @@ export type {
   ChordsRowChord,
   ChordsRowProgression,
   BarsGridProgression,
+  BarsGridVariantData,
   Progression,
   ProgressionGroup,
   Bar,

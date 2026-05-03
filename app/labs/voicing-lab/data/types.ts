@@ -81,6 +81,17 @@ export type Bar = {
   chords: BarChord[];
 };
 
+// Phase 7-α follow-up: bars-grid progressions can opt into a 2-variant
+// toggle (analogous to ChordsRowProgression's `variants: { a, b }`).
+// When the user flips the variant, BOTH the voicings dict and the bars
+// array swap — so a variant can introduce new chord keys (e.g. G7s9b13
+// for the substitutions version of the V7 chord) without forcing the
+// other variant to know about them.
+export type BarsGridVariantData = {
+  voicings: Record<string, Voicing>;
+  bars: Bar[];
+};
+
 export type BarsGridProgression = {
   id: string;
   label: string;
@@ -92,8 +103,13 @@ export type BarsGridProgression = {
   voicings: Record<string, Voicing>;
   bars: Bar[];
   group?: ProgressionGroup;
+  // Optional 2-variant toggle. When `hasVariants` is true and `variants`
+  // is set, the player swaps to `variants[type]` instead of using the
+  // top-level `voicings`/`bars` (which then act as a fallback default).
+  hasVariants?: boolean;
+  variants?: { a: BarsGridVariantData; b: BarsGridVariantData };
   // Present here for union-type symmetry; bars-grid progressions don't
-  // currently use it (no transposition / no variants).
+  // currently use it (no transposition).
   baseKey?: string;
 };
 

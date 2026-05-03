@@ -2,6 +2,7 @@ import { minorTurnaround } from './minor-turnaround';
 import { fBlues } from './f-blues';
 import { twoFiveOne } from './two-five-one';
 import { twoFiveOneAltered } from './two-five-one-altered';
+import { minorTwoFiveOne } from './minor-two-five-one';
 import { maj9Voicing } from './maj9-voicing';
 import { m11Voicing } from './m11-voicing';
 import { over } from './over';
@@ -11,6 +12,7 @@ import type { Progression, ProgressionGroup, SequenceItem } from './types';
 export const PROGRESSIONS: Record<string, Progression> = {
   'two-five-one': twoFiveOne,
   'two-five-one-altered': twoFiveOneAltered,
+  'minor-two-five-one': minorTwoFiveOne,
   'maj9-voicing': maj9Voicing,
   'm11-voicing': m11Voicing,
   'minor-turnaround': minorTurnaround,
@@ -29,6 +31,7 @@ export const PROGRESSION_LIST: ReadonlyArray<{
 }> = [
   { id: 'two-five-one',         label: '251 Voicing',            group: '構造系' },
   { id: 'two-five-one-altered', label: '251 Altered Voicing',    group: '構造系' },
+  { id: 'minor-two-five-one',   label: 'Minor 251 Voicing',      group: '構造系' },
   { id: 'maj9-voicing',         label: 'Maj9 Voicing',           group: '構造系' },
   { id: 'm11-voicing',          label: 'm11 Voicing',            group: '構造系' },
   { id: 'minor-turnaround',     label: 'Minor Turnaround in Cm', group: '楽曲系' },

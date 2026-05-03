@@ -1,4 +1,10 @@
-import type { BarsGridProgression } from './types';
+import type { BarsGridProgression, RhythmInfo } from './types';
+
+// Phase 6-C: Rhythm C = all-upbeat hits per bar [0.5, 1.5, 2.5, 3.5].
+// All 16 bars are full 4-beat, so the same RhythmInfo applies uniformly.
+// The dense upbeat-only pattern gives a syncopated bossa-leaning comping
+// feel that contrasts with Misty's Rhythm A and Fly Me's Rhythm B.
+const RHYTHM_C: RhythmInfo = { pattern: 'C', hits: [0.5, 1.5, 2.5, 3.5] };
 
 // Blue Bossa (Kenny Dorham, 1963) — 16-bar AA' minor jazz standard in
 // Cm with a brief modulation to D♭ major in bars 9-12 (♭IIΔ Neapolitan
@@ -107,22 +113,22 @@ export const blueBossa: BarsGridProgression = {
     },
   },
   bars: [
-    { number: 1,  chords: [{ key: 'Cm7',    beats: 4 }] },
-    { number: 2,  chords: [{ key: 'Cm7',    beats: 4 }] },
-    { number: 3,  chords: [{ key: 'Fm7',    beats: 4 }] },
-    { number: 4,  chords: [{ key: 'Fm7',    beats: 4 }] },
-    { number: 5,  chords: [{ key: 'Dm7b5',  beats: 4 }] },
-    { number: 6,  chords: [{ key: 'G7b9',   beats: 4 }] },
-    { number: 7,  chords: [{ key: 'Cm7',    beats: 4 }] },
-    { number: 8,  chords: [{ key: 'Cm7',    beats: 4 }] },
-    { number: 9,  chords: [{ key: 'Ebm7',   beats: 4 }] },
-    { number: 10, chords: [{ key: 'Ab7',    beats: 4 }] },
-    { number: 11, chords: [{ key: 'DbMaj7', beats: 4 }] },
-    { number: 12, chords: [{ key: 'DbMaj7', beats: 4 }] },
-    { number: 13, chords: [{ key: 'Dm7b5',  beats: 4 }] },
-    { number: 14, chords: [{ key: 'G7b9',   beats: 4 }] },
-    { number: 15, chords: [{ key: 'Cm7',    beats: 4 }] },
-    { number: 16, chords: [{ key: 'Cm7',    beats: 4 }] },
+    { number: 1,  chords: [{ key: 'Cm7',    beats: 4, rhythm: RHYTHM_C }] },
+    { number: 2,  chords: [{ key: 'Cm7',    beats: 4, rhythm: RHYTHM_C }] },
+    { number: 3,  chords: [{ key: 'Fm7',    beats: 4, rhythm: RHYTHM_C }] },
+    { number: 4,  chords: [{ key: 'Fm7',    beats: 4, rhythm: RHYTHM_C }] },
+    { number: 5,  chords: [{ key: 'Dm7b5',  beats: 4, rhythm: RHYTHM_C }] },
+    { number: 6,  chords: [{ key: 'G7b9',   beats: 4, rhythm: RHYTHM_C }] },
+    { number: 7,  chords: [{ key: 'Cm7',    beats: 4, rhythm: RHYTHM_C }] },
+    { number: 8,  chords: [{ key: 'Cm7',    beats: 4, rhythm: RHYTHM_C }] },
+    { number: 9,  chords: [{ key: 'Ebm7',   beats: 4, rhythm: RHYTHM_C }] },
+    { number: 10, chords: [{ key: 'Ab7',    beats: 4, rhythm: RHYTHM_C }] },
+    { number: 11, chords: [{ key: 'DbMaj7', beats: 4, rhythm: RHYTHM_C }] },
+    { number: 12, chords: [{ key: 'DbMaj7', beats: 4, rhythm: RHYTHM_C }] },
+    { number: 13, chords: [{ key: 'Dm7b5',  beats: 4, rhythm: RHYTHM_C }] },
+    { number: 14, chords: [{ key: 'G7b9',   beats: 4, rhythm: RHYTHM_C }] },
+    { number: 15, chords: [{ key: 'Cm7',    beats: 4, rhythm: RHYTHM_C }] },
+    { number: 16, chords: [{ key: 'Cm7',    beats: 4, rhythm: RHYTHM_C }] },
   ],
   group: 'tune',
 };

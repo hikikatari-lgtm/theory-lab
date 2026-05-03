@@ -367,10 +367,14 @@ export default function VoicingLabClient({
 
       // RH: rhythm-driven staccato hits, otherwise one sustained attack.
       // Each hit is ~half a beat long — long enough to ring through a
-      // typical comping figure, short enough to feel articulated.
+      // typical comping figure, short enough to feel articulated. Hits
+      // at or past `item.beats` are silently skipped so a 4-beat
+      // pattern (e.g. Rhythm B's [0.5, 2]) applied to a 2-beat half-bar
+      // chord doesn't bleed into the following chord's territory.
       if (wantRhythm && item.rhythm) {
         const hitDurSec = beatSec * 0.5;
         item.rhythm.hits.forEach((hitBeat) => {
+          if (hitBeat >= item.beats) return;
           const t = setTimeout(() => {
             void playSustained(rhNotes, hitDurSec);
           }, startMs + hitBeat * beatSec * 1000);

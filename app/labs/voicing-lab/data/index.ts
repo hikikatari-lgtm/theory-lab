@@ -7,6 +7,7 @@ import { blueInGreen } from './blue-in-green';
 import { soWhat } from './so-what';
 import { misty } from './misty';
 import { flyMeToTheMoon } from './fly-me-to-the-moon';
+import { takeFive } from './take-five';
 import { fBlues } from './f-blues';
 import { twoFiveOne } from './two-five-one';
 import { twoFiveOneAltered } from './two-five-one-altered';
@@ -34,6 +35,7 @@ export const PROGRESSIONS: Record<string, Progression> = {
   'so-what': soWhat,
   'misty': misty,
   'fly-me-to-the-moon': flyMeToTheMoon,
+  'take-five': takeFive,
   'f-blues': fBlues,
   'over': over,
   'virtual-insanity': virtualInsanity,
@@ -62,6 +64,7 @@ export const PROGRESSION_LIST: ReadonlyArray<{
   { id: 'so-what',              label: 'So What - Miles Davis',  group: '楽曲系' },
   { id: 'misty',                label: 'Misty - Erroll Garner',  group: '楽曲系' },
   { id: 'fly-me-to-the-moon',   label: 'Fly Me To The Moon',     group: '楽曲系' },
+  { id: 'take-five',            label: 'Take Five - Paul Desmond (5/4)', group: '楽曲系' },
   { id: 'f-blues',              label: 'F Blues Rootless',       group: '楽曲系' },
   { id: 'over',                 label: 'Over / Robert Glasper',     group: '楽曲系' },
   { id: 'virtual-insanity',     label: 'Virtual Insanity / Jamiroquai', group: '楽曲系' },

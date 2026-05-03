@@ -1,4 +1,18 @@
-import type { BarsGridProgression } from './types';
+import type { BarsGridProgression, WalkingBassInfo } from './types';
+
+// Phase 6-B: Ascending walking bass per Rule 3a (one chord-tone per beat:
+// 1 - 3/♭3 - 5/♭5 - 7/♭7). Dominants with ♭9 (D7♭9) use natural 5 in
+// the bass — walking bass typically traces the unaltered chord tones.
+const WB_Cm7:    WalkingBassInfo = { pattern: 'ascending', notes: ['C2',  'Eb2', 'G2',  'Bb2'] };
+const WB_F7:     WalkingBassInfo = { pattern: 'ascending', notes: ['F2',  'A2',  'C3',  'Eb3'] };
+const WB_BbM7:   WalkingBassInfo = { pattern: 'ascending', notes: ['Bb2', 'D3',  'F3',  'A3']  };
+const WB_EbM7:   WalkingBassInfo = { pattern: 'ascending', notes: ['Eb2', 'G2',  'Bb2', 'D3']  };
+const WB_Am7b5:  WalkingBassInfo = { pattern: 'ascending', notes: ['A2',  'C3',  'Eb3', 'G3']  };
+const WB_D7b9:   WalkingBassInfo = { pattern: 'ascending', notes: ['D2',  'F#2', 'A2',  'C3']  };
+const WB_Gm7:    WalkingBassInfo = { pattern: 'ascending', notes: ['G2',  'Bb2', 'D3',  'F3']  };
+const WB_C7:     WalkingBassInfo = { pattern: 'ascending', notes: ['C2',  'E2',  'G2',  'Bb2'] };
+const WB_Fm7:    WalkingBassInfo = { pattern: 'ascending', notes: ['F2',  'Ab2', 'C3',  'Eb3'] };
+const WB_Bb7:    WalkingBassInfo = { pattern: 'ascending', notes: ['Bb2', 'D3',  'F3',  'Ab3'] };
 
 // Autumn Leaves (Joseph Kosma, 1945; English lyrics Johnny Mercer, 1947)
 // — 32-bar AABA jazz standard in Gm. Real Book / Bill Evans standard
@@ -146,41 +160,41 @@ export const autumnLeaves: BarsGridProgression = {
   },
   bars: [
     // A (1-8): ii-V-I-IV in B♭ → ii-V-i in Gm
-    { number: 1,  chords: [{ key: 'Cm7',    beats: 4 }] },
-    { number: 2,  chords: [{ key: 'F7',     beats: 4 }] },
-    { number: 3,  chords: [{ key: 'BbM7',   beats: 4 }] },
-    { number: 4,  chords: [{ key: 'EbM7',   beats: 4 }] },
-    { number: 5,  chords: [{ key: 'Am7b5',  beats: 4 }] },
-    { number: 6,  chords: [{ key: 'D7b9',   beats: 4 }] },
-    { number: 7,  chords: [{ key: 'Gm7',    beats: 4 }] },
-    { number: 8,  chords: [{ key: 'Gm7',    beats: 4 }] },
+    { number: 1,  chords: [{ key: 'Cm7',    beats: 4, walkingBass: WB_Cm7    }] },
+    { number: 2,  chords: [{ key: 'F7',     beats: 4, walkingBass: WB_F7     }] },
+    { number: 3,  chords: [{ key: 'BbM7',   beats: 4, walkingBass: WB_BbM7   }] },
+    { number: 4,  chords: [{ key: 'EbM7',   beats: 4, walkingBass: WB_EbM7   }] },
+    { number: 5,  chords: [{ key: 'Am7b5',  beats: 4, walkingBass: WB_Am7b5  }] },
+    { number: 6,  chords: [{ key: 'D7b9',   beats: 4, walkingBass: WB_D7b9   }] },
+    { number: 7,  chords: [{ key: 'Gm7',    beats: 4, walkingBass: WB_Gm7    }] },
+    { number: 8,  chords: [{ key: 'Gm7',    beats: 4, walkingBass: WB_Gm7    }] },
     // A' (9-16): same as A
-    { number: 9,  chords: [{ key: 'Cm7',    beats: 4 }] },
-    { number: 10, chords: [{ key: 'F7',     beats: 4 }] },
-    { number: 11, chords: [{ key: 'BbM7',   beats: 4 }] },
-    { number: 12, chords: [{ key: 'EbM7',   beats: 4 }] },
-    { number: 13, chords: [{ key: 'Am7b5',  beats: 4 }] },
-    { number: 14, chords: [{ key: 'D7b9',   beats: 4 }] },
-    { number: 15, chords: [{ key: 'Gm7',    beats: 4 }] },
-    { number: 16, chords: [{ key: 'Gm7',    beats: 4 }] },
+    { number: 9,  chords: [{ key: 'Cm7',    beats: 4, walkingBass: WB_Cm7    }] },
+    { number: 10, chords: [{ key: 'F7',     beats: 4, walkingBass: WB_F7     }] },
+    { number: 11, chords: [{ key: 'BbM7',   beats: 4, walkingBass: WB_BbM7   }] },
+    { number: 12, chords: [{ key: 'EbM7',   beats: 4, walkingBass: WB_EbM7   }] },
+    { number: 13, chords: [{ key: 'Am7b5',  beats: 4, walkingBass: WB_Am7b5  }] },
+    { number: 14, chords: [{ key: 'D7b9',   beats: 4, walkingBass: WB_D7b9   }] },
+    { number: 15, chords: [{ key: 'Gm7',    beats: 4, walkingBass: WB_Gm7    }] },
+    { number: 16, chords: [{ key: 'Gm7',    beats: 4, walkingBass: WB_Gm7    }] },
     // B (17-24): ii-V-i in Gm → ii-V-I in B♭ (extended)
-    { number: 17, chords: [{ key: 'Am7b5',  beats: 4 }] },
-    { number: 18, chords: [{ key: 'D7b9',   beats: 4 }] },
-    { number: 19, chords: [{ key: 'Gm7',    beats: 4 }] },
-    { number: 20, chords: [{ key: 'Gm7',    beats: 4 }] },
-    { number: 21, chords: [{ key: 'Cm7',    beats: 4 }] },
-    { number: 22, chords: [{ key: 'F7',     beats: 4 }] },
-    { number: 23, chords: [{ key: 'BbM7',   beats: 4 }] },
-    { number: 24, chords: [{ key: 'BbM7',   beats: 4 }] },
+    { number: 17, chords: [{ key: 'Am7b5',  beats: 4, walkingBass: WB_Am7b5  }] },
+    { number: 18, chords: [{ key: 'D7b9',   beats: 4, walkingBass: WB_D7b9   }] },
+    { number: 19, chords: [{ key: 'Gm7',    beats: 4, walkingBass: WB_Gm7    }] },
+    { number: 20, chords: [{ key: 'Gm7',    beats: 4, walkingBass: WB_Gm7    }] },
+    { number: 21, chords: [{ key: 'Cm7',    beats: 4, walkingBass: WB_Cm7    }] },
+    { number: 22, chords: [{ key: 'F7',     beats: 4, walkingBass: WB_F7     }] },
+    { number: 23, chords: [{ key: 'BbM7',   beats: 4, walkingBass: WB_BbM7   }] },
+    { number: 24, chords: [{ key: 'BbM7',   beats: 4, walkingBass: WB_BbM7   }] },
     // C (25-32): ii-V-i in Gm → modulation through ii-V-I in E♭ → V7 turnaround
-    { number: 25, chords: [{ key: 'Am7b5',  beats: 4 }] },
-    { number: 26, chords: [{ key: 'D7b9',   beats: 4 }] },
-    { number: 27, chords: [{ key: 'Gm7',    beats: 4 }] },
-    { number: 28, chords: [{ key: 'C7',     beats: 4 }] },
-    { number: 29, chords: [{ key: 'Fm7',    beats: 4 }] },
-    { number: 30, chords: [{ key: 'Bb7',    beats: 4 }] },
-    { number: 31, chords: [{ key: 'EbM7',   beats: 4 }] },
-    { number: 32, chords: [{ key: 'D7b9',   beats: 4 }] },
+    { number: 25, chords: [{ key: 'Am7b5',  beats: 4, walkingBass: WB_Am7b5  }] },
+    { number: 26, chords: [{ key: 'D7b9',   beats: 4, walkingBass: WB_D7b9   }] },
+    { number: 27, chords: [{ key: 'Gm7',    beats: 4, walkingBass: WB_Gm7    }] },
+    { number: 28, chords: [{ key: 'C7',     beats: 4, walkingBass: WB_C7     }] },
+    { number: 29, chords: [{ key: 'Fm7',    beats: 4, walkingBass: WB_Fm7    }] },
+    { number: 30, chords: [{ key: 'Bb7',    beats: 4, walkingBass: WB_Bb7    }] },
+    { number: 31, chords: [{ key: 'EbM7',   beats: 4, walkingBass: WB_EbM7   }] },
+    { number: 32, chords: [{ key: 'D7b9',   beats: 4, walkingBass: WB_D7b9   }] },
   ],
   group: 'tune',
 };

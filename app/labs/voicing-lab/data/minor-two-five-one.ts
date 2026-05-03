@@ -1,10 +1,23 @@
-import type { ChordsRowChord, ChordsRowProgression } from './types';
+import type {
+  ChordsRowChord,
+  ChordsRowProgression,
+  WalkingBassInfo,
+} from './types';
 
 // Minor 251 voicing — IIm7♭5 → V7♭9 → Im7 in C minor, transposed at
 // render time. Rootless 4-note voicings per mDecks Vol.2 design rule:
 // the 7th-chord root is replaced by the 9th (♭9 in the Locrian/altered
 // contexts), and the dominant's 5 is replaced by the 13. IDs are
 // Roman-numeral based so selection persists across 12-key cycling.
+//
+// Phase 6-B: Ascending walking bass per Rule 3a. For Dm7♭5 the
+// pattern is 1-♭3-♭5-♭7 (the half-diminished's chord tones); G7♭9
+// uses natural 5 in the bass even though the upper voicing has ♭9
+// (walking bass typically traces unaltered chord tones); Cm7 uses
+// 1-♭3-5-♭7. Transposed automatically with the chord.
+const WB_DM7B5_ASC: WalkingBassInfo = { pattern: 'ascending', notes: ['D2', 'F2', 'Ab2', 'C3'] };
+const WB_G7B9_ASC:  WalkingBassInfo = { pattern: 'ascending', notes: ['G2', 'B2', 'D3', 'F3'] };
+const WB_CM7M_ASC:  WalkingBassInfo = { pattern: 'ascending', notes: ['C2', 'Eb2', 'G2', 'Bb2'] };
 
 const chords: ChordsRowChord[] = [
   {
@@ -19,6 +32,7 @@ const chords: ChordsRowChord[] = [
       { note: 'C5',  degree: '♭7' },
       { note: 'Eb5', degree: '♭9' },
     ],
+    walkingBass: WB_DM7B5_ASC,
   },
   {
     id: 'v7b9',
@@ -32,6 +46,7 @@ const chords: ChordsRowChord[] = [
       { note: 'B4',  degree: '3'  },
       { note: 'E5',  degree: '13' },
     ],
+    walkingBass: WB_G7B9_ASC,
   },
   {
     id: 'im7',
@@ -45,6 +60,7 @@ const chords: ChordsRowChord[] = [
       { note: 'Bb4', degree: '♭7' },
       { note: 'D5',  degree: '9'  },
     ],
+    walkingBass: WB_CM7M_ASC,
   },
 ];
 

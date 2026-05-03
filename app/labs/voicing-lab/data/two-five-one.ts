@@ -1,4 +1,9 @@
-import type { ChordsRowChord, ChordsRowProgression, RhythmInfo } from './types';
+import type {
+  ChordsRowChord,
+  ChordsRowProgression,
+  RhythmInfo,
+  WalkingBassInfo,
+} from './types';
 
 // 251 voicings are defined in C and transposed at render time. IDs are
 // Roman-numeral based (not C-key chord names) so that selection persists
@@ -10,6 +15,14 @@ import type { ChordsRowChord, ChordsRowProgression, RhythmInfo } from './types';
 // variant-independent so the same RhythmInfo object is reused across
 // all chords. Activated by the player's "+ Rhythm" mode.
 const RHYTHM_A: RhythmInfo = { pattern: 'A', hits: [0, 1.5] };
+
+// Phase 6-B: Ascending walking bass per Rule 3a (1 - 3/♭3 - 5 - ♭7/M7).
+// Notes are written in C key (ChordsRow base); transposeChord re-spells
+// them per current key. Same line for both variants since walking bass
+// depends on chord root/type, not on the upper voicing's inversion.
+const WB_DM7_ASC:  WalkingBassInfo = { pattern: 'ascending', notes: ['D2', 'F2', 'A2', 'C3'] };
+const WB_G7_ASC:   WalkingBassInfo = { pattern: 'ascending', notes: ['G2', 'B2', 'D3', 'F3'] };
+const WB_CM7_ASC:  WalkingBassInfo = { pattern: 'ascending', notes: ['C2', 'E2', 'G2', 'B2'] };
 
 const variantA: ChordsRowChord[] = [
   {
@@ -25,6 +38,7 @@ const variantA: ChordsRowChord[] = [
       { note: 'E5', degree: '9'  },
     ],
     rhythm: RHYTHM_A,
+    walkingBass: WB_DM7_ASC,
   },
   {
     id: 'v7',
@@ -39,6 +53,7 @@ const variantA: ChordsRowChord[] = [
       { note: 'E5', degree: '13' },
     ],
     rhythm: RHYTHM_A,
+    walkingBass: WB_G7_ASC,
   },
   {
     id: 'imaj7',
@@ -53,6 +68,7 @@ const variantA: ChordsRowChord[] = [
       { note: 'D5', degree: '9'  },
     ],
     rhythm: RHYTHM_A,
+    walkingBass: WB_CM7_ASC,
   },
 ];
 
@@ -70,6 +86,7 @@ const variantB: ChordsRowChord[] = [
       { note: 'A5', degree: '5'  },
     ],
     rhythm: RHYTHM_A,
+    walkingBass: WB_DM7_ASC,
   },
   {
     id: 'v7',
@@ -84,6 +101,7 @@ const variantB: ChordsRowChord[] = [
       { note: 'A5', degree: '9'  },
     ],
     rhythm: RHYTHM_A,
+    walkingBass: WB_G7_ASC,
   },
   {
     id: 'imaj7',
@@ -98,6 +116,7 @@ const variantB: ChordsRowChord[] = [
       { note: 'G5', degree: '5'  },
     ],
     rhythm: RHYTHM_A,
+    walkingBass: WB_CM7_ASC,
   },
 ];
 

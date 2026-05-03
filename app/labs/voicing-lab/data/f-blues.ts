@@ -1,4 +1,18 @@
-import type { BarsGridProgression } from './types';
+import type { BarsGridProgression, WalkingBassInfo } from './types';
+
+// Phase 6-B: Ascending walking bass per Rule 3a (1-3-5-♭7 for dominants,
+// 1-♭3-5-♭7 for the iim7). Half-bar 2-beat entries use just R-3 (or
+// R-♭3 for minor) as a compact ascending walk to the next chord.
+const WB_F7_FULL:  WalkingBassInfo = { pattern: 'ascending', notes: ['F2',  'A2',  'C3', 'Eb3'] };
+const WB_Bb7_FULL: WalkingBassInfo = { pattern: 'ascending', notes: ['Bb2', 'D3',  'F3', 'Ab3'] };
+const WB_D7_FULL:  WalkingBassInfo = { pattern: 'ascending', notes: ['D2',  'F#2', 'A2', 'C3'] };
+const WB_Gm7_FULL: WalkingBassInfo = { pattern: 'ascending', notes: ['G2',  'Bb2', 'D3', 'F3'] };
+const WB_C7_FULL:  WalkingBassInfo = { pattern: 'ascending', notes: ['C2',  'E2',  'G2', 'Bb2'] };
+
+const WB_F7_HALF:  WalkingBassInfo = { pattern: 'ascending', notes: ['F2',  'A2']  };
+const WB_D7_HALF:  WalkingBassInfo = { pattern: 'ascending', notes: ['D2',  'F#2'] };
+const WB_Gm7_HALF: WalkingBassInfo = { pattern: 'ascending', notes: ['G2',  'Bb2'] };
+const WB_C7_HALF:  WalkingBassInfo = { pattern: 'ascending', notes: ['C2',  'E2']  };
 
 export const fBlues: BarsGridProgression = {
   id: 'f-blues',
@@ -68,18 +82,24 @@ export const fBlues: BarsGridProgression = {
     },
   },
   bars: [
-    { number: 1,  chords: [{ key: 'F7',  beats: 4 }] },
-    { number: 2,  chords: [{ key: 'Bb7', beats: 4 }] },
-    { number: 3,  chords: [{ key: 'F7',  beats: 4 }] },
-    { number: 4,  chords: [{ key: 'F7',  beats: 4 }] },
-    { number: 5,  chords: [{ key: 'Bb7', beats: 4 }] },
-    { number: 6,  chords: [{ key: 'Bb7', beats: 4 }] },
-    { number: 7,  chords: [{ key: 'F7',  beats: 4 }] },
-    { number: 8,  chords: [{ key: 'D7',  beats: 4 }] },
-    { number: 9,  chords: [{ key: 'Gm7', beats: 4 }] },
-    { number: 10, chords: [{ key: 'C7',  beats: 4 }] },
-    { number: 11, chords: [{ key: 'F7',  beats: 2 }, { key: 'D7', beats: 2 }] },
-    { number: 12, chords: [{ key: 'Gm7', beats: 2 }, { key: 'C7', beats: 2 }] },
+    { number: 1,  chords: [{ key: 'F7',  beats: 4, walkingBass: WB_F7_FULL  }] },
+    { number: 2,  chords: [{ key: 'Bb7', beats: 4, walkingBass: WB_Bb7_FULL }] },
+    { number: 3,  chords: [{ key: 'F7',  beats: 4, walkingBass: WB_F7_FULL  }] },
+    { number: 4,  chords: [{ key: 'F7',  beats: 4, walkingBass: WB_F7_FULL  }] },
+    { number: 5,  chords: [{ key: 'Bb7', beats: 4, walkingBass: WB_Bb7_FULL }] },
+    { number: 6,  chords: [{ key: 'Bb7', beats: 4, walkingBass: WB_Bb7_FULL }] },
+    { number: 7,  chords: [{ key: 'F7',  beats: 4, walkingBass: WB_F7_FULL  }] },
+    { number: 8,  chords: [{ key: 'D7',  beats: 4, walkingBass: WB_D7_FULL  }] },
+    { number: 9,  chords: [{ key: 'Gm7', beats: 4, walkingBass: WB_Gm7_FULL }] },
+    { number: 10, chords: [{ key: 'C7',  beats: 4, walkingBass: WB_C7_FULL  }] },
+    { number: 11, chords: [
+      { key: 'F7',  beats: 2, walkingBass: WB_F7_HALF },
+      { key: 'D7',  beats: 2, walkingBass: WB_D7_HALF },
+    ] },
+    { number: 12, chords: [
+      { key: 'Gm7', beats: 2, walkingBass: WB_Gm7_HALF },
+      { key: 'C7',  beats: 2, walkingBass: WB_C7_HALF },
+    ] },
   ],
   group: 'progression',
 };

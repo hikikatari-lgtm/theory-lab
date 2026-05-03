@@ -3,6 +3,7 @@ import { minorCadenceCycle } from './minor-cadence-cycle';
 import { minorCadenceCycleExtended } from './minor-cadence-cycle-extended';
 import { blueBossa } from './blue-bossa';
 import { autumnLeaves } from './autumn-leaves';
+import { allTheThingsYouAre } from './all-the-things-you-are';
 import { bodyAndSoul } from './body-and-soul';
 import { blueInGreen } from './blue-in-green';
 import { soWhat } from './so-what';
@@ -33,6 +34,7 @@ export const PROGRESSIONS: Record<string, Progression> = {
   'minor-cadence-cycle-extended': minorCadenceCycleExtended,
   'blue-bossa': blueBossa,
   'autumn-leaves': autumnLeaves,
+  'all-the-things-you-are': allTheThingsYouAre,
   'body-and-soul': bodyAndSoul,
   'blue-in-green': blueInGreen,
   'so-what': soWhat,
@@ -68,6 +70,7 @@ export const PROGRESSION_LIST: ReadonlyArray<{
   { id: 'minor-cadence-cycle-extended', label: 'Minor Cadence Cycle Extended', group: 'progression' },
   { id: 'f-blues',              label: 'F Blues Rootless',       group: 'progression' },
   // tune — full transcribed standards
+  { id: 'all-the-things-you-are', label: 'All The Things You Are - Jerome Kern', group: 'tune' },
   { id: 'autumn-leaves',        label: 'Autumn Leaves',          group: 'tune' },
   { id: 'blue-bossa',           label: 'Blue Bossa',             group: 'tune' },
   { id: 'blue-in-green',        label: 'Blue In Green - Bill Evans',     group: 'tune' },

@@ -183,4 +183,7 @@ export type {
   RhythmInfo,
   RhythmPattern,
   Section,
+  AnchorMode,
+  AnchorDefinition,
+  ThreeAnchorViewConfig,
 } from './types';

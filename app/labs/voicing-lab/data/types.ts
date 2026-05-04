@@ -67,6 +67,7 @@ export type ChordsRowProgression = {
   hasVariants?: boolean;
   baseKey?: string;
   variants?: { a: ChordsRowChord[]; b: ChordsRowChord[] };
+  threeAnchorView?: ThreeAnchorViewConfig;
 };
 
 export type BarChord = {
@@ -107,6 +108,41 @@ export type BarsGridVariantData = {
   bars: Bar[];
 };
 
+// Phase Bill Evans PR 2: 3-view anchor mode. Progressions can opt into
+// a "3 viewpoints" practice mode where one note per chord is highlighted
+// in a distinct color across all chords in the progression — letting the
+// student focus on a single voice (top, bottom of RH, or root) and hear
+// how it moves as the chords change.
+//
+// AnchorMode values:
+//   - 'standard'    — no anchor highlighting (default; existing behavior)
+//   - 'top-note'    — RH's highest note is highlighted
+//   - 'bottom-line' — RH's lowest note is highlighted
+//   - 'root'        — LH's lowest note is highlighted (the bass)
+//
+// Color and label are configured per-progression so each piece can pick
+// hex values that read well against its specific RH/LH note layout.
+//
+// Progressions without `threeAnchorView` render exactly as before: the
+// UI doesn't show the radio group, and the keyboard treats the chord as
+// `standard` regardless of any state.
+export type AnchorMode = 'standard' | 'top-note' | 'bottom-line' | 'root';
+
+export type AnchorDefinition = {
+  color: string;
+  label: string;
+  description: string;
+};
+
+export type ThreeAnchorViewConfig = {
+  enabled: boolean;
+  anchors: {
+    topNote: AnchorDefinition;
+    bottomLine: AnchorDefinition;
+    root: AnchorDefinition;
+  };
+};
+
 export type BarsGridProgression = {
   id: string;
   label: string;
@@ -130,6 +166,7 @@ export type BarsGridProgression = {
   // Present here for union-type symmetry; bars-grid progressions don't
   // currently use it (no transposition).
   baseKey?: string;
+  threeAnchorView?: ThreeAnchorViewConfig;
 };
 
 export type Progression = ChordsRowProgression | BarsGridProgression;

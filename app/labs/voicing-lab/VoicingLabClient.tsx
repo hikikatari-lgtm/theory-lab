@@ -27,6 +27,7 @@ import {
   DEFAULT_PROGRESSION_ID,
   buildSequence,
 } from './data';
+import type { AnchorMode } from './data';
 
 type LoadState = 'loading' | 'ready' | 'error';
 
@@ -116,6 +117,7 @@ export default function VoicingLabClient({
   const [isWalking, setIsWalking] = useState(false);
   const [playbackMode, setPlaybackMode] = useState<PlaybackMode>('voicing-only');
   const [selectedSectionIdx, setSelectedSectionIdx] = useState(0);
+  const [anchorMode, setAnchorMode] = useState<AnchorMode>('standard');
   const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   // Section tab support: only relevant for bars-grid progressions that
@@ -282,6 +284,17 @@ export default function VoicingLabClient({
     setSelectedSectionIdx(0);
   }, [sequence, stopWalk]);
 
+  // Reset 3-view anchor mode to Standard when switching progressions.
+  // Variant toggle / key cycle keep the same threeAnchorView config, so
+  // we only need to reset on progressionId change. This also covers
+  // switching to a progression without `threeAnchorView` — the radio
+  // group becomes hidden, and any stale non-standard anchorMode would
+  // have been visually inert (the keyboard wouldn't receive a color),
+  // but we reset it anyway so flipping back doesn't restore a prior mode.
+  useEffect(() => {
+    setAnchorMode('standard');
+  }, [progressionId]);
+
   // Auto-switch the section tab during Walk Through so the visible
   // bars follow the currently playing chord (Q4 from spec). Ignored
   // for progressions without `sections`. Outside playback the tab
@@ -364,6 +377,19 @@ export default function VoicingLabClient({
       ...voicing.rh.map((n) => normalizeNote(n.note)),
     ];
   }, [voicing]);
+
+  // 3-view anchor: pick the configured color for the current mode (or
+  // null for standard / progressions without `threeAnchorView`). The
+  // keyboard treats a missing color as "render normally" even if
+  // anchorMode happens to be non-standard, so this is the single gate.
+  const anchorConfig = viewProgression.threeAnchorView;
+  const anchorColor = useMemo(() => {
+    if (!anchorConfig?.enabled || anchorMode === 'standard') return undefined;
+    if (anchorMode === 'top-note') return anchorConfig.anchors.topNote.color;
+    if (anchorMode === 'bottom-line') return anchorConfig.anchors.bottomLine.color;
+    if (anchorMode === 'root') return anchorConfig.anchors.root.color;
+    return undefined;
+  }, [anchorConfig, anchorMode]);
 
   const onPlayLH = () => {
     if (!voicing) return;
@@ -590,6 +616,8 @@ export default function VoicingLabClient({
               rhNotes={voicing.rh}
               commonNotes={commonNotes}
               showDegrees={showDegrees}
+              anchorMode={anchorMode}
+              anchorColor={anchorColor}
             />
           </section>
         ) : null}
@@ -613,6 +641,102 @@ export default function VoicingLabClient({
                 共通音ハイライト
               </button>
             </div>
+            {anchorConfig?.enabled ? (
+              <div
+                className="vl-anchor-row"
+                role="radiogroup"
+                aria-label="3視点表示"
+              >
+                <div className="vl-anchor-label">3視点表示</div>
+                <div className="vl-anchor-buttons">
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={anchorMode === 'standard'}
+                    className={
+                      'vl-anchor-btn' +
+                      (anchorMode === 'standard' ? ' active' : '')
+                    }
+                    onClick={() => setAnchorMode('standard')}
+                  >
+                    Standard
+                  </button>
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={anchorMode === 'top-note'}
+                    className={
+                      'vl-anchor-btn' +
+                      (anchorMode === 'top-note' ? ' active' : '')
+                    }
+                    style={
+                      anchorMode === 'top-note'
+                        ? {
+                            background: anchorConfig.anchors.topNote.color,
+                            borderColor: anchorConfig.anchors.topNote.color,
+                            color: '#1a1a1a',
+                          }
+                        : {
+                            borderLeftColor: anchorConfig.anchors.topNote.color,
+                          }
+                    }
+                    title={anchorConfig.anchors.topNote.description}
+                    onClick={() => setAnchorMode('top-note')}
+                  >
+                    {anchorConfig.anchors.topNote.label}
+                  </button>
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={anchorMode === 'bottom-line'}
+                    className={
+                      'vl-anchor-btn' +
+                      (anchorMode === 'bottom-line' ? ' active' : '')
+                    }
+                    style={
+                      anchorMode === 'bottom-line'
+                        ? {
+                            background: anchorConfig.anchors.bottomLine.color,
+                            borderColor: anchorConfig.anchors.bottomLine.color,
+                            color: '#1a1a1a',
+                          }
+                        : {
+                            borderLeftColor:
+                              anchorConfig.anchors.bottomLine.color,
+                          }
+                    }
+                    title={anchorConfig.anchors.bottomLine.description}
+                    onClick={() => setAnchorMode('bottom-line')}
+                  >
+                    {anchorConfig.anchors.bottomLine.label}
+                  </button>
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={anchorMode === 'root'}
+                    className={
+                      'vl-anchor-btn' +
+                      (anchorMode === 'root' ? ' active' : '')
+                    }
+                    style={
+                      anchorMode === 'root'
+                        ? {
+                            background: anchorConfig.anchors.root.color,
+                            borderColor: anchorConfig.anchors.root.color,
+                            color: '#fff',
+                          }
+                        : {
+                            borderLeftColor: anchorConfig.anchors.root.color,
+                          }
+                    }
+                    title={anchorConfig.anchors.root.description}
+                    onClick={() => setAnchorMode('root')}
+                  >
+                    {anchorConfig.anchors.root.label}
+                  </button>
+                </div>
+              </div>
+            ) : null}
           </div>
 
           <div className="vl-controls-section">

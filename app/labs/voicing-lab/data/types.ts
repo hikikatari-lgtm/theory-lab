@@ -51,6 +51,33 @@ export type ChordsRowChord = Voicing & {
 // (🔧 構造系 / 🔁 進行系 / 🎵 楽曲系) live in ProgressionSelector.tsx.
 export type ProgressionGroup = 'structure' | 'progression' | 'tune';
 
+// Sub-genre buckets within `group: 'tune'`. After the library grew from
+// 11 → 27 songs (Phase 8b / R&B-A / Stevie), a flat alphabetical list
+// became hard to scan — the student wants "today I'm studying Jazz" or
+// "I want a Stevie tune" without skipping past the other two genres.
+//
+// SubgenreMeta defines the dropdown display order, label, and icon.
+// Order is fixed (Jazz → R&B → Stevie) per spec, not user-configurable.
+//
+// Only `group: 'tune'` entries carry a subgenre; structure / progression
+// entries ignore it. A tune without subgenre falls into a fallback
+// "その他" group at the bottom (defensive — should never trigger if the
+// library is fully classified).
+export type SongSubgenre = 'jazz-standards' | 'rnb-neo-soul' | 'stevie-wonder';
+
+export type SubgenreMeta = {
+  id: SongSubgenre;
+  label: string;
+  icon: string;
+  order: number;
+};
+
+export const SONG_SUBGENRES: ReadonlyArray<SubgenreMeta> = [
+  { id: 'jazz-standards', label: 'Jazz Standards', icon: '🎷', order: 1 },
+  { id: 'rnb-neo-soul',   label: 'R&B / Neo Soul', icon: '🎤', order: 2 },
+  { id: 'stevie-wonder',  label: 'Stevie Wonder',  icon: '🎹', order: 3 },
+];
+
 export type ChordsRowProgression = {
   id: string;
   label: string;

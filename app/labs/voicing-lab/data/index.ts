@@ -4,11 +4,16 @@ import { minorCadenceCycleExtended } from './minor-cadence-cycle-extended';
 import { blueBossa } from './blue-bossa';
 import { autumnLeaves } from './autumn-leaves';
 import { allTheThingsYouAre } from './all-the-things-you-are';
+import { africaDangelo } from './africa-dangelo';
 import { beautifulLove } from './beautiful-love';
+import { bestPart } from './best-part';
 import { blackOrpheus } from './black-orpheus';
 import { bodyAndSoul } from './body-and-soul';
 import { howInsensitive } from './how-insensitive';
+import { itRunsThroughMe } from './it-runs-through-me';
+import { soBeautifulGlasper } from './so-beautiful-glasper';
 import { stellaByStarlight } from './stella-by-starlight';
+import { tadow } from './tadow';
 import { thereWillNeverBeAnotherYou } from './there-will-never-be-another-you';
 import { blueInGreen } from './blue-in-green';
 import { soWhat } from './so-what';
@@ -40,11 +45,16 @@ export const PROGRESSIONS: Record<string, Progression> = {
   'blue-bossa': blueBossa,
   'autumn-leaves': autumnLeaves,
   'all-the-things-you-are': allTheThingsYouAre,
+  'africa-dangelo': africaDangelo,
   'beautiful-love': beautifulLove,
+  'best-part': bestPart,
   'black-orpheus': blackOrpheus,
   'body-and-soul': bodyAndSoul,
   'how-insensitive': howInsensitive,
+  'it-runs-through-me': itRunsThroughMe,
+  'so-beautiful-glasper': soBeautifulGlasper,
   'stella-by-starlight': stellaByStarlight,
+  'tadow': tadow,
   'there-will-never-be-another-you': thereWillNeverBeAnotherYou,
   'blue-in-green': blueInGreen,
   'so-what': soWhat,
@@ -80,20 +90,25 @@ export const PROGRESSION_LIST: ReadonlyArray<{
   { id: 'minor-cadence-cycle-extended', label: 'Minor Cadence Cycle Extended', group: 'progression' },
   { id: 'f-blues',              label: 'F Blues Rootless',       group: 'progression' },
   // tune — full transcribed standards
+  { id: 'africa-dangelo',       label: "Africa - D'Angelo",      group: 'tune' },
   { id: 'all-the-things-you-are', label: 'All The Things You Are - Jerome Kern', group: 'tune' },
   { id: 'autumn-leaves',        label: 'Autumn Leaves',          group: 'tune' },
   { id: 'beautiful-love',       label: 'Beautiful Love - Wayne King', group: 'tune' },
+  { id: 'best-part',            label: 'Best Part - H.E.R. / Daniel Caesar', group: 'tune' },
   { id: 'black-orpheus',        label: 'Black Orpheus - Luiz Bonfá', group: 'tune' },
   { id: 'blue-bossa',           label: 'Blue Bossa',             group: 'tune' },
   { id: 'blue-in-green',        label: 'Blue In Green - Bill Evans',     group: 'tune' },
   { id: 'body-and-soul',        label: 'Body And Soul',          group: 'tune' },
   { id: 'fly-me-to-the-moon',   label: 'Fly Me To The Moon',     group: 'tune' },
   { id: 'how-insensitive',      label: 'How Insensitive - Antonio Carlos Jobim', group: 'tune' },
+  { id: 'it-runs-through-me',   label: 'It Runs Through Me - Tom Misch', group: 'tune' },
   { id: 'misty',                label: 'Misty - Erroll Garner',  group: 'tune' },
   { id: 'over',                 label: 'Over / Robert Glasper',  group: 'tune' },
+  { id: 'so-beautiful-glasper', label: 'So Beautiful - Robert Glasper', group: 'tune' },
   { id: 'so-what',              label: 'So What - Miles Davis',  group: 'tune' },
   { id: 'solar',                label: 'Solar - Miles Davis',    group: 'tune' },
   { id: 'stella-by-starlight',  label: 'Stella By Starlight - Victor Young', group: 'tune' },
+  { id: 'tadow',                label: 'Tadow - FKJ × Masego',   group: 'tune' },
   { id: 'take-five',            label: 'Take Five - Paul Desmond (5/4)', group: 'tune' },
   { id: 'there-will-never-be-another-you', label: 'There Will Never Be Another You - Harry Warren', group: 'tune' },
   { id: 'virtual-insanity',     label: 'Virtual Insanity / Jamiroquai',  group: 'tune' },

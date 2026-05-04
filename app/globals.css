@@ -1086,19 +1086,6 @@ footer {
   padding: 20px;
   margin-bottom: 20px;
   border: 1px solid var(--vl-border);
-  /* UX: keep the keyboard visible at viewport bottom while scrolling
-     through long progressions (Autumn Leaves / Body And Soul / ATTYA
-     etc.). Background is already opaque (--vl-panel); z-index = 10
-     lifts above the .vl-progression chord grid (max existing z-index
-     in the lab is 2). The top-edge shadow gives a subtle separation
-     from the scrolling chord grid above when the keyboard is stuck.
-     For short progressions (4–16 bars) there's nothing to scroll, so
-     the keyboard sits at its natural position and the sticky has no
-     visible effect. */
-  position: sticky;
-  bottom: 0;
-  z-index: 10;
-  box-shadow: 0 -4px 12px -4px rgba(0, 0, 0, 0.4);
 }
 .vl-detail-header {
   display: flex;
@@ -1224,19 +1211,6 @@ footer {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 6px;
-  /* UX: scroll buffer below the last row of bars equal to the sticky
-     keyboard's height + a little extra. Without this, long progressions
-     (Autumn Leaves / Body And Soul / ATTYA — 32-36 bars) leave the
-     bottom rows trapped behind the sticky keyboard at viewport bottom:
-     even at max scroll, the user can't push the late bars above the
-     keyboard's top edge. With ~360px of padding the late rows can be
-     scrolled into the upper portion of the viewport while the keyboard
-     stays pinned below.
-     Scoped to .vl-bars-grid (not .vl-progression) so chords-row
-     progressions like 251 Voicing are unaffected — they're short
-     enough that the keyboard sits at its natural position with no
-     sticky activation. */
-  padding-bottom: 360px;
 }
 .vl-bar {
   background: var(--vl-panel-2);
@@ -1503,7 +1477,7 @@ footer {
   .vl-chord-cell .vl-chord-symbol { font-size: 12px; }
   .vl-chord-cell .vl-chord-roman { font-size: 8px; }
   .vl-chords-row { gap: 4px; }
-  .vl-bars-grid { gap: 4px; padding-bottom: 240px; }
+  .vl-bars-grid { gap: 4px; }
   .vl-bar { padding: 4px; min-height: 70px; }
   .vl-bar-number { font-size: 8px; }
   .vl-bar-chords { gap: 2px; margin-top: 12px; }

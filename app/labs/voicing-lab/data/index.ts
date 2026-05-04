@@ -4,7 +4,12 @@ import { minorCadenceCycleExtended } from './minor-cadence-cycle-extended';
 import { blueBossa } from './blue-bossa';
 import { autumnLeaves } from './autumn-leaves';
 import { allTheThingsYouAre } from './all-the-things-you-are';
+import { beautifulLove } from './beautiful-love';
+import { blackOrpheus } from './black-orpheus';
 import { bodyAndSoul } from './body-and-soul';
+import { howInsensitive } from './how-insensitive';
+import { stellaByStarlight } from './stella-by-starlight';
+import { thereWillNeverBeAnotherYou } from './there-will-never-be-another-you';
 import { blueInGreen } from './blue-in-green';
 import { soWhat } from './so-what';
 import { solar } from './solar';
@@ -35,7 +40,12 @@ export const PROGRESSIONS: Record<string, Progression> = {
   'blue-bossa': blueBossa,
   'autumn-leaves': autumnLeaves,
   'all-the-things-you-are': allTheThingsYouAre,
+  'beautiful-love': beautifulLove,
+  'black-orpheus': blackOrpheus,
   'body-and-soul': bodyAndSoul,
+  'how-insensitive': howInsensitive,
+  'stella-by-starlight': stellaByStarlight,
+  'there-will-never-be-another-you': thereWillNeverBeAnotherYou,
   'blue-in-green': blueInGreen,
   'so-what': soWhat,
   'solar': solar,
@@ -72,15 +82,20 @@ export const PROGRESSION_LIST: ReadonlyArray<{
   // tune — full transcribed standards
   { id: 'all-the-things-you-are', label: 'All The Things You Are - Jerome Kern', group: 'tune' },
   { id: 'autumn-leaves',        label: 'Autumn Leaves',          group: 'tune' },
+  { id: 'beautiful-love',       label: 'Beautiful Love - Wayne King', group: 'tune' },
+  { id: 'black-orpheus',        label: 'Black Orpheus - Luiz Bonfá', group: 'tune' },
   { id: 'blue-bossa',           label: 'Blue Bossa',             group: 'tune' },
   { id: 'blue-in-green',        label: 'Blue In Green - Bill Evans',     group: 'tune' },
   { id: 'body-and-soul',        label: 'Body And Soul',          group: 'tune' },
   { id: 'fly-me-to-the-moon',   label: 'Fly Me To The Moon',     group: 'tune' },
+  { id: 'how-insensitive',      label: 'How Insensitive - Antonio Carlos Jobim', group: 'tune' },
   { id: 'misty',                label: 'Misty - Erroll Garner',  group: 'tune' },
   { id: 'over',                 label: 'Over / Robert Glasper',  group: 'tune' },
   { id: 'so-what',              label: 'So What - Miles Davis',  group: 'tune' },
   { id: 'solar',                label: 'Solar - Miles Davis',    group: 'tune' },
+  { id: 'stella-by-starlight',  label: 'Stella By Starlight - Victor Young', group: 'tune' },
   { id: 'take-five',            label: 'Take Five - Paul Desmond (5/4)', group: 'tune' },
+  { id: 'there-will-never-be-another-you', label: 'There Will Never Be Another You - Harry Warren', group: 'tune' },
   { id: 'virtual-insanity',     label: 'Virtual Insanity / Jamiroquai',  group: 'tune' },
 ];
 

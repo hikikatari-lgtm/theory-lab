@@ -21,6 +21,7 @@ import VoicingKeyboard from './components/VoicingKeyboard';
 import ProgressionSelector from './components/ProgressionSelector';
 import ChordsRow from './components/ChordsRow';
 import BarsGrid from './components/BarsGrid';
+import SectionTabs from './components/SectionTabs';
 import {
   PROGRESSIONS,
   DEFAULT_PROGRESSION_ID,
@@ -114,7 +115,19 @@ export default function VoicingLabClient({
   const [loadState, setLoadState] = useState<LoadState>('loading');
   const [isWalking, setIsWalking] = useState(false);
   const [playbackMode, setPlaybackMode] = useState<PlaybackMode>('voicing-only');
+  const [selectedSectionIdx, setSelectedSectionIdx] = useState(0);
   const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  // Section tab support: only relevant for bars-grid progressions that
+  // declare a `sections` field (Autumn Leaves / Body And Soul / ATTYA
+  // currently). Walk Through still iterates the full sequence above —
+  // sections are display-only, with the active tab auto-driven during
+  // playback (see effect below).
+  const sections =
+    viewProgression.displayMode === 'bars-grid'
+      ? viewProgression.sections ?? null
+      : null;
+  const visibleSection = sections?.[selectedSectionIdx];
 
   const showVariantToggle =
     !!progression.hasVariants && !!progression.variants;
@@ -258,13 +271,52 @@ export default function VoicingLabClient({
   // We always stop any walkthrough, but only reset selection when the
   // current selectedItemId is no longer present — for 251 the A/B variants
   // share IDs (iim7/v7/imaj7), so toggling preserves which slot is active.
+  // Section index resets to 0 on every sequence change so a new
+  // progression always opens with its first section visible.
   useEffect(() => {
     stopWalk();
     setSelectedItemId((cur) => {
       if (sequence.find((s) => s.itemId === cur)) return cur;
       return sequence[0]?.itemId ?? '';
     });
+    setSelectedSectionIdx(0);
   }, [sequence, stopWalk]);
+
+  // Auto-switch the section tab during Walk Through so the visible
+  // bars follow the currently playing chord (Q4 from spec). Ignored
+  // for progressions without `sections`. Outside playback the tab
+  // stays where the user left it.
+  useEffect(() => {
+    if (!playingItemId || !sections) return;
+    const match = playingItemId.match(/^bar(\d+)-/);
+    if (!match) return;
+    const barNum = parseInt(match[1], 10);
+    const idx = sections.findIndex(
+      (s) => barNum >= s.barRange[0] && barNum <= s.barRange[1]
+    );
+    if (idx !== -1) {
+      setSelectedSectionIdx((cur) => (idx !== cur ? idx : cur));
+    }
+  }, [playingItemId, sections]);
+
+  // Manual tab click: switch section AND move chord selection to the
+  // first chord of the new section so the keyboard immediately shows
+  // a voicing from what's now visible. Disabled while Walk Through is
+  // running (the tabs themselves render disabled in that state).
+  const handleSectionChange = useCallback(
+    (idx: number) => {
+      if (!sections) return;
+      setSelectedSectionIdx(idx);
+      const section = sections[idx];
+      const firstItem = sequence.find((item) => {
+        const m = item.itemId.match(/^bar(\d+)-/);
+        if (!m) return false;
+        return parseInt(m[1], 10) === section.barRange[0];
+      });
+      if (firstItem) setSelectedItemId(firstItem.itemId);
+    },
+    [sections, sequence]
+  );
 
   const handleProgressionChange = (newId: string) => {
     if (newId === progressionId) return;
@@ -485,6 +537,14 @@ export default function VoicingLabClient({
               </button>
             </div>
           ) : null}
+          {sections ? (
+            <SectionTabs
+              sections={sections}
+              selectedIdx={selectedSectionIdx}
+              onSelect={handleSectionChange}
+              disabled={isWalking}
+            />
+          ) : null}
           {viewProgression.displayMode === 'chords-row' ? (
             <ChordsRow
               chords={viewProgression.chords}
@@ -498,6 +558,7 @@ export default function VoicingLabClient({
               selectedItemId={effectiveSelectedId}
               playingItemId={playingItemId}
               onSelect={setSelectedItemId}
+              visibleSection={visibleSection}
             />
           )}
         </section>

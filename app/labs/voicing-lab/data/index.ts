@@ -134,4 +134,5 @@ export type {
   WalkingBassPattern,
   RhythmInfo,
   RhythmPattern,
+  Section,
 } from './types';

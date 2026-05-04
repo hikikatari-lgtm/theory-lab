@@ -947,6 +947,46 @@ footer {
   color: var(--vl-accent);
 }
 
+/* Section tabs (Autumn Leaves / Body And Soul / ATTYA) — sit between
+   the progression header and the chord grid. Same visual language as
+   .vl-variant-toggle so the variant toggle (used by 251 / MCC Extended)
+   and the section tabs feel like one family of UI controls. The wider
+   inline-flex (vs variant toggle's inline width) and slightly larger
+   tab padding accommodate up to 4-5 section labels per piece. */
+.vl-section-tabs {
+  display: inline-flex;
+  background: var(--vl-panel-2);
+  border: 1px solid var(--vl-border);
+  border-radius: 6px;
+  padding: 2px;
+  gap: 2px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.vl-section-tab {
+  background: transparent;
+  color: var(--vl-text-dim);
+  border: 0;
+  padding: 6px 14px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: inherit;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: all 0.15s;
+  min-width: 48px;
+}
+.vl-section-tab:hover:not(:disabled) { color: var(--vl-text); }
+.vl-section-tab.active {
+  background: rgba(255, 107, 107, 0.15);
+  color: var(--vl-accent);
+}
+.vl-section-tab:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .vl-key-switch {
   display: flex;
   align-items: center;
@@ -1477,4 +1517,5 @@ footer {
   .vl-key-switch-display { font-size: 12px; }
   .vl-key-switch-display strong { font-size: 16px; }
   .vl-variant-btn { padding: 5px 10px; font-size: 11px; }
+  .vl-section-tab { padding: 5px 10px; font-size: 11px; min-width: 40px; }
 }

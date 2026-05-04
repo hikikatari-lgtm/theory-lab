@@ -1,13 +1,17 @@
 'use client';
 
 import VoicingCell from './VoicingCell';
-import type { BarsGridProgression } from '../data/types';
+import type { BarsGridProgression, Section } from '../data/types';
 
 type Props = {
   progression: BarsGridProgression;
   selectedItemId: string | null;
   playingItemId: string | null;
   onSelect: (id: string) => void;
+  // When set, only bars whose `number` falls inside section.barRange
+  // (inclusive on both ends) are rendered. Walk Through still iterates
+  // the full progression — section visibility is purely a display crop.
+  visibleSection?: Section;
 };
 
 export default function BarsGrid({
@@ -15,10 +19,19 @@ export default function BarsGrid({
   selectedItemId,
   playingItemId,
   onSelect,
+  visibleSection,
 }: Props) {
+  const visibleBars = visibleSection
+    ? progression.bars.filter(
+        (bar) =>
+          bar.number >= visibleSection.barRange[0] &&
+          bar.number <= visibleSection.barRange[1]
+      )
+    : progression.bars;
+
   return (
     <div className="vl-bars-grid">
-      {progression.bars.map((bar) => (
+      {visibleBars.map((bar) => (
         <div key={bar.number} className="vl-bar">
           <div className="vl-bar-number">{bar.number}</div>
           <div className="vl-bar-chords">

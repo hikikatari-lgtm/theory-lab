@@ -201,4 +201,10 @@ export const autumnLeaves: BarsGridProgression = {
     { number: 32, chords: [{ key: 'D7b9',   beats: 4, walkingBass: WB_D7b9,   rhythm: RHYTHM_A }] },
   ],
   group: 'tune',
+  sections: [
+    { name: 'A1', label: 'A1', barRange: [1,  8]  },
+    { name: 'A2', label: 'A2', barRange: [9,  16] },
+    { name: 'B',  label: 'B',  barRange: [17, 24] },
+    { name: 'C',  label: 'C',  barRange: [25, 32] },
+  ],
 };

@@ -36,7 +36,12 @@ import { m11Voicing } from './m11-voicing';
 import { over } from './over';
 import { virtualInsanity } from './virtual-insanity';
 import { billEvansStyleM251 } from './bill-evans-style-m251';
-import type { Progression, ProgressionGroup, SequenceItem } from './types';
+import type {
+  Progression,
+  ProgressionGroup,
+  SequenceItem,
+  SongSubgenre,
+} from './types';
 
 export const PROGRESSIONS: Record<string, Progression> = {
   'two-five-one': twoFiveOne,
@@ -88,6 +93,12 @@ export const PROGRESSION_LIST: ReadonlyArray<{
   id: string;
   label: string;
   group: ProgressionGroup;
+  // Only set when group === 'tune'. Drives the 3-way subgenre split
+  // (Jazz Standards / R&B / Neo Soul / Stevie Wonder) inside the
+  // dropdown's 楽曲系 section. Tunes without subgenre fall into a
+  // fallback "その他" optgroup at the bottom (defensive — should never
+  // trigger if the library is fully classified).
+  subgenre?: SongSubgenre;
 }> = [
   // structure — single-chord voicings
   { id: 'maj9-voicing',         label: 'Maj9 Voicing',           group: 'structure' },
@@ -102,34 +113,35 @@ export const PROGRESSION_LIST: ReadonlyArray<{
   { id: 'minor-cadence-cycle',  label: 'Minor Cadence Cycle',    group: 'progression' },
   { id: 'minor-cadence-cycle-extended', label: 'Minor Cadence Cycle Extended', group: 'progression' },
   { id: 'f-blues',              label: 'F Blues Rootless',       group: 'progression' },
-  // tune — full transcribed standards
-  { id: 'africa-dangelo',       label: "Africa - D'Angelo",      group: 'tune' },
-  { id: 'all-the-things-you-are', label: 'All The Things You Are - Jerome Kern', group: 'tune' },
-  { id: 'as-stevie',            label: 'As - Stevie Wonder',     group: 'tune' },
-  { id: 'autumn-leaves',        label: 'Autumn Leaves',          group: 'tune' },
-  { id: 'beautiful-love',       label: 'Beautiful Love - Wayne King', group: 'tune' },
-  { id: 'best-part',            label: 'Best Part - H.E.R. / Daniel Caesar', group: 'tune' },
-  { id: 'black-orpheus',        label: 'Black Orpheus - Luiz Bonfá', group: 'tune' },
-  { id: 'blue-bossa',           label: 'Blue Bossa',             group: 'tune' },
-  { id: 'blue-in-green',        label: 'Blue In Green - Bill Evans',     group: 'tune' },
-  { id: 'body-and-soul',        label: 'Body And Soul',          group: 'tune' },
-  { id: 'fly-me-to-the-moon',   label: 'Fly Me To The Moon',     group: 'tune' },
-  { id: 'how-insensitive',      label: 'How Insensitive - Antonio Carlos Jobim', group: 'tune' },
-  { id: 'isnt-she-lovely',      label: "Isn't She Lovely - Stevie Wonder", group: 'tune' },
-  { id: 'it-runs-through-me',   label: 'It Runs Through Me - Tom Misch', group: 'tune' },
-  { id: 'lately',               label: 'Lately - Stevie Wonder', group: 'tune' },
-  { id: 'misty',                label: 'Misty - Erroll Garner',  group: 'tune' },
-  { id: 'over',                 label: 'Over / Robert Glasper',  group: 'tune' },
-  { id: 'overjoyed',            label: 'Overjoyed - Stevie Wonder', group: 'tune' },
-  { id: 'ribbon-in-the-sky',    label: 'Ribbon in the Sky - Stevie Wonder', group: 'tune' },
-  { id: 'so-beautiful-glasper', label: 'So Beautiful - Robert Glasper', group: 'tune' },
-  { id: 'so-what',              label: 'So What - Miles Davis',  group: 'tune' },
-  { id: 'solar',                label: 'Solar - Miles Davis',    group: 'tune' },
-  { id: 'stella-by-starlight',  label: 'Stella By Starlight - Victor Young', group: 'tune' },
-  { id: 'tadow',                label: 'Tadow - FKJ × Masego',   group: 'tune' },
-  { id: 'take-five',            label: 'Take Five - Paul Desmond (5/4)', group: 'tune' },
-  { id: 'there-will-never-be-another-you', label: 'There Will Never Be Another You - Harry Warren', group: 'tune' },
-  { id: 'virtual-insanity',     label: 'Virtual Insanity / Jamiroquai',  group: 'tune' },
+  // tune — full transcribed standards. `subgenre` controls the
+  // 3-way split inside the 楽曲系 dropdown section.
+  { id: 'africa-dangelo',       label: "Africa - D'Angelo",      group: 'tune', subgenre: 'rnb-neo-soul' },
+  { id: 'all-the-things-you-are', label: 'All The Things You Are - Jerome Kern', group: 'tune', subgenre: 'jazz-standards' },
+  { id: 'as-stevie',            label: 'As - Stevie Wonder',     group: 'tune', subgenre: 'stevie-wonder' },
+  { id: 'autumn-leaves',        label: 'Autumn Leaves',          group: 'tune', subgenre: 'jazz-standards' },
+  { id: 'beautiful-love',       label: 'Beautiful Love - Wayne King', group: 'tune', subgenre: 'jazz-standards' },
+  { id: 'best-part',            label: 'Best Part - H.E.R. / Daniel Caesar', group: 'tune', subgenre: 'rnb-neo-soul' },
+  { id: 'black-orpheus',        label: 'Black Orpheus - Luiz Bonfá', group: 'tune', subgenre: 'jazz-standards' },
+  { id: 'blue-bossa',           label: 'Blue Bossa',             group: 'tune', subgenre: 'jazz-standards' },
+  { id: 'blue-in-green',        label: 'Blue In Green - Bill Evans',     group: 'tune', subgenre: 'jazz-standards' },
+  { id: 'body-and-soul',        label: 'Body And Soul',          group: 'tune', subgenre: 'jazz-standards' },
+  { id: 'fly-me-to-the-moon',   label: 'Fly Me To The Moon',     group: 'tune', subgenre: 'jazz-standards' },
+  { id: 'how-insensitive',      label: 'How Insensitive - Antonio Carlos Jobim', group: 'tune', subgenre: 'jazz-standards' },
+  { id: 'isnt-she-lovely',      label: "Isn't She Lovely - Stevie Wonder", group: 'tune', subgenre: 'stevie-wonder' },
+  { id: 'it-runs-through-me',   label: 'It Runs Through Me - Tom Misch', group: 'tune', subgenre: 'rnb-neo-soul' },
+  { id: 'lately',               label: 'Lately - Stevie Wonder', group: 'tune', subgenre: 'stevie-wonder' },
+  { id: 'misty',                label: 'Misty - Erroll Garner',  group: 'tune', subgenre: 'jazz-standards' },
+  { id: 'over',                 label: 'Over / Robert Glasper',  group: 'tune', subgenre: 'rnb-neo-soul' },
+  { id: 'overjoyed',            label: 'Overjoyed - Stevie Wonder', group: 'tune', subgenre: 'stevie-wonder' },
+  { id: 'ribbon-in-the-sky',    label: 'Ribbon in the Sky - Stevie Wonder', group: 'tune', subgenre: 'stevie-wonder' },
+  { id: 'so-beautiful-glasper', label: 'So Beautiful - Robert Glasper', group: 'tune', subgenre: 'rnb-neo-soul' },
+  { id: 'so-what',              label: 'So What - Miles Davis',  group: 'tune', subgenre: 'jazz-standards' },
+  { id: 'solar',                label: 'Solar - Miles Davis',    group: 'tune', subgenre: 'jazz-standards' },
+  { id: 'stella-by-starlight',  label: 'Stella By Starlight - Victor Young', group: 'tune', subgenre: 'jazz-standards' },
+  { id: 'tadow',                label: 'Tadow - FKJ × Masego',   group: 'tune', subgenre: 'rnb-neo-soul' },
+  { id: 'take-five',            label: 'Take Five - Paul Desmond (5/4)', group: 'tune', subgenre: 'jazz-standards' },
+  { id: 'there-will-never-be-another-you', label: 'There Will Never Be Another You - Harry Warren', group: 'tune', subgenre: 'jazz-standards' },
+  { id: 'virtual-insanity',     label: 'Virtual Insanity / Jamiroquai',  group: 'tune', subgenre: 'rnb-neo-soul' },
 ];
 
 export const DEFAULT_PROGRESSION_ID = 'minor-turnaround';
@@ -186,4 +198,7 @@ export type {
   AnchorMode,
   AnchorDefinition,
   ThreeAnchorViewConfig,
+  SongSubgenre,
+  SubgenreMeta,
 } from './types';
+export { SONG_SUBGENRES } from './types';

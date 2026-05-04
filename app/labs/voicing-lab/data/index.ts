@@ -35,6 +35,7 @@ import { maj9Voicing } from './maj9-voicing';
 import { m11Voicing } from './m11-voicing';
 import { over } from './over';
 import { virtualInsanity } from './virtual-insanity';
+import { billEvansStyleM251 } from './bill-evans-style-m251';
 import type { Progression, ProgressionGroup, SequenceItem } from './types';
 
 export const PROGRESSIONS: Record<string, Progression> = {
@@ -75,6 +76,7 @@ export const PROGRESSIONS: Record<string, Progression> = {
   'f-blues': fBlues,
   'over': over,
   'virtual-insanity': virtualInsanity,
+  'bill-evans-style-m251': billEvansStyleM251,
 };
 
 // Source-of-truth list for the dropdown. The display order in the UI is
@@ -95,6 +97,7 @@ export const PROGRESSION_LIST: ReadonlyArray<{
   { id: 'two-five-one-altered',       label: '251 Altered Voicing',       group: 'progression' },
   { id: 'minor-two-five-one',         label: 'Minor 251 Voicing',         group: 'progression' },
   { id: 'minor-two-five-one-altered', label: 'Minor 251 Altered Voicing', group: 'progression' },
+  { id: 'bill-evans-style-m251',      label: 'Bill Evans Style Minor 251 Voicing', group: 'progression' },
   { id: 'minor-turnaround',     label: 'Minor Turnaround in Cm', group: 'progression' },
   { id: 'minor-cadence-cycle',  label: 'Minor Cadence Cycle',    group: 'progression' },
   { id: 'minor-cadence-cycle-extended', label: 'Minor Cadence Cycle Extended', group: 'progression' },

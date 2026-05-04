@@ -410,4 +410,10 @@ export const bodyAndSoul: BarsGridProgression = {
     ] },
   ],
   group: 'tune',
+  sections: [
+    { name: 'A1', label: 'A1',         barRange: [1,  8]  },
+    { name: 'A2', label: 'A2',         barRange: [9,  16] },
+    { name: 'B',  label: 'B (bridge)', barRange: [17, 24] },
+    { name: 'A3', label: 'A3',         barRange: [25, 32] },
+  ],
 };

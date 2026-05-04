@@ -81,6 +81,21 @@ export type Bar = {
   chords: BarChord[];
 };
 
+// Phase post-Phase 8a UX improvement: split long bars-grid progressions
+// into musical sections (A / A' / B / A'' etc.) so the user can switch
+// between sections via tabs instead of scrolling. Walk Through still
+// plays the entire progression — sections are display-only, with the
+// active tab auto-switching as playback advances through the bars.
+//
+// barRange is inclusive on both ends, e.g. [1, 8] means bars 1 through 8.
+// Optional — bars-grid progressions without sections render the full
+// progression as before (backwards-compatible).
+export type Section = {
+  name: string;
+  label: string;
+  barRange: [number, number];
+};
+
 // Phase 7-α follow-up: bars-grid progressions can opt into a 2-variant
 // toggle (analogous to ChordsRowProgression's `variants: { a, b }`).
 // When the user flips the variant, BOTH the voicings dict and the bars
@@ -108,6 +123,10 @@ export type BarsGridProgression = {
   // top-level `voicings`/`bars` (which then act as a fallback default).
   hasVariants?: boolean;
   variants?: { a: BarsGridVariantData; b: BarsGridVariantData };
+  // Optional section list for tab-based UI. Currently used by long
+  // standards (Autumn Leaves / Body And Soul / All The Things You Are)
+  // to expose A/A'/B/A'' segments without forcing the user to scroll.
+  sections?: Section[];
   // Present here for union-type symmetry; bars-grid progressions don't
   // currently use it (no transposition).
   baseKey?: string;

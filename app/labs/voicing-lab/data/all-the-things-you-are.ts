@@ -432,4 +432,10 @@ export const allTheThingsYouAre: BarsGridProgression = {
     ] },
   ],
   group: 'tune',
+  sections: [
+    { name: 'A',   label: 'A',   barRange: [1,  8]  },
+    { name: "A'",  label: "A'",  barRange: [9,  16] },
+    { name: 'B',   label: 'B',   barRange: [17, 24] },
+    { name: "A''", label: "A''", barRange: [25, 36] },
+  ],
 };

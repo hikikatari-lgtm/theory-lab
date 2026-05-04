@@ -5,12 +5,17 @@ import { blueBossa } from './blue-bossa';
 import { autumnLeaves } from './autumn-leaves';
 import { allTheThingsYouAre } from './all-the-things-you-are';
 import { africaDangelo } from './africa-dangelo';
+import { asStevie } from './as-stevie';
 import { beautifulLove } from './beautiful-love';
 import { bestPart } from './best-part';
 import { blackOrpheus } from './black-orpheus';
 import { bodyAndSoul } from './body-and-soul';
 import { howInsensitive } from './how-insensitive';
+import { isntSheLovely } from './isnt-she-lovely';
 import { itRunsThroughMe } from './it-runs-through-me';
+import { lately } from './lately';
+import { overjoyed } from './overjoyed';
+import { ribbonInTheSky } from './ribbon-in-the-sky';
 import { soBeautifulGlasper } from './so-beautiful-glasper';
 import { stellaByStarlight } from './stella-by-starlight';
 import { tadow } from './tadow';
@@ -46,12 +51,17 @@ export const PROGRESSIONS: Record<string, Progression> = {
   'autumn-leaves': autumnLeaves,
   'all-the-things-you-are': allTheThingsYouAre,
   'africa-dangelo': africaDangelo,
+  'as-stevie': asStevie,
   'beautiful-love': beautifulLove,
   'best-part': bestPart,
   'black-orpheus': blackOrpheus,
   'body-and-soul': bodyAndSoul,
   'how-insensitive': howInsensitive,
+  'isnt-she-lovely': isntSheLovely,
   'it-runs-through-me': itRunsThroughMe,
+  'lately': lately,
+  'overjoyed': overjoyed,
+  'ribbon-in-the-sky': ribbonInTheSky,
   'so-beautiful-glasper': soBeautifulGlasper,
   'stella-by-starlight': stellaByStarlight,
   'tadow': tadow,
@@ -92,6 +102,7 @@ export const PROGRESSION_LIST: ReadonlyArray<{
   // tune — full transcribed standards
   { id: 'africa-dangelo',       label: "Africa - D'Angelo",      group: 'tune' },
   { id: 'all-the-things-you-are', label: 'All The Things You Are - Jerome Kern', group: 'tune' },
+  { id: 'as-stevie',            label: 'As - Stevie Wonder',     group: 'tune' },
   { id: 'autumn-leaves',        label: 'Autumn Leaves',          group: 'tune' },
   { id: 'beautiful-love',       label: 'Beautiful Love - Wayne King', group: 'tune' },
   { id: 'best-part',            label: 'Best Part - H.E.R. / Daniel Caesar', group: 'tune' },
@@ -101,9 +112,13 @@ export const PROGRESSION_LIST: ReadonlyArray<{
   { id: 'body-and-soul',        label: 'Body And Soul',          group: 'tune' },
   { id: 'fly-me-to-the-moon',   label: 'Fly Me To The Moon',     group: 'tune' },
   { id: 'how-insensitive',      label: 'How Insensitive - Antonio Carlos Jobim', group: 'tune' },
+  { id: 'isnt-she-lovely',      label: "Isn't She Lovely - Stevie Wonder", group: 'tune' },
   { id: 'it-runs-through-me',   label: 'It Runs Through Me - Tom Misch', group: 'tune' },
+  { id: 'lately',               label: 'Lately - Stevie Wonder', group: 'tune' },
   { id: 'misty',                label: 'Misty - Erroll Garner',  group: 'tune' },
   { id: 'over',                 label: 'Over / Robert Glasper',  group: 'tune' },
+  { id: 'overjoyed',            label: 'Overjoyed - Stevie Wonder', group: 'tune' },
+  { id: 'ribbon-in-the-sky',    label: 'Ribbon in the Sky - Stevie Wonder', group: 'tune' },
   { id: 'so-beautiful-glasper', label: 'So Beautiful - Robert Glasper', group: 'tune' },
   { id: 'so-what',              label: 'So What - Miles Davis',  group: 'tune' },
   { id: 'solar',                label: 'Solar - Miles Davis',    group: 'tune' },

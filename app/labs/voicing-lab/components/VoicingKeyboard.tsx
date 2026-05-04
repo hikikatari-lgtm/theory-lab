@@ -1,7 +1,8 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, type CSSProperties } from 'react';
 import { normalizeNote } from '@/lib/chord-theory';
+import type { AnchorMode } from '../data/types';
 
 const NOTE_ORDER = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 
@@ -57,6 +58,12 @@ type Props = {
   rhNotes: VoicingNote[];
   commonNotes: Set<string>;
   showDegrees: boolean;
+  // Phase Bill Evans PR 2: optional 3-view anchor highlighting. When
+  // `anchorMode` is non-standard and `anchorColor` is provided, the
+  // matching note for that mode is rendered with the anchor color and
+  // wins over both LH/RH base color and common-note highlighting.
+  anchorMode?: AnchorMode;
+  anchorColor?: string;
 };
 
 // Visual hand assignment for a key. RH wins ties: if the same pitch
@@ -70,6 +77,8 @@ export default function VoicingKeyboard({
   rhNotes,
   commonNotes,
   showDegrees,
+  anchorMode = 'standard',
+  anchorColor,
 }: Props) {
   const { whiteKeys, blackKeys } = useMemo(() => {
     const allNotes = [...lhNotes, ...rhNotes];
@@ -138,19 +147,52 @@ export default function VoicingKeyboard({
     return null;
   };
 
+  // Anchor note (normalized form like 'D4' or 'G#5'), or null for standard
+  // mode. Picks the extremum per mode using noteToIndex (octave * 12 + pc),
+  // which is monotonic — so argmax/argmin behave the same as standard MIDI.
+  //   - top-note    → argmax over RH
+  //   - bottom-line → argmin over RH
+  //   - root        → argmin over LH (the bass note when LH has multiple)
+  const anchorNote = useMemo<string | null>(() => {
+    if (anchorMode === 'standard' || !anchorColor) return null;
+    const source = anchorMode === 'root' ? lhNotes : rhNotes;
+    if (source.length === 0) return null;
+    const wantMax = anchorMode === 'top-note';
+    let bestNote = '';
+    let bestIdx = wantMax ? -Infinity : Infinity;
+    for (const n of source) {
+      const norm = normalizeNote(n.note);
+      const idx = noteToIndex(norm);
+      if (wantMax ? idx > bestIdx : idx < bestIdx) {
+        bestIdx = idx;
+        bestNote = norm;
+      }
+    }
+    return bestNote || null;
+  }, [anchorMode, anchorColor, lhNotes, rhNotes]);
+
   const keyClass = (note: string) => {
     const hand = handFor(note);
+    const isAnchor = anchorNote === note;
     const rhInfo = hand === 'rh' ? rhMap.get(note) : undefined;
-    const isCommon = !!rhInfo?.isCommon;
-    const isRH = hand === 'rh' && !isCommon;
-    const isLH = hand === 'lh';
+    const isCommon = !!rhInfo?.isCommon && !isAnchor;
+    const isRH = hand === 'rh' && !isCommon && !isAnchor;
+    const isLH = hand === 'lh' && !isAnchor;
     return (
       'vl-' +
       (isBlackKey(note) ? 'key-black' : 'key-white') +
       (isLH ? ' lh-active' : '') +
       (isRH ? ' rh-active' : '') +
-      (isCommon ? ' common-active' : '')
+      (isCommon ? ' common-active' : '') +
+      (isAnchor ? ' anchor-active' : '')
     );
+  };
+
+  const keyStyle = (note: string): CSSProperties | undefined => {
+    if (anchorNote === note && anchorColor) {
+      return { background: anchorColor };
+    }
+    return undefined;
   };
 
   const renderLabel = (note: string) => {
@@ -175,20 +217,28 @@ export default function VoicingKeyboard({
     <div className="vl-keyboard-wrap">
       <div className="vl-keyboard">
         {whiteKeys.map((wk) => (
-          <div key={wk.note} className={keyClass(wk.note)} data-note={wk.note}>
+          <div
+            key={wk.note}
+            className={keyClass(wk.note)}
+            data-note={wk.note}
+            style={keyStyle(wk.note)}
+          >
             {renderLabel(wk.note)}
           </div>
         ))}
-        {blackKeys.map((bk) => (
-          <div
-            key={bk.note}
-            className={keyClass(bk.note)}
-            data-note={bk.note}
-            style={{ left: bk.left, width: bk.width }}
-          >
-            {renderLabel(bk.note)}
-          </div>
-        ))}
+        {blackKeys.map((bk) => {
+          const anchorStyle = keyStyle(bk.note);
+          return (
+            <div
+              key={bk.note}
+              className={keyClass(bk.note)}
+              data-note={bk.note}
+              style={{ left: bk.left, width: bk.width, ...anchorStyle }}
+            >
+              {renderLabel(bk.note)}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

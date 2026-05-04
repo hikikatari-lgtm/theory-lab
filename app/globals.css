@@ -1369,6 +1369,27 @@ footer {
   color: #6b4500;
 }
 
+/* Phase Bill Evans PR 2: 3-view anchor highlight. The background color
+   itself is set via inline style (per-progression hex from the data),
+   so the class only handles the glow + label legibility. The anchor
+   color always wins over LH/RH base + common-note highlighting via the
+   keyClass logic in VoicingKeyboard. */
+.vl-key-white.anchor-active,
+.vl-key-black.anchor-active {
+  box-shadow: inset 0 -8px 12px rgba(0, 0, 0, 0.25),
+    0 0 14px rgba(255, 255, 255, 0.45);
+  border-color: #fff;
+}
+.vl-key-white.anchor-active .vl-note-label,
+.vl-key-black.anchor-active .vl-note-label {
+  color: #1a1a1a;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+.vl-key-white.anchor-active .vl-note-label .vl-degree,
+.vl-key-black.anchor-active .vl-note-label .vl-degree {
+  color: #1a1a1a;
+}
+
 .vl-controls {
   background: var(--vl-panel);
   border-radius: 12px;
@@ -1453,6 +1474,57 @@ footer {
   background: rgba(255, 107, 107, 0.1);
   border-color: var(--vl-accent);
   color: var(--vl-accent);
+}
+
+/* Phase Bill Evans PR 2: 3-view radio group. Sits below the existing
+   音度ラベル / 共通音ハイライト row inside the View section, only when
+   the current progression declares `threeAnchorView`. Styled as a row
+   of radio-style buttons; each non-Standard button shows its anchor
+   color as a left-edge accent when inactive, and switches to a solid
+   color background when active so the chosen view is unmistakable. */
+.vl-anchor-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--vl-border);
+}
+.vl-anchor-label {
+  font-size: 11px;
+  color: var(--vl-text-dim);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.vl-anchor-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+.vl-anchor-btn {
+  background: var(--vl-panel-2);
+  color: var(--vl-text-dim);
+  border: 1px solid var(--vl-border);
+  border-left-width: 3px;
+  padding: 7px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: inherit;
+  font-weight: 500;
+  user-select: none;
+  transition: all 0.15s;
+}
+.vl-anchor-btn:hover { background: #2d2d2d; }
+.vl-anchor-btn.active {
+  font-weight: 700;
+}
+@media (max-width: 767px) {
+  .vl-anchor-row { gap: 6px; padding-top: 10px; margin-top: 10px; }
+  .vl-anchor-buttons { gap: 6px; }
+  .vl-anchor-btn { padding: 6px 9px; font-size: 11px; }
 }
 
 /* Theory Lab back-link inside the voicing-lab page — make sure the

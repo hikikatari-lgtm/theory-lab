@@ -102,4 +102,32 @@ export const billEvansStyleM251: BarsGridProgression = {
     { name: 'A', label: 'A (Pattern)', barRange: [1, 4] },
     { name: 'B', label: 'B (Repeat)',  barRange: [5, 8] },
   ],
+  // 3-view practice mode: each anchor highlights one note per chord so
+  // the student can lock the ear onto a single voice and hear how it
+  // moves across the iim7♭5 → V7♭5♯9 → im6 cadence.
+  //   - top-note    A4 → A♭4 → E5  (RH soprano voice — how the top sings)
+  //   - bottom-line D4 → D♭4 → F#4 (RH bottom — the half-step Bill Evans
+  //                                  voice leading; Bar 1→2 is the trick)
+  //   - root        B2 → B2 → A2   (LH bass — the V → I bass motion;
+  //                                  B held common across the mutation)
+  threeAnchorView: {
+    enabled: true,
+    anchors: {
+      topNote: {
+        color: '#FFD700',
+        label: 'Top-note Anchor',
+        description: 'RHのトップ音を固定視点として、コード遷移を聴く',
+      },
+      bottomLine: {
+        color: '#4ADE80',
+        label: 'Bottom-line Anchor',
+        description: 'RHの下声半音下降をフォーカスして voice leading を聴く',
+      },
+      root: {
+        color: '#A855F7',
+        label: 'Root Anchor',
+        description: 'm7♭5 のルートから機能感（ii→V→I）を再認識する',
+      },
+    },
+  },
 };

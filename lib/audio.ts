@@ -19,9 +19,40 @@ async function loadTone(): Promise<ToneModule> {
   return Tone;
 }
 
+// iOS Safari 17+ mutes Web Audio output when the hardware silent
+// switch (マナーモード) is on, even though the AudioContext is
+// running. WebKit 17.4 (March 2024) added `navigator.audioSession`
+// which lets us declare the audio category — setting `type =
+// 'playback'` tells Safari this is media content that should play
+// regardless of the silent switch.
+//
+// No-op on:
+//   - browsers without `navigator.audioSession` (desktop Safari/
+//     Chrome, Android, iOS < 17.4)
+//   - SSR (no `navigator` global)
+//
+// Called from `initPiano()` so the category is set before the first
+// AudioContext / Tone.Sampler is created. Safe to call repeatedly,
+// but `initPiano()` already short-circuits via `pianoReady`.
+//
+// See docs/audio-ios-silent-switch.md for the full diagnosis.
+function configureIosAudioSession(): void {
+  if (typeof navigator === 'undefined') return;
+  if (!('audioSession' in navigator)) return;
+  try {
+    (navigator as { audioSession?: { type?: string } })
+      .audioSession!.type = 'playback';
+  } catch {
+    // Defensive: ignore if a future Safari changes the API shape
+    // (e.g. read-only property, removed type, etc.). Audio still
+    // plays at the silent-switch-respecting default.
+  }
+}
+
 export async function initPiano(): Promise<void> {
   if (pianoReady) return;
   if (typeof window === 'undefined') return;
+  configureIosAudioSession();
   const T = await loadTone();
   return new Promise<void>((resolve, reject) => {
     reverb = new T.Reverb({ decay: 2.5, preDelay: 0.02, wet: 0.25 }).toDestination();

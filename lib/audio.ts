@@ -19,9 +19,171 @@ async function loadTone(): Promise<ToneModule> {
   return Tone;
 }
 
+// Tiny silent WAV (~48 bytes): RIFF header + 1 silent 16-bit PCM sample
+// at 44.1 kHz mono. Bundled as a data URI so no extra network round-trip
+// and no asset to ship. Used to "prime" iOS Safari's audio session so
+// the Web Audio output isn't muted by the hardware silent switch.
+const SILENT_WAV =
+  'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAAABkYXRhAgAAAAEA';
+
+let silentAudio: HTMLAudioElement | null = null;
+let iosDiagnosticsLogged = false;
+
+// ---- Diagnostics infrastructure (consumed by AudioDebugPanel) ----
+//
+// Module-level state that tracks the audio pipeline's progress so an
+// on-screen debug panel can read it without needing Mac-iPhone remote
+// debugging. Everything here is best-effort: a diagnostic that throws
+// must never break audio playback (every reader / writer is wrapped in
+// try/catch where it touches optional browser APIs).
+
+export type PrimerStatus = 'pending' | 'success' | 'failure' | 'skipped';
+
+export type AudioLogEntry = {
+  t: number;        // Date.now() at the moment the event fired
+  event: string;    // Short identifier — see AUDIO_EVENT_* docs below
+  ok: boolean;      // Whether this step completed without error
+  detail?: string;  // Optional one-line message (error text, value, etc.)
+};
+
+export type AudioDiagnostics = {
+  hasAudioSessionApi: boolean;
+  audioSessionType?: string;
+  pianoReady: boolean;
+  toneStarted: boolean;
+  primerStatus: PrimerStatus;
+  contextState?: string;   // 'running' | 'suspended' | 'closed'
+  sampleRate?: number;     // AudioContext.sampleRate
+  ua: string;
+  log: AudioLogEntry[];    // Most-recent-last, capped at MAX_LOG
+};
+
+let primerStatus: PrimerStatus = 'pending';
+let audioLog: AudioLogEntry[] = [];
+const MAX_LOG = 16;
+
+type DiagListener = () => void;
+const diagListeners = new Set<DiagListener>();
+
+function emitDiagnostics(): void {
+  diagListeners.forEach((l) => {
+    try {
+      l();
+    } catch {
+      /* listener bug must not break audio */
+    }
+  });
+}
+
+function pushAudioLog(event: string, ok: boolean, detail?: string): void {
+  audioLog = [
+    ...audioLog.slice(-(MAX_LOG - 1)),
+    { t: Date.now(), event, ok, detail },
+  ];
+  emitDiagnostics();
+}
+
+// Subscribe to diagnostic state changes. Returns an unsubscribe fn.
+// React components consume this via a useState + useEffect pair so the
+// panel re-renders whenever the audio pipeline advances.
+export function subscribeAudioDiagnostics(listener: DiagListener): () => void {
+  diagListeners.add(listener);
+  return () => {
+    diagListeners.delete(listener);
+  };
+}
+
+// Snapshot the current diagnostic state. Reads Tone.context lazily
+// (only if the module has been imported); never triggers a Tone.js
+// load on its own.
+export function getAudioDiagnostics(): AudioDiagnostics {
+  let contextState: string | undefined;
+  let sampleRate: number | undefined;
+  if (Tone) {
+    try {
+      const ctx = Tone.getContext();
+      const raw = (ctx as { rawContext?: AudioContext }).rawContext;
+      contextState =
+        (ctx as { state?: string }).state ?? raw?.state ?? undefined;
+      sampleRate =
+        (ctx as { sampleRate?: number }).sampleRate ?? raw?.sampleRate;
+    } catch {
+      /* defensive — Tone internals may change shape */
+    }
+  }
+  let audioSessionType: string | undefined;
+  let hasAudioSessionApi = false;
+  let ua = '';
+  if (typeof navigator !== 'undefined') {
+    hasAudioSessionApi = 'audioSession' in navigator;
+    try {
+      audioSessionType = (navigator as { audioSession?: { type?: string } })
+        .audioSession?.type;
+    } catch {
+      /* read failure */
+    }
+    ua = navigator.userAgent ?? '';
+  }
+  return {
+    hasAudioSessionApi,
+    audioSessionType,
+    pianoReady,
+    toneStarted,
+    primerStatus,
+    contextState,
+    sampleRate,
+    ua,
+    log: audioLog,
+  };
+}
+
+// iOS Safari 17+ mutes Web Audio output when the hardware silent
+// switch (マナーモード) is on, even though the AudioContext is
+// running. WebKit 17.4 (March 2024) added `navigator.audioSession`
+// which lets us declare the audio category — setting `type =
+// 'playback'` tells Safari this is media content that should play
+// regardless of the silent switch.
+//
+// No-op on:
+//   - browsers without `navigator.audioSession` (desktop Safari/
+//     Chrome, Android, iOS < 17.4)
+//   - SSR (no `navigator` global)
+//
+// Called from `initPiano()` so the category is set before the first
+// AudioContext / Tone.Sampler is created. Safe to call repeatedly,
+// but `initPiano()` already short-circuits via `pianoReady`.
+//
+// See docs/audio-ios-silent-switch.md for the full diagnosis.
+function configureIosAudioSession(): void {
+  if (typeof navigator === 'undefined') {
+    pushAudioLog('audioSession.skip', true, 'no navigator (SSR)');
+    return;
+  }
+  if (!('audioSession' in navigator)) {
+    pushAudioLog('audioSession.skip', true, 'API not supported');
+    return;
+  }
+  try {
+    (navigator as { audioSession?: { type?: string } })
+      .audioSession!.type = 'playback';
+    pushAudioLog('audioSession.set', true, "type='playback'");
+  } catch (e) {
+    // Defensive: ignore if a future Safari changes the API shape
+    // (e.g. read-only property, removed type, etc.). Audio still
+    // plays at the silent-switch-respecting default.
+    pushAudioLog(
+      'audioSession.set',
+      false,
+      e instanceof Error ? e.message : String(e)
+    );
+  }
+}
+
 export async function initPiano(): Promise<void> {
   if (pianoReady) return;
   if (typeof window === 'undefined') return;
+  configureIosAudioSession();
+  pushAudioLog('initPiano.begin', true);
   const T = await loadTone();
   return new Promise<void>((resolve, reject) => {
     reverb = new T.Reverb({ decay: 2.5, preDelay: 0.02, wet: 0.25 }).toDestination();
@@ -31,10 +193,16 @@ export async function initPiano(): Promise<void> {
       release: 3.5,
       onload: () => {
         pianoReady = true;
+        pushAudioLog('initPiano.ready', true);
         resolve();
       },
       onerror: (err: unknown) => {
         console.error('Piano load error:', err);
+        pushAudioLog(
+          'initPiano.error',
+          false,
+          err instanceof Error ? err.message : String(err)
+        );
         reject(err);
       },
     }).connect(reverb);
@@ -46,27 +214,155 @@ export function isPianoReady(): boolean {
   return pianoReady;
 }
 
+// iOS Safari silent-switch primer + one-time diagnostic log. Called
+// from the user-gesture path (the first ensureToneStarted invocation
+// inside a play-button click) which is when iOS will actually accept
+// the audio-session category change.
+//
+// Two complementary mechanisms:
+//   (1) navigator.audioSession.type = 'playback' (iOS 17.4+, set in
+//       initPiano too — re-set here in case iOS only honors it from
+//       a gesture-context call).
+//   (2) Silent <audio loop playsinline> primer — the long-standing
+//       workaround that has worked on iOS Safari since long before
+//       audioSession existed. Playing any HTMLAudioElement inside a
+//       user gesture elevates the page's audio session away from the
+//       silent-switch-respecting default, letting the subsequent Web
+//       Audio output ignore the hardware mute.
+//
+// The diagnostic log fires once and reports whether the audioSession
+// API is even present on the device, plus the resulting `.type` after
+// we tried to set it. Read it via Mac Safari → Develop → [iPhone] to
+// confirm the iOS version actually reaches the API.
+function primeIosAudioSession(): void {
+  // (1) Re-set audioSession.type inside the user gesture, just in
+  //     case the early call from initPiano was ignored by iOS.
+  configureIosAudioSession();
+
+  // (2) Silent <audio> primer. Created once; iOS Safari only needs
+  //     a single play() inside a gesture for the session category
+  //     change to take effect. After that we don't reach this code
+  //     again because toneStarted = true.
+  if (typeof document === 'undefined') {
+    primerStatus = 'skipped';
+    pushAudioLog('primer.skip', true, 'no document (SSR)');
+  } else if (silentAudio !== null) {
+    pushAudioLog('primer.skip', true, 'already created');
+  } else {
+    try {
+      silentAudio = document.createElement('audio');
+      silentAudio.src = SILENT_WAV;
+      silentAudio.loop = true;
+      silentAudio.setAttribute('playsinline', '');
+      silentAudio.setAttribute('webkit-playsinline', '');
+      // Some iOS versions skip volume === 0 entirely, so use a
+      // very-quiet but nonzero value.
+      silentAudio.volume = 0.001;
+      pushAudioLog('primer.create', true);
+      // Best-effort play — autoplay block / codec rejection is fine,
+      // the element having been .play()'d once in a gesture is what
+      // shifts the audio session category. We deliberately don't
+      // await: if it rejects we still try the rest of the path.
+      void silentAudio
+        .play()
+        .then(() => {
+          primerStatus = 'success';
+          pushAudioLog('primer.play', true);
+        })
+        .catch((e: unknown) => {
+          primerStatus = 'failure';
+          pushAudioLog(
+            'primer.play',
+            false,
+            e instanceof Error ? e.message : String(e)
+          );
+          /* autoplay blocked or codec issue — primer ineffective but
+             audioSession.type may still help */
+        });
+    } catch (e) {
+      // DOM API failure (very unusual) — swallow and continue.
+      // Audio still plays on platforms that don't need the primer.
+      primerStatus = 'failure';
+      pushAudioLog(
+        'primer.create',
+        false,
+        e instanceof Error ? e.message : String(e)
+      );
+    }
+  }
+
+  // One-shot diagnostic log so the device's actual audioSession state
+  // can be inspected via Mac Safari Web Inspector. Shape kept small
+  // so it's easy to copy back. Wrapped in try/catch because logging
+  // must never break audio playback.
+  if (!iosDiagnosticsLogged) {
+    iosDiagnosticsLogged = true;
+    try {
+      const nav = navigator as {
+        audioSession?: { type?: string };
+        userAgent?: string;
+      };
+      console.log('[audio]', {
+        hasAudioSessionApi:
+          typeof navigator !== 'undefined' && 'audioSession' in navigator,
+        audioSessionType: nav.audioSession?.type,
+        ua: nav.userAgent,
+      });
+    } catch {
+      /* never throw from a diagnostic */
+    }
+  }
+}
+
 async function ensureToneStarted(): Promise<void> {
   if (toneStarted) return;
+  // User-gesture context: prime the iOS audio session BEFORE
+  // Tone.start() so the AudioContext resume happens with the right
+  // session category in effect.
+  primeIosAudioSession();
   const T = await loadTone();
-  await T.start();
+  try {
+    await T.start();
+    pushAudioLog('Tone.start', true);
+  } catch (e) {
+    pushAudioLog(
+      'Tone.start',
+      false,
+      e instanceof Error ? e.message : String(e)
+    );
+    throw e;
+  }
   toneStarted = true;
+  emitDiagnostics();
 }
 
 export async function playNotes(
   toneNames: string[],
   mode: 'block' | 'broken' = 'block'
 ): Promise<void> {
-  if (!pianoReady || !sampler) return;
+  if (!pianoReady || !sampler) {
+    pushAudioLog('playNotes.skip', false, 'piano not ready');
+    return;
+  }
   await ensureToneStarted();
   const T = await loadTone();
-  if (mode === 'block') {
-    sampler.triggerAttackRelease(toneNames, '2n');
-  } else {
-    const t = T.now();
-    toneNames.forEach((n, i) => {
-      sampler!.triggerAttackRelease(n, '4n', t + i * 0.18);
-    });
+  try {
+    if (mode === 'block') {
+      sampler.triggerAttackRelease(toneNames, '2n');
+    } else {
+      const t = T.now();
+      toneNames.forEach((n, i) => {
+        sampler!.triggerAttackRelease(n, '4n', t + i * 0.18);
+      });
+    }
+    pushAudioLog('playNotes', true, `${mode}, ${toneNames.length} notes`);
+  } catch (e) {
+    pushAudioLog(
+      'playNotes',
+      false,
+      e instanceof Error ? e.message : String(e)
+    );
+    throw e;
   }
 }
 
@@ -92,13 +388,39 @@ export async function playSingleNote(toneName: string): Promise<void> {
 // Trigger a chord and hold for `durationSec` seconds. Used by Voicing Lab's
 // Walk Through where each chord is sustained for ~4 beats at the progression
 // tempo, scheduled via setTimeout from the React layer.
+//
+// Walk Through fires this many times in succession. We log only the FIRST
+// one per Tone.start session (i.e. while toneStarted was just flipped) so
+// the panel doesn't drown in repetitive entries; subsequent calls go quiet
+// to keep the log readable.
+let playSustainedLogged = false;
 export async function playSustained(
   toneNames: string[],
   durationSec: number
 ): Promise<void> {
-  if (!pianoReady || !sampler) return;
+  if (!pianoReady || !sampler) {
+    pushAudioLog('playSustained.skip', false, 'piano not ready');
+    return;
+  }
   await ensureToneStarted();
-  sampler.triggerAttackRelease(toneNames, durationSec);
+  try {
+    sampler.triggerAttackRelease(toneNames, durationSec);
+    if (!playSustainedLogged) {
+      playSustainedLogged = true;
+      pushAudioLog(
+        'playSustained',
+        true,
+        `${toneNames.length} notes, ${durationSec.toFixed(2)}s`
+      );
+    }
+  } catch (e) {
+    pushAudioLog(
+      'playSustained',
+      false,
+      e instanceof Error ? e.message : String(e)
+    );
+    throw e;
+  }
 }
 
 // Cut all currently sounding notes immediately. Used when the user hits

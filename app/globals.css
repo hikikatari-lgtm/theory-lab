@@ -1565,3 +1565,115 @@ footer {
   .vl-variant-btn { padding: 5px 10px; font-size: 11px; }
   .vl-section-tab { padding: 5px 10px; font-size: 11px; min-width: 40px; }
 }
+
+/* On-screen audio diagnostic panel — Voicing Lab `?debug=1` mode.
+   Floats over the page so iOS users can read live state without Mac
+   remote inspector. Compact, monospace-leaning, subtle drop shadow. */
+.vl-debug-panel {
+  position: fixed;
+  bottom: 12px;
+  right: 12px;
+  z-index: 9999;
+  width: min(360px, calc(100vw - 24px));
+  max-height: min(70vh, 560px);
+  overflow-y: auto;
+  background: rgba(15, 15, 20, 0.96);
+  color: #f5f5f5;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 10px;
+  padding: 10px 12px 12px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 11px;
+  line-height: 1.45;
+  -webkit-overflow-scrolling: touch;
+}
+.vl-debug-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+.vl-debug-title {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+.vl-debug-close {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 6px;
+  color: #f5f5f5;
+  font-size: 16px;
+  line-height: 1;
+  padding: 2px 8px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.vl-debug-close:hover { background: rgba(255, 255, 255, 0.08); }
+.vl-debug-state {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 3px 10px;
+  margin: 0 0 10px;
+}
+.vl-debug-key {
+  color: rgba(245, 245, 245, 0.55);
+  font-size: 10px;
+  letter-spacing: 0.02em;
+  margin: 0;
+  align-self: center;
+}
+.vl-debug-val {
+  margin: 0;
+  font-weight: 600;
+  word-break: break-all;
+}
+.vl-debug-val.ok { color: #4ade80; }
+.vl-debug-val.warn { color: #fbbf24; }
+.vl-debug-val.mono {
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 10px;
+  font-weight: 500;
+  color: rgba(245, 245, 245, 0.85);
+}
+.vl-debug-log-label {
+  font-size: 10px;
+  color: rgba(245, 245, 245, 0.55);
+  margin-bottom: 4px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.vl-debug-log {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 10px;
+}
+.vl-debug-log-item {
+  padding: 2px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  word-break: break-word;
+}
+.vl-debug-log-item.ok .vl-debug-log-event { color: #4ade80; }
+.vl-debug-log-item.fail .vl-debug-log-event { color: #f87171; }
+.vl-debug-log-event { font-weight: 600; }
+.vl-debug-log-detail { color: rgba(245, 245, 245, 0.6); }
+.vl-debug-log-empty {
+  color: rgba(245, 245, 245, 0.45);
+  font-style: italic;
+  padding: 6px 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+@media (max-width: 480px) {
+  .vl-debug-panel {
+    bottom: 8px;
+    right: 8px;
+    width: calc(100vw - 16px);
+    font-size: 10px;
+    padding: 8px 10px 10px;
+  }
+}

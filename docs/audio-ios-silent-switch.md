@@ -101,6 +101,63 @@ navigator.audioSession?.type                 // => 'playback' になっていれ
 
 ---
 
+## Iteration 2: silent primer + 診断ログ追加 (2026-05-06)
+
+### Iteration 1 の限界
+
+PR #29 の `navigator.audioSession.type = 'playback'` だけでは、廣嶋さんの iPhone (実機、マナー ON) で音が出ないことが判明。考えられる原因:
+
+| 仮説 | 確認方法 |
+|---|---|
+| (a) iOS が 17.4 未満で API 自体が無い | 診断ログで `hasAudioSessionApi: false` |
+| (b) AudioContext 作成タイミングと audioSession 設定の順序問題 | 診断ログで `audioSessionType: 'playback'` だが鳴らない |
+| (c) iOS 17.4+ でも audioSession だけでは不十分 (iOS 18 で挙動変更の事例) | 同上 |
+
+### Iteration 2 の対策
+
+iOS web audio コミュニティで定番の **silent `<audio>` primer** を併用:
+
+1. 無音の短い WAV (`SILENT_WAV` data URI、48 bytes、bundle 同梱) を `<audio loop playsinline>` で生成
+2. ユーザー操作内 (`ensureToneStarted` 初回) で `play()` を呼ぶ
+3. iOS Safari は「このページはメディア再生したい」と判断 → audio session を silent-switch 無視カテゴリにエレベート
+4. 同時に診断ログを 1 回だけ出力 — iOS 実機の audioSession API 有無 / type 値 / UA を確認できる
+
+```ts
+// lib/audio.ts のエッセンス
+function primeIosAudioSession(): void {
+  configureIosAudioSession();           // (1) audioSession.type を再設定
+  // (2) silent <audio> primer (一度だけ生成)
+  silentAudio = document.createElement('audio');
+  silentAudio.src = SILENT_WAV;
+  silentAudio.loop = true;
+  silentAudio.setAttribute('playsinline', '');
+  silentAudio.volume = 0.001;
+  void silentAudio.play().catch(() => {});
+  // 診断ログ (一度だけ)
+  console.log('[audio]', { hasAudioSessionApi, audioSessionType, ua });
+}
+```
+
+### Iteration 2 の検証手順
+
+1. 修正版を deploy / preview
+2. **Mac Safari → 開発メニュー → [iPhone デバイス名] → Voicing Lab タブ** を開く (リモート Web インスペクタ)
+3. iPhone マナーモード ON で Voicing Lab を起動 → 「▶ 再生」
+4. **音が出るか確認** ✅
+5. **同時にコンソールログ `[audio] {...}` を確認** → 廣嶋さん経由で値を共有
+   - `hasAudioSessionApi: true/false`
+   - `audioSessionType: 'playback' / undefined / その他`
+   - `ua: '...'` (iOS バージョン特定用)
+
+### Iteration 2 後も鳴らない場合の次手
+
+診断ログから (a)/(b)/(c) のどれに当たっているかが判明したら:
+- (a) であれば → silent primer が効く可能性が高い (古い iOS は primer 派なので)
+- (b) であれば → AudioContext 再作成 or session.activate() を試す
+- (c) であれば → `<video>` 要素 hack や別 web audio ラッパーへの移行を検討
+
+---
+
 ## るるぴさんへの完了報告 (返信下書き)
 
 > るるぴさん、ご報告ありがとうございました 🙇‍♂️

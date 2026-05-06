@@ -40,6 +40,7 @@ import { unlimitedPattern1C } from './unlimited-pattern-1-c';
 import { unlimitedPattern2C } from './unlimited-pattern-2-c';
 import { unlimitedPattern3C } from './unlimited-pattern-3-c';
 import { unlimitedPattern4C } from './unlimited-pattern-4-c';
+import { upgradeDrop2C } from './upgrade-drop2-c';
 import type {
   Progression,
   ProgressionGroup,
@@ -90,6 +91,7 @@ export const PROGRESSIONS: Record<string, Progression> = {
   'unlimited-pattern-2-c': unlimitedPattern2C,
   'unlimited-pattern-3-c': unlimitedPattern3C,
   'unlimited-pattern-4-c': unlimitedPattern4C,
+  'upgrade-drop2-c': upgradeDrop2C,
 };
 
 // Source-of-truth list for the dropdown. The display order in the UI is
@@ -123,6 +125,8 @@ export const PROGRESSION_LIST: ReadonlyArray<{
   { id: 'unlimited-pattern-2-c',      label: 'UNLIMITED Pattern 2 (IV-V-vi)',     group: 'progression' },
   { id: 'unlimited-pattern-3-c',      label: 'UNLIMITED Pattern 3 (vi-I-vii°)',   group: 'progression' },
   { id: 'unlimited-pattern-4-c',      label: 'UNLIMITED Pattern 4 (I-iii-ii-I)',  group: 'progression' },
+  // UPGRADE Drop 2 — Phase Drop2&3-Upgrade PR 1 (Cキー単体、メロディハーモナイゼーション語彙)
+  { id: 'upgrade-drop2-c',            label: 'UPGRADE Drop 2 - C Major Scale Top Note', group: 'progression' },
   { id: 'minor-turnaround',     label: 'Minor Turnaround in Cm', group: 'progression' },
   { id: 'minor-cadence-cycle',  label: 'Minor Cadence Cycle',    group: 'progression' },
   { id: 'minor-cadence-cycle-extended', label: 'Minor Cadence Cycle Extended', group: 'progression' },

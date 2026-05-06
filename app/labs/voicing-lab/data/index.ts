@@ -36,6 +36,10 @@ import { m11Voicing } from './m11-voicing';
 import { over } from './over';
 import { virtualInsanity } from './virtual-insanity';
 import { billEvansStyleM251 } from './bill-evans-style-m251';
+import { unlimitedPattern1C } from './unlimited-pattern-1-c';
+import { unlimitedPattern2C } from './unlimited-pattern-2-c';
+import { unlimitedPattern3C } from './unlimited-pattern-3-c';
+import { unlimitedPattern4C } from './unlimited-pattern-4-c';
 import type {
   Progression,
   ProgressionGroup,
@@ -82,6 +86,10 @@ export const PROGRESSIONS: Record<string, Progression> = {
   'over': over,
   'virtual-insanity': virtualInsanity,
   'bill-evans-style-m251': billEvansStyleM251,
+  'unlimited-pattern-1-c': unlimitedPattern1C,
+  'unlimited-pattern-2-c': unlimitedPattern2C,
+  'unlimited-pattern-3-c': unlimitedPattern3C,
+  'unlimited-pattern-4-c': unlimitedPattern4C,
 };
 
 // Source-of-truth list for the dropdown. The display order in the UI is
@@ -109,6 +117,12 @@ export const PROGRESSION_LIST: ReadonlyArray<{
   { id: 'minor-two-five-one',         label: 'Minor 251 Voicing',         group: 'progression' },
   { id: 'minor-two-five-one-altered', label: 'Minor 251 Altered Voicing', group: 'progression' },
   { id: 'bill-evans-style-m251',      label: 'Bill Evans Style Minor 251 Voicing', group: 'progression' },
+  // UNLIMITED Chord Patterns (PrettyPiano Drop 2 & 3 Number System) —
+  // Phase Drop2&3 PR 1: Cキー単体。PR 2 で 12 キー化予定。
+  { id: 'unlimited-pattern-1-c',      label: 'UNLIMITED Pattern 1 (I-iii-IV)',    group: 'progression' },
+  { id: 'unlimited-pattern-2-c',      label: 'UNLIMITED Pattern 2 (IV-V-vi)',     group: 'progression' },
+  { id: 'unlimited-pattern-3-c',      label: 'UNLIMITED Pattern 3 (vi-I-vii°)',   group: 'progression' },
+  { id: 'unlimited-pattern-4-c',      label: 'UNLIMITED Pattern 4 (I-iii-ii-I)',  group: 'progression' },
   { id: 'minor-turnaround',     label: 'Minor Turnaround in Cm', group: 'progression' },
   { id: 'minor-cadence-cycle',  label: 'Minor Cadence Cycle',    group: 'progression' },
   { id: 'minor-cadence-cycle-extended', label: 'Minor Cadence Cycle Extended', group: 'progression' },

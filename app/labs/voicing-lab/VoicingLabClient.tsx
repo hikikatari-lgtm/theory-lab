@@ -22,6 +22,7 @@ import ProgressionSelector from './components/ProgressionSelector';
 import ChordsRow from './components/ChordsRow';
 import BarsGrid from './components/BarsGrid';
 import SectionTabs from './components/SectionTabs';
+import AudioDebugPanel from './components/AudioDebugPanel';
 import {
   PROGRESSIONS,
   DEFAULT_PROGRESSION_ID,
@@ -482,6 +483,7 @@ export default function VoicingLabClient({
 
   return (
     <div className="vl-page">
+      <AudioDebugPanel />
       <div className="vl-shell">
         <LabHeader backHref="/" backLabel="Theory Lab" />
 

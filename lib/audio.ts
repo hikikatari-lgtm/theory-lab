@@ -46,6 +46,24 @@ export type AudioLogEntry = {
   detail?: string;  // Optional one-line message (error text, value, etc.)
 };
 
+// Snapshot of the hidden <video> element used for the iOS-mute
+// workaround. Undefined when the routing wasn't set up (e.g. SSR).
+export type VideoRoutingState = {
+  // True if the element exists in the DOM
+  attached: boolean;
+  // <video>.muted — must be `false` for iOS to override the silent
+  // switch. If this somehow becomes true, the workaround is broken.
+  muted: boolean;
+  // <video>.paused — should be `false` after the user gesture
+  // play() resolves. If true, the MediaStream isn't being consumed
+  // and audio won't reach the speaker.
+  paused: boolean;
+  // <video>.readyState — HTMLMediaElement.HAVE_NOTHING(0) → HAVE_ENOUGH_DATA(4)
+  readyState: number;
+  // True if a MediaStream was successfully assigned to srcObject
+  hasSrcObject: boolean;
+};
+
 export type AudioDiagnostics = {
   hasAudioSessionApi: boolean;
   audioSessionType?: string;
@@ -55,12 +73,21 @@ export type AudioDiagnostics = {
   contextState?: string;   // 'running' | 'suspended' | 'closed'
   sampleRate?: number;     // AudioContext.sampleRate
   ua: string;
+  video?: VideoRoutingState;  // present once setupVideoAudioRouting ran
   log: AudioLogEntry[];    // Most-recent-last, capped at MAX_LOG
 };
 
 let primerStatus: PrimerStatus = 'pending';
 let audioLog: AudioLogEntry[] = [];
 const MAX_LOG = 16;
+
+// Hidden <video> element that consumes Tone.js's audio output via a
+// MediaStream. iOS Safari treats <video> elements with audio tracks
+// as the "playback" audio session category, which overrides the
+// hardware silent switch (マナーモード) — same mechanism YouTube
+// uses for music playback. See setupVideoAudioRouting().
+let mediaStreamDest: MediaStreamAudioDestinationNode | null = null;
+let audioVideo: HTMLVideoElement | null = null;
 
 type DiagListener = () => void;
 const diagListeners = new Set<DiagListener>();
@@ -124,6 +151,20 @@ export function getAudioDiagnostics(): AudioDiagnostics {
     }
     ua = navigator.userAgent ?? '';
   }
+  let video: VideoRoutingState | undefined;
+  if (audioVideo) {
+    try {
+      video = {
+        attached: !!audioVideo.parentNode,
+        muted: audioVideo.muted,
+        paused: audioVideo.paused,
+        readyState: audioVideo.readyState,
+        hasSrcObject: audioVideo.srcObject !== null,
+      };
+    } catch {
+      /* defensive — element might be torn down mid-read */
+    }
+  }
   return {
     hasAudioSessionApi,
     audioSessionType,
@@ -133,6 +174,7 @@ export function getAudioDiagnostics(): AudioDiagnostics {
     contextState,
     sampleRate,
     ua,
+    video,
     log: audioLog,
   };
 }
@@ -179,14 +221,185 @@ function configureIosAudioSession(): void {
   }
 }
 
+// Build the MediaStream → <video> routing path. Called from initPiano
+// once the Tone module is loaded and its AudioContext is available.
+//
+// Plan A architecture (single path, cross-platform):
+//
+//   Tone.Sampler → Reverb → MediaStreamAudioDestinationNode
+//                              ↓
+//                         MediaStream
+//                              ↓
+//                       <video>.srcObject  (hidden 1px element)
+//                              ↓
+//                      iOS speaker (Playback category, silent-switch immune)
+//
+// The <video> element is what fools iOS into the playback category —
+// same mechanism YouTube uses. Audio-only MediaStreams in <video>
+// elements (via srcObject) are explicitly supported by WebKit per
+// Apple's docs and have been since Safari 11.
+//
+// On non-iOS platforms this routing also works (no audio doubling
+// because we skip Tone.Destination entirely). It adds ~10-30ms
+// latency, imperceptible at Walk Through tempos.
+//
+// Returns the MediaStreamAudioDestinationNode if setup succeeded, or
+// null on failure (in which case the caller falls back to the legacy
+// Tone.Destination path so audio still works).
+function setupVideoAudioRouting(
+  T: ToneModule
+): MediaStreamAudioDestinationNode | null {
+  if (typeof document === 'undefined') {
+    pushAudioLog('video.setup.skip', true, 'no document (SSR)');
+    return null;
+  }
+  // Defensive: tear down any prior <video> from a previous initPiano
+  // call (React StrictMode dev double-invoke / HMR re-evaluation
+  // can land here twice). Without this we'd accumulate orphaned
+  // <video> elements that still hold MediaStream references.
+  if (audioVideo) {
+    try {
+      audioVideo.pause();
+      audioVideo.srcObject = null;
+      audioVideo.remove();
+    } catch {
+      /* element may already be detached — ignore */
+    }
+    audioVideo = null;
+  }
+  try {
+    const ctx = T.getContext();
+    const raw = (ctx as { rawContext?: AudioContext }).rawContext;
+    if (!raw || typeof raw.createMediaStreamDestination !== 'function') {
+      pushAudioLog(
+        'video.setup.skip',
+        false,
+        'rawContext or createMediaStreamDestination unavailable'
+      );
+      return null;
+    }
+    mediaStreamDest = raw.createMediaStreamDestination();
+    pushAudioLog('video.streamDest.create', true);
+
+    // Keep-alive signal: a sub-audible 1 Hz oscillator at vanishingly
+    // small gain feeds the MediaStream continuously so the <video>
+    // element never sees an "idle stream" condition that would cause
+    // browsers (Chrome desktop especially) to auto-pause playback.
+    // The signal is too low-frequency / too quiet to be perceived but
+    // is enough to keep the stream's audio track marked active.
+    try {
+      const keepAlive = raw.createOscillator();
+      keepAlive.frequency.value = 1; // 1 Hz, well below human hearing
+      const gain = raw.createGain();
+      gain.gain.value = 0.00001; // -100 dB, imperceptible
+      keepAlive.connect(gain);
+      gain.connect(mediaStreamDest);
+      keepAlive.start();
+      pushAudioLog('video.keepAlive', true);
+    } catch (e) {
+      // Without keep-alive the video may auto-pause when Tone is idle,
+      // but the iOS workaround can still kick in during active playback.
+      pushAudioLog(
+        'video.keepAlive',
+        false,
+        e instanceof Error ? e.message : String(e)
+      );
+    }
+
+    audioVideo = document.createElement('video');
+    audioVideo.srcObject = mediaStreamDest.stream;
+    // CRITICAL: the element MUST NOT be muted — that's the whole
+    // point. iOS only treats a <video> as "playback category" when
+    // it actually carries audible content.
+    audioVideo.muted = false;
+    audioVideo.playsInline = true;
+    audioVideo.setAttribute('playsinline', '');
+    audioVideo.setAttribute('webkit-playsinline', '');
+    // loop keeps the element "active" indefinitely; with srcObject
+    // there's no source EOF so loop is mostly a hint.
+    audioVideo.loop = true;
+    // 1×1 px, parked off-screen via clip-path (rather than opacity:0
+    // or display:none) so Chrome / WebKit don't apply their
+    // "invisible video → pause" optimization. The element is in the
+    // layout tree and considered visible by the browser, but the
+    // user can't see it because it's clipped to nothing AND
+    // anchored to a corner. Pointer events disabled so it never
+    // intercepts UI interactions.
+    audioVideo.style.cssText =
+      'position:fixed;width:1px;height:1px;right:0;bottom:0;' +
+      'clip-path:inset(50%);pointer-events:none;';
+    document.body.appendChild(audioVideo);
+    pushAudioLog('video.element.create', true);
+    return mediaStreamDest;
+  } catch (e) {
+    pushAudioLog(
+      'video.setup.error',
+      false,
+      e instanceof Error ? e.message : String(e)
+    );
+    return null;
+  }
+}
+
+// Start the hidden <video> playback. Must be called inside a user
+// gesture (the play-button click path). Without play(), the
+// MediaStream is connected but no audio reaches the speaker because
+// the <video> element is paused.
+async function startAudioVideo(): Promise<void> {
+  if (!audioVideo) return;
+  try {
+    await audioVideo.play();
+    pushAudioLog('video.play', true);
+  } catch (e) {
+    // Autoplay block, codec issue, etc. The diagnostic panel will
+    // show paused: true — that's the sign to investigate further.
+    pushAudioLog(
+      'video.play',
+      false,
+      e instanceof Error ? e.message : String(e)
+    );
+  }
+}
+
 export async function initPiano(): Promise<void> {
   if (pianoReady) return;
   if (typeof window === 'undefined') return;
   configureIosAudioSession();
   pushAudioLog('initPiano.begin', true);
   const T = await loadTone();
+
+  // Build the MediaStream → <video> routing path BEFORE the Tone
+  // graph is wired up so we know whether to route reverb to the
+  // stream destination or fall back to Tone.Destination.
+  const streamDest = setupVideoAudioRouting(T);
+
   return new Promise<void>((resolve, reject) => {
-    reverb = new T.Reverb({ decay: 2.5, preDelay: 0.02, wet: 0.25 }).toDestination();
+    reverb = new T.Reverb({ decay: 2.5, preDelay: 0.02, wet: 0.25 });
+    if (streamDest) {
+      try {
+        // Tone v15 ToneAudioNode.connect accepts AudioNode targets.
+        reverb.connect(streamDest);
+        pushAudioLog('video.route', true, 'reverb → MediaStream');
+      } catch (e) {
+        // If the connect fails for any reason, fall back to the
+        // legacy direct path so audio still plays (silent switch
+        // workaround degrades, but the lab isn't completely silent).
+        reverb.toDestination();
+        pushAudioLog(
+          'video.route',
+          false,
+          'fallback to Tone.Destination: ' +
+            (e instanceof Error ? e.message : String(e))
+        );
+      }
+    } else {
+      reverb.toDestination();
+      pushAudioLog(
+        'video.route',
+        false,
+        'no streamDest, using Tone.Destination'
+      );
+    }
     sampler = new T.Sampler({
       urls: SAMPLE_MAP,
       baseUrl: SAMPLE_BASE,
@@ -316,10 +529,13 @@ function primeIosAudioSession(): void {
 
 async function ensureToneStarted(): Promise<void> {
   if (toneStarted) return;
-  // User-gesture context: prime the iOS audio session BEFORE
-  // Tone.start() so the AudioContext resume happens with the right
-  // session category in effect.
+  // User-gesture context: triple-layered iOS workaround all activated
+  // here so they all get the same gesture credit.
+  //   (1) audioSession.type = 'playback' (iOS 17.4+)
+  //   (2) silent <audio> primer (legacy, all iOS versions)
+  //   (3) <video> srcObject = MediaStream (the YouTube-style fix)
   primeIosAudioSession();
+  await startAudioVideo();
   const T = await loadTone();
   try {
     await T.start();

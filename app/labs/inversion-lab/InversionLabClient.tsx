@@ -34,12 +34,16 @@ export default function InversionLabClient() {
   const [inputText, setInputText] = useState<string>(DEFAULT_TEXT);
   const [appliedText, setAppliedText] = useState<string>(DEFAULT_TEXT);
   const [stepIdx, setStepIdx] = useState<number>(0);
+  const [startingInversion, setStartingInversion] = useState<number>(0);
   const [audioReady, setAudioReady] = useState<boolean>(false);
   const [audioLoading, setAudioLoading] = useState<boolean>(false);
   const [soundOn, setSoundOn] = useState<boolean>(false);
 
   const chords = useMemo(() => parseProgression(appliedText), [appliedText]);
-  const voicings = useMemo<Voicing[]>(() => buildVoicings(chords), [chords]);
+  const voicings = useMemo<Voicing[]>(
+    () => buildVoicings(chords, startingInversion),
+    [chords, startingInversion]
+  );
 
   // Reset selection whenever the progression changes.
   useEffect(() => {
@@ -209,6 +213,35 @@ export default function InversionLabClient() {
                     移動する音
                   </span>
                 </div>
+              </div>
+
+              <div className="il-inversion-picker">
+                <span className="il-inversion-picker-label">
+                  開始転回形
+                </span>
+                <div className="il-segmented" role="group">
+                  {[
+                    { value: 0, label: 'Root' },
+                    { value: 1, label: '1st inv' },
+                    { value: 2, label: '2nd inv' },
+                  ].map((opt) => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      className={
+                        'il-segmented-btn' +
+                        (startingInversion === opt.value ? ' active' : '')
+                      }
+                      onClick={() => setStartingInversion(opt.value)}
+                      aria-pressed={startingInversion === opt.value}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <span className="il-inversion-picker-hint">
+                  最初のコードの転回形を選ぶと、後続のコードも再計算されます
+                </span>
               </div>
 
               <InversionKeyboard

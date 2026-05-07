@@ -135,8 +135,12 @@ function preservedCount(prev: number[], next: number[]): number {
   return n;
 }
 
-export function rootPositionVoicing(chord: Chord): Voicing {
-  return { midis: invertedMidis(chord, 4, 0), inversion: 0, chord };
+// Voicing of `chord` anchored around C4 at the requested inversion.
+// Used as the entry point of the progression — the user picks 0/1/2
+// and every subsequent chord is voice-led from there.
+export function startingVoicing(chord: Chord, inversion: number = 0): Voicing {
+  const safeInv = Math.max(0, Math.min(2, inversion));
+  return { midis: invertedMidis(chord, 4, safeInv), inversion: safeInv, chord };
 }
 
 // Pick the candidate voicing of `chord` that voice-leads best from
@@ -168,10 +172,17 @@ export function pickBestVoicing(prev: Voicing, chord: Chord): Voicing {
 }
 
 // Compute the full sequence of voicings for a progression, applying the
-// voice-leading rule from the second chord onward.
-export function buildVoicings(chords: Chord[]): Voicing[] {
+// voice-leading rule from the second chord onward. `startingInversion`
+// (0/1/2) controls which inversion the first chord uses — every later
+// chord is then derived by minimizing movement from its predecessor,
+// so changing the starting inversion ripples through the whole
+// progression.
+export function buildVoicings(
+  chords: Chord[],
+  startingInversion: number = 0
+): Voicing[] {
   if (chords.length === 0) return [];
-  const out: Voicing[] = [rootPositionVoicing(chords[0])];
+  const out: Voicing[] = [startingVoicing(chords[0], startingInversion)];
   for (let i = 1; i < chords.length; i++) {
     out.push(pickBestVoicing(out[i - 1], chords[i]));
   }

@@ -15,16 +15,26 @@ function isBlackKey(note: string): boolean {
   return note.includes('#');
 }
 
-// Range = a few semitones above & below the union of voicings, snapped
-// to a clean white-key boundary so the keyboard never looks lopsided.
+// Range = several semitones above & below the union of voicings, snapped
+// to a clean white-key boundary, then padded an extra ~half-octave on
+// each side. The extra padding matters because the dot is 30px wide
+// centered on each key — without breathing room past the highest
+// pitch, the rightmost dot can extend past the wrap edge and get
+// visually clipped on narrower viewports. Ensures at least 2 octaves
+// (≈ C3..C5) even when the chord set is small.
 function computeRange(midis: number[]): { startIdx: number; endIdx: number } {
   if (midis.length === 0) {
-    return { startIdx: 4 * 12, endIdx: 6 * 12 };
+    return { startIdx: 3 * 12, endIdx: 6 * 12 };
   }
   const min = Math.min(...midis);
   const max = Math.max(...midis);
   let startIdx = min - 3;
   let endIdx = max + 3;
+  while (startIdx % 12 !== 0 && startIdx > 0) startIdx--;
+  while (endIdx % 12 !== 0 && endIdx % 12 !== 5 && endIdx < 127) endIdx++;
+  // Extra breathing room past the snapped boundary.
+  startIdx = Math.max(0, startIdx - 5);
+  endIdx = Math.min(127, endIdx + 5);
   while (startIdx % 12 !== 0 && startIdx > 0) startIdx--;
   while (endIdx % 12 !== 0 && endIdx % 12 !== 5 && endIdx < 127) endIdx++;
   return { startIdx, endIdx };

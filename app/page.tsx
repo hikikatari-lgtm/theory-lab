@@ -27,6 +27,14 @@ const LABS: Lab[] = [
       'プロのボイシングを進行ごとに体験する図鑑。Minor Turnaround、F Blues Rootless など複数の進行を切り替えて学べる。',
     status: 'active',
   },
+  {
+    slug: 'drop-2-lab',
+    title: 'Drop 2 Lab',
+    subtitle: 'Drop 2 ボイシングを4段階で習得する',
+    description:
+      'Drop 2 ボイシングの作り方を「基本 → 両手 → 抜く」の4ステップで段階的に体験する。',
+    status: 'active',
+  },
 ];
 
 export default function Home() {

@@ -27,6 +27,14 @@ const LABS: Lab[] = [
       'プロのボイシングを進行ごとに体験する図鑑。Minor Turnaround、F Blues Rootless など複数の進行を切り替えて学べる。',
     status: 'active',
   },
+  {
+    slug: 'inversion-lab',
+    title: 'Inversion Lab',
+    subtitle: '基本形と転回形を滑らかに繋ぐ',
+    description:
+      'コード進行を入力すると、最もスムーズなボイスリーディングになる転回形を自動選択。共通音と移動する音を鍵盤上にドット表示する。',
+    status: 'active',
+  },
 ];
 
 export default function Home() {

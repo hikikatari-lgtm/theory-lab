@@ -42,6 +42,7 @@ import { unlimitedPattern3C } from './unlimited-pattern-3-c';
 import { unlimitedPattern4C } from './unlimited-pattern-4-c';
 import { dirty2536 } from './dirty-2536';
 import { neoSoulChords } from './neo-soul-chords';
+import { soWhatQuartal } from './so-what-quartal';
 import type {
   Progression,
   ProgressionGroup,
@@ -94,6 +95,7 @@ export const PROGRESSIONS: Record<string, Progression> = {
   'unlimited-pattern-4-c': unlimitedPattern4C,
   'dirty-2536': dirty2536,
   'neo-soul-chords': neoSoulChords,
+  'so-what-quartal': soWhatQuartal,
 };
 
 // Source-of-truth list for the dropdown. The display order in the UI is
@@ -115,6 +117,7 @@ export const PROGRESSION_LIST: ReadonlyArray<{
   // structure — single-chord voicings
   { id: 'maj9-voicing',         label: 'Maj9 Voicing',           group: 'structure' },
   { id: 'm11-voicing',          label: 'm11 Voicing',            group: 'structure' },
+  { id: 'so-what-quartal',      label: 'So What Voicings (C Dorian)', group: 'structure' },
   // progression — generic jazz patterns (251 family, blues, turnarounds)
   { id: 'two-five-one',               label: '251 Voicing',               group: 'progression' },
   { id: 'two-five-one-altered',       label: '251 Altered Voicing',       group: 'progression' },

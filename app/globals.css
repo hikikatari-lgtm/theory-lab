@@ -1738,17 +1738,46 @@ footer {
   color: var(--al-accent);
 }
 
-.al-chords-row {
-  display: flex;
+/* 4 bars × N chords. 各小節は枠で囲ってバーラインを表現する。
+   小節内の複数コードは flex 等分なので、1 コード = 1 拍 〜 4 拍と
+   関係なく、見た目で「1 小節 2 コード」がはっきり伝わる。 */
+.al-bars-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: 8px;
-  flex-wrap: wrap;
+}
+.al-bar {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--al-border);
+  border-radius: 10px;
+  padding: 18px 8px 10px;
+  position: relative;
+  min-height: 96px;
+  display: flex;
+  flex-direction: column;
+}
+.al-bar-number {
+  position: absolute;
+  top: 5px;
+  left: 8px;
+  color: var(--al-text-dim);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+.al-bar-number::before { content: 'BAR '; }
+.al-bar-chords {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+  align-items: stretch;
 }
 .al-chord-card {
   flex: 1 1 0;
-  min-width: 84px;
+  min-width: 0;
   background: var(--al-panel-2);
-  border-radius: 10px;
-  padding: 12px 8px;
+  border-radius: 8px;
+  padding: 12px 6px;
   text-align: center;
   cursor: pointer;
   border: 2px solid transparent;
@@ -1971,11 +2000,14 @@ footer {
   .al-chord-name { font-size: 28px; gap: 10px; }
   .al-roman-large { font-size: 18px; }
   .al-symbol-large { font-size: 28px; }
-  .al-chord-card { min-width: 70px; padding: 10px 4px; }
-  .al-chord-symbol { font-size: 14px; }
-  .al-chord-roman { font-size: 10px; }
+  .al-chord-card { padding: 10px 3px; }
+  .al-chord-symbol { font-size: 13px; }
+  .al-chord-roman { font-size: 9px; }
   .al-chord-badge { font-size: 8px; padding: 1px 5px; right: -4px; top: -7px; }
-  .al-chords-row { gap: 6px; }
+  .al-bars-row { gap: 4px; }
+  .al-bar { padding: 16px 4px 6px; min-height: 80px; }
+  .al-bar-chords { gap: 3px; }
+  .al-bar-number { font-size: 8px; left: 5px; top: 4px; }
   .al-version-tab { padding: 7px 12px; font-size: 12px; }
   .al-btn { font-size: 12px; padding: 8px 10px; min-width: 60px; }
   .al-toggle-item { min-width: 110px; font-size: 11px; }

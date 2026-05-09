@@ -28,14 +28,20 @@ export type ArrangeChord = {
 // オレンジ系でハイライトされる (前バージョンから引き継いだコードは false)。
 // `technique` はパッシングコード / オンコード / サブドミナントマイナー
 // などの解説文。鍵盤下のディテール表示でタグ付きで表示される。
+//
+// `beats` が省略されている場合は「小節内で均等割り」(BEATS_PER_BAR /
+// 小節内コード数)。明示的に指定する場合は同小節内すべての slot に
+// 値を入れて合計が BEATS_PER_BAR (=4) になるようにする。例えば
+// 2-1-1 の不均等チェンジは [{beats:2}, {beats:1}, {beats:1}]。
 export type ArrangeChordSlot = {
   chord: ArrangeChord;
   added?: boolean;
   technique?: string;
+  beats?: number;
 };
 
-// 1 小節 = 4 拍 を前提に、小節内のコードは均等割りで再生される。
-// 1 コードなら 4 拍、2 コードなら各 2 拍、3 コードなら各 4/3 拍。
+// 1 小節 = 4 拍 を前提。各 slot の `beats` で配分を決める。
+// `beats` 未指定なら均等割り (1 コード=4 拍 / 2 コード=各 2 拍 / etc)。
 export type ArrangeBar = {
   chords: ArrangeChordSlot[];
 };

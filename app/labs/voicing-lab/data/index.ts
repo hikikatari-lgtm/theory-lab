@@ -40,6 +40,9 @@ import { unlimitedPattern1C } from './unlimited-pattern-1-c';
 import { unlimitedPattern2C } from './unlimited-pattern-2-c';
 import { unlimitedPattern3C } from './unlimited-pattern-3-c';
 import { unlimitedPattern4C } from './unlimited-pattern-4-c';
+import { dirty2536 } from './dirty-2536';
+import { neoSoulChords } from './neo-soul-chords';
+import { soWhatQuartal } from './so-what-quartal';
 import type {
   Progression,
   ProgressionGroup,
@@ -90,6 +93,9 @@ export const PROGRESSIONS: Record<string, Progression> = {
   'unlimited-pattern-2-c': unlimitedPattern2C,
   'unlimited-pattern-3-c': unlimitedPattern3C,
   'unlimited-pattern-4-c': unlimitedPattern4C,
+  'dirty-2536': dirty2536,
+  'neo-soul-chords': neoSoulChords,
+  'so-what-quartal': soWhatQuartal,
 };
 
 // Source-of-truth list for the dropdown. The display order in the UI is
@@ -111,6 +117,7 @@ export const PROGRESSION_LIST: ReadonlyArray<{
   // structure — single-chord voicings
   { id: 'maj9-voicing',         label: 'Maj9 Voicing',           group: 'structure' },
   { id: 'm11-voicing',          label: 'm11 Voicing',            group: 'structure' },
+  { id: 'so-what-quartal',      label: 'So What Voicings (C Dorian)', group: 'structure' },
   // progression — generic jazz patterns (251 family, blues, turnarounds)
   { id: 'two-five-one',               label: '251 Voicing',               group: 'progression' },
   { id: 'two-five-one-altered',       label: '251 Altered Voicing',       group: 'progression' },
@@ -139,12 +146,14 @@ export const PROGRESSION_LIST: ReadonlyArray<{
   { id: 'blue-bossa',           label: 'Blue Bossa',             group: 'tune', subgenre: 'jazz-standards' },
   { id: 'blue-in-green',        label: 'Blue In Green - Bill Evans',     group: 'tune', subgenre: 'jazz-standards' },
   { id: 'body-and-soul',        label: 'Body And Soul',          group: 'tune', subgenre: 'jazz-standards' },
+  { id: 'dirty-2536',           label: 'Dirty 2536 in C / iVerza', group: 'tune', subgenre: 'rnb-neo-soul' },
   { id: 'fly-me-to-the-moon',   label: 'Fly Me To The Moon',     group: 'tune', subgenre: 'jazz-standards' },
   { id: 'how-insensitive',      label: 'How Insensitive - Antonio Carlos Jobim', group: 'tune', subgenre: 'jazz-standards' },
   { id: 'isnt-she-lovely',      label: "Isn't She Lovely - Stevie Wonder", group: 'tune', subgenre: 'stevie-wonder' },
   { id: 'it-runs-through-me',   label: 'It Runs Through Me - Tom Misch', group: 'tune', subgenre: 'rnb-neo-soul' },
   { id: 'lately',               label: 'Lately - Stevie Wonder', group: 'tune', subgenre: 'stevie-wonder' },
   { id: 'misty',                label: 'Misty - Erroll Garner',  group: 'tune', subgenre: 'jazz-standards' },
+  { id: 'neo-soul-chords',      label: 'Neo Soul Chords / Piano Peak Academy', group: 'tune', subgenre: 'rnb-neo-soul' },
   { id: 'over',                 label: 'Over / Robert Glasper',  group: 'tune', subgenre: 'rnb-neo-soul' },
   { id: 'overjoyed',            label: 'Overjoyed - Stevie Wonder', group: 'tune', subgenre: 'stevie-wonder' },
   { id: 'ribbon-in-the-sky',    label: 'Ribbon in the Sky - Stevie Wonder', group: 'tune', subgenre: 'stevie-wonder' },

@@ -1982,3 +1982,364 @@ footer {
   .al-selector { padding: 10px 12px; gap: 8px; }
   .al-selector-select { font-size: 13px; padding: 9px 12px; padding-right: 32px; }
 }
+
+/* ==================================================================
+   INVERSION LAB
+   Reuses .vl-page tokens for the dark palette, then adds .il- classes
+   for the chord-input controls, the progression strip, and the
+   keyboard-with-dots used to visualize voice leading. Common notes
+   render blue; moving notes render red — opposite to the Voicing Lab
+   convention, where blue = LH and yellow = common. The colors are
+   the user-facing convention for this lab.
+   ================================================================== */
+.il-page {
+  --il-common: #5b9bd5;
+  --il-moving: #e85d6f;
+  --il-input-bg: #0f1419;
+}
+
+.il-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+.il-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.il-label {
+  font-family: var(--font-jbmono), 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--vl-text-dim);
+  min-width: 110px;
+}
+.il-select,
+.il-input {
+  flex: 1;
+  min-width: 200px;
+  background: var(--il-input-bg);
+  border: 1px solid var(--vl-border);
+  color: var(--vl-text);
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-family: var(--font-jbmono), 'JetBrains Mono', monospace;
+  font-size: 13px;
+}
+.il-select:focus,
+.il-input:focus {
+  outline: none;
+  border-color: var(--vl-accent);
+}
+.il-hint {
+  font-family: var(--font-jbmono), 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--vl-text-dim);
+  letter-spacing: 0.04em;
+}
+
+.il-btn {
+  background: var(--vl-panel-2);
+  border: 1px solid var(--vl-border);
+  color: var(--vl-text);
+  padding: 9px 16px;
+  border-radius: 8px;
+  font-family: var(--font-jbmono), 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.il-btn:hover:not(:disabled) {
+  border-color: var(--vl-accent);
+  color: var(--vl-accent);
+}
+.il-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.il-btn-primary {
+  background: var(--vl-accent);
+  border-color: var(--vl-accent);
+  color: #1a1a1a;
+}
+.il-btn-primary:hover:not(:disabled) {
+  background: #ff8a8a;
+  color: #1a1a1a;
+}
+
+.il-empty {
+  background: var(--vl-panel);
+  border: 1px solid var(--vl-border);
+  border-radius: 12px;
+  padding: 32px;
+  text-align: center;
+  color: var(--vl-text-dim);
+  font-family: var(--font-jbmono), 'JetBrains Mono', monospace;
+  font-size: 12px;
+}
+
+.il-progression-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.il-chip {
+  background: var(--vl-panel-2);
+  border: 1px solid var(--vl-border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 84px;
+  transition: all 0.15s ease;
+  color: var(--vl-text);
+}
+.il-chip:hover {
+  border-color: var(--vl-accent);
+}
+.il-chip-active {
+  border-color: var(--vl-accent);
+  background: rgba(255, 107, 107, 0.12);
+  box-shadow: 0 0 12px rgba(255, 107, 107, 0.2);
+}
+.il-chip-symbol {
+  font-size: 18px;
+  font-weight: 600;
+}
+.il-chip-inv {
+  font-family: var(--font-jbmono), 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--vl-text-dim);
+  text-transform: uppercase;
+}
+.il-chip-active .il-chip-inv {
+  color: var(--vl-accent);
+}
+
+.il-stage {
+  background: var(--vl-panel);
+  border: 1px solid var(--vl-border);
+  border-radius: 12px;
+  padding: 18px;
+}
+.il-stage-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.il-stage-eyebrow {
+  font-family: var(--font-jbmono), 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--vl-text-dim);
+  text-transform: uppercase;
+}
+.il-stage-symbol {
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 1.1;
+  margin-top: 2px;
+}
+.il-stage-inv {
+  font-family: var(--font-jbmono), 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  color: var(--vl-accent);
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.il-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.il-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-jbmono), 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--vl-text-dim);
+  letter-spacing: 0.06em;
+}
+.il-legend-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+.il-legend-common { background: var(--il-common); }
+.il-legend-moving { background: var(--il-moving); }
+
+.il-inversion-picker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+  padding: 8px 0;
+  border-top: 1px solid var(--vl-border);
+  border-bottom: 1px solid var(--vl-border);
+}
+.il-inversion-picker-label {
+  font-family: var(--font-jbmono), 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--vl-text-dim);
+}
+.il-inversion-picker-hint {
+  font-family: var(--font-jbmono), 'JetBrains Mono', monospace;
+  font-size: 10px;
+  color: var(--vl-text-dim);
+  letter-spacing: 0.04em;
+  flex: 1;
+  min-width: 200px;
+}
+.il-segmented {
+  display: inline-flex;
+  background: var(--vl-panel-2);
+  border: 1px solid var(--vl-border);
+  border-radius: 8px;
+  padding: 3px;
+  gap: 2px;
+}
+.il-segmented-btn {
+  background: transparent;
+  border: none;
+  color: var(--vl-text-dim);
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-family: var(--font-jbmono), 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-transform: uppercase;
+}
+.il-segmented-btn:hover { color: var(--vl-text); }
+.il-segmented-btn.active {
+  background: var(--vl-panel);
+  color: var(--vl-accent);
+  box-shadow: 0 0 0 1px var(--vl-accent);
+}
+
+/* Keyboard. Same proportions as the Voicing Lab keyboard, but with
+   clean white keys + circular dots over each active note. The dot
+   color encodes movement state; the degree label sits inside it. */
+.il-keyboard-wrap {
+  /* No overflow:hidden — dots are 30px wide and centered on each key,
+     so the rightmost/leftmost dot can extend a few px beyond the
+     keyboard edge on narrow viewports. Letting them render outside
+     the bounds is safer than clipping them. */
+  padding: 8px 4px;
+  position: relative;
+}
+.il-keyboard {
+  position: relative;
+  height: 220px;
+  display: flex;
+  width: 100%;
+  user-select: none;
+}
+.il-key-white {
+  flex: 1;
+  background: linear-gradient(to bottom, #fafafa, #e8e8e8);
+  border: 1px solid #888;
+  border-radius: 0 0 4px 4px;
+  position: relative;
+  margin-right: -1px;
+}
+.il-key-black {
+  position: absolute;
+  height: 60%;
+  background: linear-gradient(to bottom, #1a1a1a, #000);
+  border: 1px solid #000;
+  border-radius: 0 0 3px 3px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.il-dot {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-jbmono), 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 11px;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  z-index: 3;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+.il-dot-common { background: var(--il-common); }
+.il-dot-moving { background: var(--il-moving); }
+.il-dot-degree {
+  display: block;
+}
+.il-key-black .il-dot {
+  bottom: 8px;
+  width: 24px;
+  height: 24px;
+  font-size: 10px;
+}
+
+.il-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+.il-sound-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-jbmono), 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--vl-text-dim);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  user-select: none;
+}
+.il-sound-toggle input { accent-color: var(--vl-accent); }
+.il-sound-status { color: var(--vl-accent); margin-left: 4px; }
+
+@media (max-width: 720px) {
+  .il-label { min-width: 0; flex: 0 0 100%; }
+  .il-row { gap: 6px; }
+  .il-stage-symbol { font-size: 28px; }
+  .il-keyboard { height: 180px; }
+  .il-dot { width: 24px; height: 24px; font-size: 10px; bottom: 12px; }
+  .il-key-black .il-dot { width: 18px; height: 18px; font-size: 9px; }
+  .il-chip { min-width: 68px; padding: 8px 10px; }
+  .il-chip-symbol { font-size: 16px; }
+  .il-legend { flex-direction: row; gap: 12px; }
+  .il-inversion-picker-hint { display: none; }
+  .il-segmented-btn { padding: 5px 10px; font-size: 10px; }
+}

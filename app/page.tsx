@@ -43,6 +43,14 @@ const LABS: Lab[] = [
       'コード進行を入力すると、最もスムーズなボイスリーディングになる転回形を自動選択。共通音と移動する音を鍵盤上にドット表示する。',
     status: 'active',
   },
+  {
+    slug: 'arrange-lab',
+    title: 'Chord Arrange Lab',
+    subtitle: 'Before / After で聴き比べ',
+    description:
+      'シンプルなコード進行が、パッシングコードやオンコードを足していくとどう変化するか。Original から段階的なアレンジへ切り替えて体感する。',
+    status: 'active',
+  },
 ];
 
 export default function Home() {

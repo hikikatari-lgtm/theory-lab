@@ -1566,6 +1566,423 @@ footer {
   .vl-section-tab { padding: 5px 10px; font-size: 11px; min-width: 40px; }
 }
 
+/* ============================================================
+   ARRANGE LAB (Lab 03)
+   Scoped under .al-page. Reuses the .vl-keyboard / .vl-key-*
+   piano styles which are already global. The "added chord"
+   highlight uses an orange accent so it stands out from the
+   red selection ring.
+   ============================================================ */
+.al-page {
+  --al-bg: #0a0a0a;
+  --al-panel: #1a1a1a;
+  --al-panel-2: #232323;
+  --al-border: #333;
+  --al-text: #f5f5f5;
+  --al-text-dim: #888;
+  --al-accent: #ff6b6b;
+  --al-roman: #ffd54a;
+  --al-added: #ffa235;
+  --al-added-bg: rgba(255, 162, 53, 0.16);
+  --al-added-border: rgba(255, 162, 53, 0.55);
+  --al-highlight: #ffeb3b;
+  --al-lh: #4a90e2;
+  --al-rh: #ff6b6b;
+
+  background: var(--al-bg);
+  color: var(--al-text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  min-height: 100vh;
+  padding: 16px;
+}
+.al-shell {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.al-page .lab-back-link {
+  color: rgba(245, 245, 245, 0.55);
+}
+.al-page .lab-back-link:hover {
+  color: var(--al-accent);
+}
+
+.al-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.al-header h1 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  font-family: inherit;
+  letter-spacing: 0;
+  font-style: normal;
+  line-height: 1.2;
+}
+.al-header-subtitle {
+  color: var(--al-text-dim);
+  font-size: 13px;
+}
+
+.al-selector {
+  background: var(--al-panel);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  border: 1px solid var(--al-border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.al-selector-label {
+  color: var(--al-text-dim);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.al-selector-select {
+  flex: 1;
+  min-width: 200px;
+  background: var(--al-panel-2);
+  color: var(--al-text);
+  border: 1px solid var(--al-border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3e%3cpath fill='%23888' d='M6 8L0 0h12z'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+.al-selector-select:hover { background-color: #2d2d2d; }
+.al-selector-select:focus {
+  outline: none;
+  border-color: var(--al-accent);
+}
+
+.al-progression {
+  background: var(--al-panel);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+  border: 1px solid var(--al-border);
+}
+.al-progression-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.al-progression-label {
+  color: var(--al-text-dim);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+.al-subtitle-roman {
+  color: var(--al-roman);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-style: italic;
+  font-weight: 600;
+  margin-left: 4px;
+}
+.al-tempo-display {
+  display: inline-flex;
+  align-items: center;
+  background: var(--al-panel-2);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--al-text-dim);
+}
+.al-tempo-display strong {
+  color: var(--al-text);
+  margin-left: 4px;
+}
+
+.al-version-tabs {
+  display: inline-flex;
+  background: var(--al-panel-2);
+  border: 1px solid var(--al-border);
+  border-radius: 8px;
+  padding: 3px;
+  gap: 2px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.al-version-tab {
+  background: transparent;
+  color: var(--al-text-dim);
+  border: 0;
+  padding: 8px 18px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.al-version-tab:hover { color: var(--al-text); }
+.al-version-tab.active {
+  background: rgba(255, 107, 107, 0.18);
+  color: var(--al-accent);
+}
+
+.al-chords-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.al-chord-card {
+  flex: 1 1 0;
+  min-width: 84px;
+  background: var(--al-panel-2);
+  border-radius: 10px;
+  padding: 12px 8px;
+  text-align: center;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.15s;
+  user-select: none;
+  font-family: inherit;
+  color: var(--al-text);
+  position: relative;
+}
+.al-chord-card:hover {
+  background: #2d2d2d;
+  transform: translateY(-1px);
+}
+.al-chord-card.selected {
+  border-color: var(--al-accent);
+  background: #3a2828;
+}
+.al-chord-card.playing {
+  border-color: var(--al-highlight);
+  background: #3a3528;
+  box-shadow: 0 0 14px rgba(255, 235, 59, 0.35);
+}
+.al-chord-card.added {
+  background: var(--al-added-bg);
+  border-color: var(--al-added-border);
+  color: #fff5e6;
+}
+.al-chord-card.added:hover { background: rgba(255, 162, 53, 0.24); }
+.al-chord-card.added.selected {
+  border-color: var(--al-added);
+  box-shadow: 0 0 14px rgba(255, 162, 53, 0.4);
+}
+.al-chord-card.added .al-chord-roman { color: var(--al-added); }
+.al-chord-roman {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--al-roman);
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-style: italic;
+}
+.al-chord-symbol {
+  font-size: 17px;
+  font-weight: 700;
+}
+.al-chord-badge {
+  position: absolute;
+  top: -8px;
+  right: -6px;
+  background: var(--al-added);
+  color: #1a1a1a;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 2px 6px;
+  border-radius: 999px;
+  box-shadow: 0 0 8px rgba(255, 162, 53, 0.45);
+}
+
+.al-detail {
+  background: var(--al-panel);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid var(--al-border);
+}
+.al-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.al-detail-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.al-chord-name {
+  font-size: 38px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.al-roman-large {
+  font-size: 24px;
+  color: var(--al-roman);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-style: italic;
+  font-weight: 600;
+}
+.al-symbol-large {
+  font-size: 38px;
+}
+.al-chord-degrees-large {
+  color: var(--al-text-dim);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+}
+.al-technique {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--al-added);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.al-technique-tag {
+  background: var(--al-added-bg);
+  border: 1px solid var(--al-added-border);
+  color: var(--al-added);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 3px 7px;
+  border-radius: 4px;
+}
+.al-chord-meta {
+  color: var(--al-text-dim);
+  font-size: 12px;
+  text-align: right;
+}
+.al-chord-meta div { margin-bottom: 2px; }
+.al-lh-label { color: var(--al-lh); font-weight: 500; }
+.al-rh-label { color: var(--al-rh); font-weight: 500; }
+
+.al-controls {
+  background: var(--al-panel);
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid var(--al-border);
+}
+.al-controls-section { margin-bottom: 14px; }
+.al-controls-section:last-child { margin-bottom: 0; }
+.al-controls-label {
+  color: var(--al-text-dim);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.al-button-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.al-btn {
+  background: #2d2d2d;
+  color: var(--al-text);
+  border: 1px solid var(--al-border);
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.15s;
+  font-family: inherit;
+  flex: 1;
+  min-width: 80px;
+}
+.al-btn:hover { background: #3a3a3a; }
+.al-btn:active { transform: scale(0.97); }
+.al-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+.al-btn-primary {
+  background: var(--al-accent);
+  border-color: var(--al-accent);
+  color: #fff;
+}
+.al-btn-primary:hover { background: #ff5252; }
+
+.al-toggle-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.al-toggle-item {
+  background: var(--al-panel-2);
+  color: var(--al-text-dim);
+  border: 1px solid var(--al-border);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: inherit;
+  font-weight: 500;
+  user-select: none;
+  transition: all 0.15s;
+  flex: 1;
+  min-width: 130px;
+}
+.al-toggle-item:hover { background: #2d2d2d; }
+.al-toggle-item.active {
+  background: rgba(255, 107, 107, 0.1);
+  border-color: var(--al-accent);
+  color: var(--al-accent);
+}
+
+.al-status {
+  margin-top: 12px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--al-text-dim);
+  letter-spacing: 0.05em;
+}
+.al-status-error { color: var(--al-accent); }
+
+@media (max-width: 767px) {
+  .al-page { padding: 12px; }
+  .al-chord-name { font-size: 28px; gap: 10px; }
+  .al-roman-large { font-size: 18px; }
+  .al-symbol-large { font-size: 28px; }
+  .al-chord-card { min-width: 70px; padding: 10px 4px; }
+  .al-chord-symbol { font-size: 14px; }
+  .al-chord-roman { font-size: 10px; }
+  .al-chord-badge { font-size: 8px; padding: 1px 5px; right: -4px; top: -7px; }
+  .al-chords-row { gap: 6px; }
+  .al-version-tab { padding: 7px 12px; font-size: 12px; }
+  .al-btn { font-size: 12px; padding: 8px 10px; min-width: 60px; }
+  .al-toggle-item { min-width: 110px; font-size: 11px; }
+  .al-selector { padding: 10px 12px; gap: 8px; }
+  .al-selector-select { font-size: 13px; padding: 9px 12px; padding-right: 32px; }
+}
+
 /* ==================================================================
    INVERSION LAB
    Reuses .vl-page tokens for the dark palette, then adds .il- classes

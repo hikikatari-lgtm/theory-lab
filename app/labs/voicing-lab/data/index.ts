@@ -40,6 +40,7 @@ import { unlimitedPattern1C } from './unlimited-pattern-1-c';
 import { unlimitedPattern2C } from './unlimited-pattern-2-c';
 import { unlimitedPattern3C } from './unlimited-pattern-3-c';
 import { unlimitedPattern4C } from './unlimited-pattern-4-c';
+import { dirty2536 } from './dirty-2536';
 import type {
   Progression,
   ProgressionGroup,
@@ -90,6 +91,7 @@ export const PROGRESSIONS: Record<string, Progression> = {
   'unlimited-pattern-2-c': unlimitedPattern2C,
   'unlimited-pattern-3-c': unlimitedPattern3C,
   'unlimited-pattern-4-c': unlimitedPattern4C,
+  'dirty-2536': dirty2536,
 };
 
 // Source-of-truth list for the dropdown. The display order in the UI is
@@ -139,6 +141,7 @@ export const PROGRESSION_LIST: ReadonlyArray<{
   { id: 'blue-bossa',           label: 'Blue Bossa',             group: 'tune', subgenre: 'jazz-standards' },
   { id: 'blue-in-green',        label: 'Blue In Green - Bill Evans',     group: 'tune', subgenre: 'jazz-standards' },
   { id: 'body-and-soul',        label: 'Body And Soul',          group: 'tune', subgenre: 'jazz-standards' },
+  { id: 'dirty-2536',           label: 'Dirty 2536 in C / iVerza', group: 'tune', subgenre: 'rnb-neo-soul' },
   { id: 'fly-me-to-the-moon',   label: 'Fly Me To The Moon',     group: 'tune', subgenre: 'jazz-standards' },
   { id: 'how-insensitive',      label: 'How Insensitive - Antonio Carlos Jobim', group: 'tune', subgenre: 'jazz-standards' },
   { id: 'isnt-she-lovely',      label: "Isn't She Lovely - Stevie Wonder", group: 'tune', subgenre: 'stevie-wonder' },

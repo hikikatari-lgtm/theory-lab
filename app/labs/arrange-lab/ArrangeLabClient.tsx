@@ -45,10 +45,12 @@ export default function ArrangeLabClient() {
 
   // bars をフラット化。slotId は (barIdx, chordIdxInBar) なので、
   // 同じ chord が複数の slot を占有してもそれぞれ独立に扱える。
+  // 各 slot の beats は明示値 (slot.beats) を最優先、未指定なら
+  // 小節内均等割り (BEATS_PER_BAR / 小節内コード数)。
   const flatSlots = useMemo<FlatSlot[]>(() => {
     const out: FlatSlot[] = [];
     bars.forEach((bar, barIdx) => {
-      const beatsPerChord = BEATS_PER_BAR / bar.chords.length;
+      const evenBeats = BEATS_PER_BAR / bar.chords.length;
       bar.chords.forEach((slot, chordIdx) => {
         out.push({
           slot,
@@ -56,7 +58,7 @@ export default function ArrangeLabClient() {
           slotId: `${barIdx}-${chordIdx}`,
           barIdx,
           chordIdx,
-          beats: beatsPerChord,
+          beats: slot.beats ?? evenBeats,
         });
       });
     });

@@ -146,6 +146,19 @@ const FM7 = {
   ],
 };
 
+const FM6 = {
+  id: 'fm6',
+  symbol: 'Fm6',
+  roman: 'IVm6',
+  degreesLabel: '6, ♭3, 5',
+  lh: [{ note: 'F2', degree: 'R' }],
+  rh: [
+    { note: 'D3', degree: '6' },
+    { note: 'Ab3', degree: '♭3' },
+    { note: 'C4', degree: '5' },
+  ],
+};
+
 const CADD9_ON_E = {
   id: 'cadd9-on-e',
   symbol: 'Cadd9/E',
@@ -274,26 +287,41 @@ export const justTheWayYouAre: ArrangePreset = {
     {
       id: 'arrange2',
       label: 'Arrange ②',
-      // 発展型 / 原曲 — Am6, Fm7, Cadd9/E, Gm7, C7 で色気を出す
-      // |C|Am6|F△7|Am7|
-      // |C|F△7|Fm7|Cadd9/E - Gm7 - C7|
+      // 発展型 / 原曲 — 2 拍チェンジ + 不均等チェンジ (2-1-1) で
+      // 原曲の細かい色彩を再現。
+      // |C-Am6|F△7-Am7-C|F△7-Fm7|Cadd9/E-Gm7-C7|
+      // |F△7-Fm6|Em7-Am7|Dm7|Dm7/G|
       bars: [
-        { chords: [{ chord: C_TRI }] },
+        // Bar 1: C(2) - Am6(2)
         {
           chords: [
+            { chord: C_TRI },
             {
               chord: AM6,
               added: true,
-              technique: 'Am7 → Am6 (6th 化で爽やかさが出る原曲の響き)',
+              technique:
+                'Am7 → Am6 (6th 化で原曲の爽やかな響き)',
             },
           ],
         },
-        { chords: [{ chord: FMAJ7 }] },
-        { chords: [{ chord: AM7 }] },
-        { chords: [{ chord: C_TRI }] },
-        { chords: [{ chord: FMAJ7 }] },
+        // Bar 2: F△7(2) - Am7(1) - C(1)  ※ C は 3 つ目のトニック挿入
         {
           chords: [
+            { chord: FMAJ7, beats: 2 },
+            { chord: AM7, beats: 1 },
+            {
+              chord: C_TRI,
+              beats: 1,
+              added: true,
+              technique:
+                'トニック挿入 (Am7 → C で半小節だけ I に戻る原曲の動き)',
+            },
+          ],
+        },
+        // Bar 3: F△7(2) - Fm7(2)
+        {
+          chords: [
+            { chord: FMAJ7 },
             {
               chord: FM7,
               added: true,
@@ -301,25 +329,52 @@ export const justTheWayYouAre: ArrangePreset = {
             },
           ],
         },
+        // Bar 4: Cadd9/E(2) - Gm7(1) - C7(1)
         {
           chords: [
             {
               chord: CADD9_ON_E,
+              beats: 2,
               added: true,
-              technique: 'オンコード + add9 (3度を bass に、9th でテンション付加)',
+              technique:
+                'オンコード + add9 (3度を bass に、9th でテンション付加)',
             },
             {
               chord: GM7,
+              beats: 1,
               added: true,
-              technique: 'IIm7 of F (= V/IV の II) — C7 への 251 準備',
+              technique:
+                'IIm7 of F (= V/IV の II) — C7 への 251 準備',
             },
             {
               chord: C7,
+              beats: 1,
               added: true,
-              technique: 'セカンダリードミナント (V7/IV — F へ進行する準備)',
+              technique:
+                'セカンダリードミナント (V7/IV — F へ進行する準備)',
             },
           ],
         },
+        // Bar 5: F△7(2) - Fm6(2)
+        {
+          chords: [
+            { chord: FMAJ7 },
+            {
+              chord: FM6,
+              added: true,
+              technique:
+                'IVm6 (Fm7 の 6th 化 — 終止に向かう陰影)',
+            },
+          ],
+        },
+        // Bar 6: Em7(2) - Am7(2)
+        {
+          chords: [{ chord: EM7 }, { chord: AM7 }],
+        },
+        // Bar 7: Dm7(4)
+        { chords: [{ chord: DM7 }] },
+        // Bar 8: Dm7/G(4)
+        { chords: [{ chord: DM7_ON_G }] },
       ],
     },
   ],

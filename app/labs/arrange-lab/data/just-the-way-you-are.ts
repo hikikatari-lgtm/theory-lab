@@ -195,14 +195,14 @@ export const justTheWayYouAre: ArrangePreset = {
     {
       id: 'original',
       label: 'Original',
-      // 3 コード型 (C / F / G のみで構成)
-      // |C|F|C|F|
+      // 3 コード型 — 2 拍チェンジを含む 8 小節
+      // |C|F-C|F|C|
       // |F|C|F|G|
       bars: [
         { chords: [{ chord: C_TRI }] },
+        { chords: [{ chord: F_TRI }, { chord: C_TRI }] },
         { chords: [{ chord: F_TRI }] },
         { chords: [{ chord: C_TRI }] },
-        { chords: [{ chord: F_TRI }] },
         { chords: [{ chord: F_TRI }] },
         { chords: [{ chord: C_TRI }] },
         { chords: [{ chord: F_TRI }] },
@@ -212,33 +212,44 @@ export const justTheWayYouAre: ArrangePreset = {
     {
       id: 'arrange1',
       label: 'Arrange ①',
-      // 基本型 — 7th 化 + ダイアトニック展開
-      // |C|Am7|F△7|Am7|
-      // |F△7 - Em7|Am7|Dm7|Dm7/G|
+      // 基本型 — 7th 化 + 2 拍チェンジで Am7 / Em7 を絡めたパターン
+      // |C-Am7|F△7-Am7|F△7|Em7-Am7|
+      // |F△7|Em7-Am7|Dm7|Dm7/G|
       bars: [
-        { chords: [{ chord: C_TRI }] },
         {
           chords: [
+            { chord: C_TRI },
             { chord: AM7, added: true, technique: 'VIm7 — トニック代理' },
           ],
         },
         {
           chords: [
-            { chord: FMAJ7, added: true, technique: 'IV△7 — 7th を加えて深み' },
+            {
+              chord: FMAJ7,
+              added: true,
+              technique: 'IV△7 — 7th を加えて深み',
+            },
+            { chord: AM7, added: true },
           ],
         },
-        { chords: [{ chord: AM7, added: true }] },
+        { chords: [{ chord: FMAJ7, added: true }] },
         {
           chords: [
-            { chord: FMAJ7 },
             {
               chord: EM7,
               added: true,
               technique: 'IIIm7 — VIm への滑らかな経過音',
             },
+            { chord: AM7, added: true },
           ],
         },
-        { chords: [{ chord: AM7 }] },
+        { chords: [{ chord: FMAJ7, added: true }] },
+        {
+          chords: [
+            { chord: EM7, added: true },
+            { chord: AM7, added: true },
+          ],
+        },
         {
           chords: [
             {
@@ -253,7 +264,8 @@ export const justTheWayYouAre: ArrangePreset = {
             {
               chord: DM7_ON_G,
               added: true,
-              technique: 'オンコード (V7sus9 風 — トニックへの柔らかい解決)',
+              technique:
+                'オンコード (V7sus9 風 — トニックへの柔らかい解決)',
             },
           ],
         },

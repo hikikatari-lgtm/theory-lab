@@ -22,6 +22,9 @@ import type { ArrangeChord, ArrangeNote } from './data/types';
 
 type LoadState = 'loading' | 'ready' | 'error';
 
+// 1 小節を 4 拍として、小節内の各コードに割り当てる拍数。
+const BEATS_PER_BAR = 4;
+
 export default function ArrangeLabClient() {
   const [presetId, setPresetId] = useState<string>(DEFAULT_PRESET_ID);
   const preset = PRESETS[presetId];
@@ -29,9 +32,24 @@ export default function ArrangeLabClient() {
   const [versionId, setVersionId] = useState<string>(preset.versions[0].id);
   const version =
     preset.versions.find((v) => v.id === versionId) ?? preset.versions[0];
-  const chords: ArrangeChord[] = version.chords;
+  const bars = version.bars;
 
-  const [selectedId, setSelectedId] = useState<string>(chords[0]?.id ?? '');
+  // Walk Through とステップ進行のため、bars をフラット配列に展開する。
+  // 各エントリは「小節内で何拍分鳴らすか」を持つ。
+  const flatChords = useMemo(() => {
+    const out: { chord: ArrangeChord; barIdx: number; beats: number }[] = [];
+    bars.forEach((bar, barIdx) => {
+      const beatsPerChord = BEATS_PER_BAR / bar.chords.length;
+      bar.chords.forEach((chord) => {
+        out.push({ chord, barIdx, beats: beatsPerChord });
+      });
+    });
+    return out;
+  }, [bars]);
+
+  const [selectedId, setSelectedId] = useState<string>(
+    flatChords[0]?.chord.id ?? ''
+  );
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [showDegrees, setShowDegrees] = useState(true);
   const [soundOn, setSoundOn] = useState(true);
@@ -44,11 +62,11 @@ export default function ArrangeLabClient() {
   // バージョン全体のノート集合 — 鍵盤レンジを安定させる用。
   const rangeNotes = useMemo<ArrangeNote[]>(() => {
     const all: ArrangeNote[] = [];
-    chords.forEach((c) => {
-      all.push(...c.lh, ...c.rh);
+    flatChords.forEach(({ chord }) => {
+      all.push(...chord.lh, ...chord.rh);
     });
     return all;
-  }, [chords]);
+  }, [flatChords]);
 
   const stopWalk = useCallback(() => {
     timeoutsRef.current.forEach(clearTimeout);
@@ -81,21 +99,20 @@ export default function ArrangeLabClient() {
   useEffect(() => {
     stopWalk();
     setSelectedId((cur) => {
-      if (chords.find((c) => c.id === cur)) return cur;
-      return chords[0]?.id ?? '';
+      if (flatChords.find((f) => f.chord.id === cur)) return cur;
+      return flatChords[0]?.chord.id ?? '';
     });
-  }, [chords, stopWalk]);
+  }, [flatChords, stopWalk]);
 
   // プリセット切替時はバージョンを先頭に戻す
   useEffect(() => {
     setVersionId(preset.versions[0].id);
   }, [preset]);
 
-  const selectedChord =
-    chords.find((c) => c.id === selectedId) ?? chords[0] ?? null;
-  const selectedIdx = selectedChord
-    ? chords.findIndex((c) => c.id === selectedChord.id)
-    : -1;
+  const selectedIdx = flatChords.findIndex((f) => f.chord.id === selectedId);
+  const selectedEntry =
+    selectedIdx >= 0 ? flatChords[selectedIdx] : flatChords[0] ?? null;
+  const selectedChord = selectedEntry?.chord ?? null;
 
   const playChord = useCallback(
     async (chord: ArrangeChord) => {
@@ -111,32 +128,34 @@ export default function ArrangeLabClient() {
 
   const handleSelect = (id: string) => {
     setSelectedId(id);
-    const c = chords.find((x) => x.id === id);
-    if (c) void playChord(c);
+    const entry = flatChords.find((f) => f.chord.id === id);
+    if (entry) void playChord(entry.chord);
   };
 
   const handlePrev = () => {
     if (selectedIdx <= 0) return;
-    const next = chords[selectedIdx - 1];
-    setSelectedId(next.id);
-    void playChord(next);
+    const next = flatChords[selectedIdx - 1];
+    setSelectedId(next.chord.id);
+    void playChord(next.chord);
   };
   const handleNext = () => {
-    if (selectedIdx < 0 || selectedIdx >= chords.length - 1) return;
-    const next = chords[selectedIdx + 1];
-    setSelectedId(next.id);
-    void playChord(next);
+    if (selectedIdx < 0 || selectedIdx >= flatChords.length - 1) return;
+    const next = flatChords[selectedIdx + 1];
+    setSelectedId(next.chord.id);
+    void playChord(next.chord);
   };
 
   const walkThrough = async () => {
-    if (isWalking || !ready || chords.length === 0) return;
+    if (isWalking || !ready || flatChords.length === 0) return;
     setIsWalking(true);
     const beatSec = 60 / preset.tempo;
-    const chordBeats = 4;
-    const durMs = chordBeats * beatSec * 1000;
+    let cumMs = 0;
 
-    chords.forEach((chord, i) => {
-      const startMs = i * durMs;
+    flatChords.forEach((entry) => {
+      const { chord, beats } = entry;
+      const startMs = cumMs;
+      const durSec = beats * beatSec;
+
       const t = setTimeout(() => {
         setSelectedId(chord.id);
         setPlayingId(chord.id);
@@ -145,17 +164,18 @@ export default function ArrangeLabClient() {
             ...chord.lh.map((n) => normalizeNote(n.note)),
             ...chord.rh.map((n) => normalizeNote(n.note)),
           ];
-          void playSustained(tones, (chordBeats * beatSec) * 0.95);
+          void playSustained(tones, durSec * 0.95);
         }
       }, startMs);
       timeoutsRef.current.push(t);
+
+      cumMs += durSec * 1000;
     });
 
-    const totalMs = chords.length * durMs;
     const finalT = setTimeout(() => {
       setPlayingId(null);
       setIsWalking(false);
-    }, totalMs);
+    }, cumMs);
     timeoutsRef.current.push(finalT);
   };
 
@@ -224,7 +244,7 @@ export default function ArrangeLabClient() {
           </div>
 
           <ArrangeChordsRow
-            chords={chords}
+            bars={bars}
             selectedId={selectedChord?.id ?? null}
             playingId={playingId}
             onSelect={handleSelect}
@@ -304,7 +324,9 @@ export default function ArrangeLabClient() {
                 type="button"
                 className="al-btn"
                 onClick={handleNext}
-                disabled={selectedIdx < 0 || selectedIdx >= chords.length - 1}
+                disabled={
+                  selectedIdx < 0 || selectedIdx >= flatChords.length - 1
+                }
               >
                 次へ →
               </button>

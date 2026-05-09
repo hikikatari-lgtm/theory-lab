@@ -1,8 +1,10 @@
 import type { ArrangePreset } from './types';
 
 // 4156 progression in C: IV△7 - I△7 - V7 - VIm7
-// 3&7-bass voicings. アレンジ① でオンコード(G/B) と パッシングコード(Bm7♭5) を追加、
-// アレンジ② でさらに #IVm7♭5 (F#m7♭5) を末尾に追加してトニックへ滑り込ませる。
+// 3&7-bass voicings. アレンジ① でオンコード (G/B) と パッシングコード
+// (Bm7♭5) を 1 小節内の 3 拍目に挿入、アレンジ② でさらに #IVm7♭5
+// (F#m7♭5) を最終小節 4 小節目の 3 拍目に挿入してトニックへ滑り込ませる。
+// 各バージョン共通で 4 小節構成。
 
 const FM7 = {
   id: 'fm7',
@@ -111,17 +113,35 @@ export const fourOneFiveSix: ArrangePreset = {
     {
       id: 'original',
       label: 'Original',
-      chords: [FM7, CM7, G7, AM7],
+      // |FM7|CM7|G7|Am7|
+      bars: [
+        { chords: [FM7] },
+        { chords: [CM7] },
+        { chords: [G7] },
+        { chords: [AM7] },
+      ],
     },
     {
       id: 'arrange1',
       label: 'Arrange ①',
-      chords: [FM7, G_OVER_B, CM7, G7, BM7B5, AM7],
+      // |FM7 - G/B|CM7|G7 - Bm7(♭5)|Am7|
+      bars: [
+        { chords: [FM7, G_OVER_B] },
+        { chords: [CM7] },
+        { chords: [G7, BM7B5] },
+        { chords: [AM7] },
+      ],
     },
     {
       id: 'arrange2',
       label: 'Arrange ②',
-      chords: [FM7, G_OVER_B, CM7, G7, BM7B5, AM7, FSM7B5],
+      // |FM7 - G/B|CM7|G7 - Bm7(♭5)|Am7 - F#m7(♭5)|
+      bars: [
+        { chords: [FM7, G_OVER_B] },
+        { chords: [CM7] },
+        { chords: [G7, BM7B5] },
+        { chords: [AM7, FSM7B5] },
+      ],
     },
   ],
 };

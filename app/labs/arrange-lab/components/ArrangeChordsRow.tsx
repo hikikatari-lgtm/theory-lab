@@ -4,19 +4,19 @@ import type { ArrangeBar } from '../data/types';
 
 type Props = {
   bars: ArrangeBar[];
-  selectedId: string | null;
-  playingId: string | null;
-  onSelect: (id: string) => void;
+  // Slot key = `${barIdx}-${chordIdxInBar}`. Selection / playing は slot
+  // 単位で扱うので、同じコード ID が複数の slot に入ってもそれぞれ
+  // 独立してハイライトされる (例: Just The Way You Are で Am7 が
+  // 複数小節に登場するケース)。
+  selectedSlotId: string | null;
+  playingSlotId: string | null;
+  onSelect: (slotId: string) => void;
 };
 
-// 4 小節構成。各小節は 1〜複数コードを含み、小節ごとに枠で囲って
-// バーラインを視覚化する。1 小節 = 4 拍 を均等割り (1 コード= 4 拍 /
-// 2 コード = 各 2 拍 / 3 コード = 各 4/3 拍) として、コードチップ幅を
-// flex で配分する。
 export default function ArrangeChordsRow({
   bars,
-  selectedId,
-  playingId,
+  selectedSlotId,
+  playingSlotId,
   onSelect,
 }: Props) {
   return (
@@ -25,22 +25,23 @@ export default function ArrangeChordsRow({
         <div key={barIdx} className="al-bar">
           <div className="al-bar-number">{barIdx + 1}</div>
           <div className="al-bar-chords">
-            {bar.chords.map((chord) => {
+            {bar.chords.map((slot, chordIdx) => {
+              const slotId = `${barIdx}-${chordIdx}`;
               const cls =
                 'al-chord-card' +
-                (chord.added ? ' added' : '') +
-                (chord.id === selectedId ? ' selected' : '') +
-                (chord.id === playingId ? ' playing' : '');
+                (slot.added ? ' added' : '') +
+                (slotId === selectedSlotId ? ' selected' : '') +
+                (slotId === playingSlotId ? ' playing' : '');
               return (
                 <button
-                  key={chord.id}
+                  key={slotId}
                   type="button"
                   className={cls}
-                  onClick={() => onSelect(chord.id)}
+                  onClick={() => onSelect(slotId)}
                 >
-                  <div className="al-chord-roman">{chord.roman}</div>
-                  <div className="al-chord-symbol">{chord.symbol}</div>
-                  {chord.added ? (
+                  <div className="al-chord-roman">{slot.chord.roman}</div>
+                  <div className="al-chord-symbol">{slot.chord.symbol}</div>
+                  {slot.added ? (
                     <div className="al-chord-badge">NEW</div>
                   ) : null}
                 </button>

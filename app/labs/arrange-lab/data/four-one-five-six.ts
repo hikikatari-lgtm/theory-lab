@@ -5,6 +5,10 @@ import type { ArrangePreset } from './types';
 // (Bm7♭5) を 1 小節内の 3 拍目に挿入、アレンジ② でさらに #IVm7♭5
 // (F#m7♭5) を最終小節 4 小節目の 3 拍目に挿入してトニックへ滑り込ませる。
 // 各バージョン共通で 4 小節構成。
+//
+// `added` / `technique` は slot レベルで持たせる: そのバージョンで
+// 「新たに登場した」コードだけがハイライトされ、前のアレンジから
+// 引き継がれたコードは普通色で表示される。
 
 const FM7 = {
   id: 'fm7',
@@ -69,8 +73,6 @@ const G_OVER_B = {
     { note: 'B3', degree: '3' },
     { note: 'D4', degree: '5' },
   ],
-  added: true,
-  technique: 'オンコード (Gの第1転回形)',
 };
 
 const BM7B5 = {
@@ -84,8 +86,6 @@ const BM7B5 = {
     { note: 'D4', degree: '♭3' },
     { note: 'F4', degree: '♭5' },
   ],
-  added: true,
-  technique: 'パッシングコード (V7→VIm7 の経過音)',
 };
 
 const FSM7B5 = {
@@ -99,8 +99,6 @@ const FSM7B5 = {
     { note: 'A3', degree: '♭3' },
     { note: 'C4', degree: '♭5' },
   ],
-  added: true,
-  technique: 'パッシングコード (#IV→I のクロマティック解決)',
 };
 
 export const fourOneFiveSix: ArrangePreset = {
@@ -115,10 +113,10 @@ export const fourOneFiveSix: ArrangePreset = {
       label: 'Original',
       // |FM7|CM7|G7|Am7|
       bars: [
-        { chords: [FM7] },
-        { chords: [CM7] },
-        { chords: [G7] },
-        { chords: [AM7] },
+        { chords: [{ chord: FM7 }] },
+        { chords: [{ chord: CM7 }] },
+        { chords: [{ chord: G7 }] },
+        { chords: [{ chord: AM7 }] },
       ],
     },
     {
@@ -126,10 +124,28 @@ export const fourOneFiveSix: ArrangePreset = {
       label: 'Arrange ①',
       // |FM7 - G/B|CM7|G7 - Bm7(♭5)|Am7|
       bars: [
-        { chords: [FM7, G_OVER_B] },
-        { chords: [CM7] },
-        { chords: [G7, BM7B5] },
-        { chords: [AM7] },
+        {
+          chords: [
+            { chord: FM7 },
+            {
+              chord: G_OVER_B,
+              added: true,
+              technique: 'オンコード (Gの第1転回形)',
+            },
+          ],
+        },
+        { chords: [{ chord: CM7 }] },
+        {
+          chords: [
+            { chord: G7 },
+            {
+              chord: BM7B5,
+              added: true,
+              technique: 'パッシングコード (V7→VIm7 の経過音)',
+            },
+          ],
+        },
+        { chords: [{ chord: AM7 }] },
       ],
     },
     {
@@ -137,10 +153,29 @@ export const fourOneFiveSix: ArrangePreset = {
       label: 'Arrange ②',
       // |FM7 - G/B|CM7|G7 - Bm7(♭5)|Am7 - F#m7(♭5)|
       bars: [
-        { chords: [FM7, G_OVER_B] },
-        { chords: [CM7] },
-        { chords: [G7, BM7B5] },
-        { chords: [AM7, FSM7B5] },
+        {
+          chords: [
+            { chord: FM7 },
+            { chord: G_OVER_B, technique: 'オンコード (Gの第1転回形)' },
+          ],
+        },
+        { chords: [{ chord: CM7 }] },
+        {
+          chords: [
+            { chord: G7 },
+            { chord: BM7B5, technique: 'パッシングコード (V7→VIm7 の経過音)' },
+          ],
+        },
+        {
+          chords: [
+            { chord: AM7 },
+            {
+              chord: FSM7B5,
+              added: true,
+              technique: 'パッシングコード (#IV→I のクロマティック解決)',
+            },
+          ],
+        },
       ],
     },
   ],

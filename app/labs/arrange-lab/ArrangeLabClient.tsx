@@ -18,12 +18,21 @@ import {
 import ArrangeKeyboard from './components/ArrangeKeyboard';
 import ArrangeChordsRow from './components/ArrangeChordsRow';
 import { PRESETS, PRESET_LIST, DEFAULT_PRESET_ID } from './data';
-import type { ArrangeChord, ArrangeNote } from './data/types';
+import type { ArrangeChord, ArrangeChordSlot, ArrangeNote } from './data/types';
 
 type LoadState = 'loading' | 'ready' | 'error';
 
 // 1 小節を 4 拍として、小節内の各コードに割り当てる拍数。
 const BEATS_PER_BAR = 4;
+
+type FlatSlot = {
+  slot: ArrangeChordSlot;
+  chord: ArrangeChord;
+  slotId: string; // `${barIdx}-${chordIdxInBar}`
+  barIdx: number;
+  chordIdx: number;
+  beats: number;
+};
 
 export default function ArrangeLabClient() {
   const [presetId, setPresetId] = useState<string>(DEFAULT_PRESET_ID);
@@ -34,23 +43,30 @@ export default function ArrangeLabClient() {
     preset.versions.find((v) => v.id === versionId) ?? preset.versions[0];
   const bars = version.bars;
 
-  // Walk Through とステップ進行のため、bars をフラット配列に展開する。
-  // 各エントリは「小節内で何拍分鳴らすか」を持つ。
-  const flatChords = useMemo(() => {
-    const out: { chord: ArrangeChord; barIdx: number; beats: number }[] = [];
+  // bars をフラット化。slotId は (barIdx, chordIdxInBar) なので、
+  // 同じ chord が複数の slot を占有してもそれぞれ独立に扱える。
+  const flatSlots = useMemo<FlatSlot[]>(() => {
+    const out: FlatSlot[] = [];
     bars.forEach((bar, barIdx) => {
       const beatsPerChord = BEATS_PER_BAR / bar.chords.length;
-      bar.chords.forEach((chord) => {
-        out.push({ chord, barIdx, beats: beatsPerChord });
+      bar.chords.forEach((slot, chordIdx) => {
+        out.push({
+          slot,
+          chord: slot.chord,
+          slotId: `${barIdx}-${chordIdx}`,
+          barIdx,
+          chordIdx,
+          beats: beatsPerChord,
+        });
       });
     });
     return out;
   }, [bars]);
 
-  const [selectedId, setSelectedId] = useState<string>(
-    flatChords[0]?.chord.id ?? ''
+  const [selectedSlotId, setSelectedSlotId] = useState<string>(
+    flatSlots[0]?.slotId ?? ''
   );
-  const [playingId, setPlayingId] = useState<string | null>(null);
+  const [playingSlotId, setPlayingSlotId] = useState<string | null>(null);
   const [showDegrees, setShowDegrees] = useState(true);
   const [soundOn, setSoundOn] = useState(true);
   const [loadState, setLoadState] = useState<LoadState>('loading');
@@ -62,17 +78,17 @@ export default function ArrangeLabClient() {
   // バージョン全体のノート集合 — 鍵盤レンジを安定させる用。
   const rangeNotes = useMemo<ArrangeNote[]>(() => {
     const all: ArrangeNote[] = [];
-    flatChords.forEach(({ chord }) => {
+    flatSlots.forEach(({ chord }) => {
       all.push(...chord.lh, ...chord.rh);
     });
     return all;
-  }, [flatChords]);
+  }, [flatSlots]);
 
   const stopWalk = useCallback(() => {
     timeoutsRef.current.forEach(clearTimeout);
     timeoutsRef.current = [];
     releaseAllNotes();
-    setPlayingId(null);
+    setPlayingSlotId(null);
     setIsWalking(false);
   }, []);
 
@@ -95,24 +111,25 @@ export default function ArrangeLabClient() {
 
   // バージョン or プリセット切替で:
   //  - Walk Through を停止
-  //  - 選択を 1 つ目にリセット (ID が新リストにあるなら維持)
+  //  - 選択を 1 つ目の slot にリセット (slotId が新リストにあるなら維持)
   useEffect(() => {
     stopWalk();
-    setSelectedId((cur) => {
-      if (flatChords.find((f) => f.chord.id === cur)) return cur;
-      return flatChords[0]?.chord.id ?? '';
+    setSelectedSlotId((cur) => {
+      if (flatSlots.find((f) => f.slotId === cur)) return cur;
+      return flatSlots[0]?.slotId ?? '';
     });
-  }, [flatChords, stopWalk]);
+  }, [flatSlots, stopWalk]);
 
   // プリセット切替時はバージョンを先頭に戻す
   useEffect(() => {
     setVersionId(preset.versions[0].id);
   }, [preset]);
 
-  const selectedIdx = flatChords.findIndex((f) => f.chord.id === selectedId);
+  const selectedIdx = flatSlots.findIndex((f) => f.slotId === selectedSlotId);
   const selectedEntry =
-    selectedIdx >= 0 ? flatChords[selectedIdx] : flatChords[0] ?? null;
+    selectedIdx >= 0 ? flatSlots[selectedIdx] : flatSlots[0] ?? null;
   const selectedChord = selectedEntry?.chord ?? null;
+  const selectedSlot = selectedEntry?.slot ?? null;
 
   const playChord = useCallback(
     async (chord: ArrangeChord) => {
@@ -126,39 +143,39 @@ export default function ArrangeLabClient() {
     [soundOn, ready]
   );
 
-  const handleSelect = (id: string) => {
-    setSelectedId(id);
-    const entry = flatChords.find((f) => f.chord.id === id);
+  const handleSelect = (slotId: string) => {
+    setSelectedSlotId(slotId);
+    const entry = flatSlots.find((f) => f.slotId === slotId);
     if (entry) void playChord(entry.chord);
   };
 
   const handlePrev = () => {
     if (selectedIdx <= 0) return;
-    const next = flatChords[selectedIdx - 1];
-    setSelectedId(next.chord.id);
+    const next = flatSlots[selectedIdx - 1];
+    setSelectedSlotId(next.slotId);
     void playChord(next.chord);
   };
   const handleNext = () => {
-    if (selectedIdx < 0 || selectedIdx >= flatChords.length - 1) return;
-    const next = flatChords[selectedIdx + 1];
-    setSelectedId(next.chord.id);
+    if (selectedIdx < 0 || selectedIdx >= flatSlots.length - 1) return;
+    const next = flatSlots[selectedIdx + 1];
+    setSelectedSlotId(next.slotId);
     void playChord(next.chord);
   };
 
   const walkThrough = async () => {
-    if (isWalking || !ready || flatChords.length === 0) return;
+    if (isWalking || !ready || flatSlots.length === 0) return;
     setIsWalking(true);
     const beatSec = 60 / preset.tempo;
     let cumMs = 0;
 
-    flatChords.forEach((entry) => {
-      const { chord, beats } = entry;
+    flatSlots.forEach((entry) => {
+      const { chord, slotId, beats } = entry;
       const startMs = cumMs;
       const durSec = beats * beatSec;
 
       const t = setTimeout(() => {
-        setSelectedId(chord.id);
-        setPlayingId(chord.id);
+        setSelectedSlotId(slotId);
+        setPlayingSlotId(slotId);
         if (soundOn) {
           const tones = [
             ...chord.lh.map((n) => normalizeNote(n.note)),
@@ -173,7 +190,7 @@ export default function ArrangeLabClient() {
     });
 
     const finalT = setTimeout(() => {
-      setPlayingId(null);
+      setPlayingSlotId(null);
       setIsWalking(false);
     }, cumMs);
     timeoutsRef.current.push(finalT);
@@ -245,8 +262,8 @@ export default function ArrangeLabClient() {
 
           <ArrangeChordsRow
             bars={bars}
-            selectedId={selectedChord?.id ?? null}
-            playingId={playingId}
+            selectedSlotId={selectedEntry?.slotId ?? null}
+            playingSlotId={playingSlotId}
             onSelect={handleSelect}
           />
         </section>
@@ -262,10 +279,10 @@ export default function ArrangeLabClient() {
                 <div className="al-chord-degrees-large">
                   {selectedChord.degreesLabel}
                 </div>
-                {selectedChord.technique ? (
+                {selectedSlot?.technique ? (
                   <div className="al-technique">
                     <span className="al-technique-tag">TECHNIQUE</span>
-                    {selectedChord.technique}
+                    {selectedSlot.technique}
                   </div>
                 ) : null}
               </div>
@@ -325,7 +342,7 @@ export default function ArrangeLabClient() {
                 className="al-btn"
                 onClick={handleNext}
                 disabled={
-                  selectedIdx < 0 || selectedIdx >= flatChords.length - 1
+                  selectedIdx < 0 || selectedIdx >= flatSlots.length - 1
                 }
               >
                 次へ →

@@ -27,6 +27,14 @@ const LABS: Lab[] = [
       'プロのボイシングを進行ごとに体験する図鑑。Minor Turnaround、F Blues Rootless など複数の進行を切り替えて学べる。',
     status: 'active',
   },
+  {
+    slug: 'arrange-lab',
+    title: 'Chord Arrange Lab',
+    subtitle: 'Before / After で聴き比べ',
+    description:
+      'シンプルなコード進行が、パッシングコードやオンコードを足していくとどう変化するか。Original から段階的なアレンジへ切り替えて体感する。',
+    status: 'active',
+  },
 ];
 
 export default function Home() {

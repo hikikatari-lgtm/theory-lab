@@ -4,11 +4,13 @@
 //
 // プリセットごとに複数バージョン (Original / Arrange① / Arrange② …) を持ち、
 // 各バージョンは "小節 (bar) の配列" を保持する。Original / Arrange① /
-// Arrange② はいずれも常に 4 小節構成で、アレンジ版で増えたコードは小節内
-// に押し込まれる (例: |G7 - Bm7♭5| のように 1 小節 2 コード)。
+// Arrange② はいずれも同じ小節数で、アレンジ版で増えたコードは小節内に
+// 押し込まれる (例: |G7 - Bm7♭5| のように 1 小節 2 コード)。
 //
-// アレンジ版で追加 / 変更されたコードは `added: true` でハイライト対象
-// として印を付ける。
+// `added` / `technique` は ArrangeChordSlot 側に持たせる:
+// 同じコード (例: Am7) が複数バージョンに登場する場合、
+// 「その slot で初出か」が版によって変わるため、コード本体ではなく
+// "コードがその位置に置かれている文脈" の属性として扱う。
 
 export type ArrangeNote = { note: string; degree: string };
 
@@ -19,18 +21,23 @@ export type ArrangeChord = {
   degreesLabel: string;
   lh: ArrangeNote[];
   rh: ArrangeNote[];
-  // Original にはなく、このアレンジで追加 / 変更されたコード。
-  // true のとき、コードチップがオレンジ系でハイライトされる。
+};
+
+// 1 小節内の "1 つのコードの置き場所"。
+// `added: true` のとき、そのバージョンで新たに導入されたコードとして
+// オレンジ系でハイライトされる (前バージョンから引き継いだコードは false)。
+// `technique` はパッシングコード / オンコード / サブドミナントマイナー
+// などの解説文。鍵盤下のディテール表示でタグ付きで表示される。
+export type ArrangeChordSlot = {
+  chord: ArrangeChord;
   added?: boolean;
-  // パッシングコード / オンコード / 代理コード などのテクニック名。
-  // 鍵盤下のディテール表示で「(パッシングコード)」のように出す。
   technique?: string;
 };
 
 // 1 小節 = 4 拍 を前提に、小節内のコードは均等割りで再生される。
 // 1 コードなら 4 拍、2 コードなら各 2 拍、3 コードなら各 4/3 拍。
 export type ArrangeBar = {
-  chords: ArrangeChord[];
+  chords: ArrangeChordSlot[];
 };
 
 export type ArrangeVersion = {

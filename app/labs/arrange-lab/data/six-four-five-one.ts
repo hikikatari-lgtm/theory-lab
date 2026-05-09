@@ -6,6 +6,9 @@ import type { ArrangePreset } from './types';
 // Arrange② で更に E7(♯9) (Hendrix Chord 風) を末尾に挿入し、
 // Am7 への III7 セカンダリードミナント解決を作る。
 // 各バージョン共通で 4 小節構成。
+//
+// `added` / `technique` は slot レベル — そのバージョンで初出のコード
+// だけがハイライトされる。
 
 const AM7 = {
   id: 'am7',
@@ -70,8 +73,6 @@ const C_OVER_E = {
     { note: 'E3', degree: '3' },
     { note: 'G3', degree: '5' },
   ],
-  added: true,
-  technique: 'オンコード (Cの第1転回形 — Am7→FM7 を滑らかに繋ぐ)',
 };
 
 const G7SUS4 = {
@@ -85,8 +86,6 @@ const G7SUS4 = {
     { note: 'C4', degree: '4' },
     { note: 'D4', degree: '5' },
   ],
-  added: true,
-  technique: 'sus4 化 (3度を一旦保留し緊張を和らげる)',
 };
 
 const DM7 = {
@@ -100,8 +99,6 @@ const DM7 = {
     { note: 'F4', degree: '♭3' },
     { note: 'A4', degree: '5' },
   ],
-  added: true,
-  technique: 'パッシングコード (V→I の前に IIm7 を挟む 251 化)',
 };
 
 const E7_SHARP9 = {
@@ -116,8 +113,6 @@ const E7_SHARP9 = {
     // ♯9 = G (E から見て augmented 9th)。Hendrix Chord 配置で 5度抜き。
     { note: 'G4', degree: '♯9' },
   ],
-  added: true,
-  technique: 'セカンダリードミナント (V/VIm — Am7 への解決を準備)',
 };
 
 export const sixFourFiveOne: ArrangePreset = {
@@ -132,10 +127,10 @@ export const sixFourFiveOne: ArrangePreset = {
       label: 'Original',
       // |Am7|FM7|G7|C|
       bars: [
-        { chords: [AM7] },
-        { chords: [FM7] },
-        { chords: [G7] },
-        { chords: [C_MAJ] },
+        { chords: [{ chord: AM7 }] },
+        { chords: [{ chord: FM7 }] },
+        { chords: [{ chord: G7 }] },
+        { chords: [{ chord: C_MAJ }] },
       ],
     },
     {
@@ -143,10 +138,38 @@ export const sixFourFiveOne: ArrangePreset = {
       label: 'Arrange ①',
       // |Am7 - C/E|FM7|G7sus4|Dm7 - C|
       bars: [
-        { chords: [AM7, C_OVER_E] },
-        { chords: [FM7] },
-        { chords: [G7SUS4] },
-        { chords: [DM7, C_MAJ] },
+        {
+          chords: [
+            { chord: AM7 },
+            {
+              chord: C_OVER_E,
+              added: true,
+              technique:
+                'オンコード (Cの第1転回形 — Am7→FM7 を滑らかに繋ぐ)',
+            },
+          ],
+        },
+        { chords: [{ chord: FM7 }] },
+        {
+          chords: [
+            {
+              chord: G7SUS4,
+              added: true,
+              technique: 'sus4 化 (3度を一旦保留し緊張を和らげる)',
+            },
+          ],
+        },
+        {
+          chords: [
+            {
+              chord: DM7,
+              added: true,
+              technique:
+                'パッシングコード (V→I の前に IIm7 を挟む 251 化)',
+            },
+            { chord: C_MAJ },
+          ],
+        },
       ],
     },
     {
@@ -154,10 +177,30 @@ export const sixFourFiveOne: ArrangePreset = {
       label: 'Arrange ②',
       // |Am7 - C/E|FM7|G7sus4 - Dm7|C - E7(♯9)|
       bars: [
-        { chords: [AM7, C_OVER_E] },
-        { chords: [FM7] },
-        { chords: [G7SUS4, DM7] },
-        { chords: [C_MAJ, E7_SHARP9] },
+        {
+          chords: [
+            { chord: AM7 },
+            { chord: C_OVER_E, technique: 'オンコード (Cの第1転回形)' },
+          ],
+        },
+        { chords: [{ chord: FM7 }] },
+        {
+          chords: [
+            { chord: G7SUS4, technique: 'sus4 化' },
+            { chord: DM7, technique: 'パッシングコード (V → I を IIm7 経由)' },
+          ],
+        },
+        {
+          chords: [
+            { chord: C_MAJ },
+            {
+              chord: E7_SHARP9,
+              added: true,
+              technique:
+                'セカンダリードミナント (V/VIm — Am7 への解決を準備)',
+            },
+          ],
+        },
       ],
     },
   ],

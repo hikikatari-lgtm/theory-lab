@@ -232,13 +232,13 @@ export const virtualInsanity: ArrangePreset = {
       id: 'original',
       label: 'Original',
       // 3 コード型 — 8 小節
-      // |Am|Dm|Am|Dm|E7|Am|Dm-E7|Am|
+      // |Am-Dm|Am|Dm|E7-Am|Dm|Am|Dm-E7|Am|
       bars: [
+        { chords: [{ chord: AM_TRI }, { chord: DM_TRI }] },
         { chords: [{ chord: AM_TRI }] },
         { chords: [{ chord: DM_TRI }] },
-        { chords: [{ chord: AM_TRI }] },
+        { chords: [{ chord: E7 }, { chord: AM_TRI }] },
         { chords: [{ chord: DM_TRI }] },
-        { chords: [{ chord: E7 }] },
         { chords: [{ chord: AM_TRI }] },
         { chords: [{ chord: DM_TRI }, { chord: E7 }] },
         { chords: [{ chord: AM_TRI }] },

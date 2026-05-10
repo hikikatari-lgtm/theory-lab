@@ -2,6 +2,7 @@ import { fourOneFiveSix } from './four-one-five-six';
 import { sixFourFiveOne } from './six-four-five-one';
 import { justTheWayYouAre } from './just-the-way-you-are';
 import { sounan } from './sounan';
+import { kabutomushi } from './kabutomushi';
 import type { ArrangePreset } from './types';
 
 export const PRESETS: Record<string, ArrangePreset> = {
@@ -9,6 +10,7 @@ export const PRESETS: Record<string, ArrangePreset> = {
   'six-four-five-one': sixFourFiveOne,
   'just-the-way-you-are': justTheWayYouAre,
   sounan: sounan,
+  kabutomushi: kabutomushi,
 };
 
 export const PRESET_LIST: ReadonlyArray<{ id: string; label: string }> = [
@@ -16,6 +18,7 @@ export const PRESET_LIST: ReadonlyArray<{ id: string; label: string }> = [
   { id: 'six-four-five-one', label: '6451 Progression (Key C)' },
   { id: 'just-the-way-you-are', label: 'Just The Way You Are (Key C)' },
   { id: 'sounan', label: '遭難 / 椎名林檎 (Key Am)' },
+  { id: 'kabutomushi', label: 'カブトムシ / aiko (Key C)' },
 ];
 
 export const DEFAULT_PRESET_ID = 'four-one-five-six';

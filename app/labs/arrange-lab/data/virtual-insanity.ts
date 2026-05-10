@@ -310,11 +310,12 @@ export const virtualInsanity: ArrangePreset = {
       id: 'arrange2',
       label: 'Arrange ②',
       // 発展型 / 原曲 — 9th / ♭9 / ♭13 / 13 のテンションと
-      // F♯m7♭5 で原曲のジャジーな彩り
-      // |Am7(9)|D7(9)|G7(9)-Cmaj7(9)|F♯m7♭5-Fmaj7-E7(♭13,♭9)|
-      // |Am7|D7(9)-G7(13,♭9)|Cmaj7(9)-F♯m7♭5-Fmaj7|E7(♭13,♭9)-Am7|
+      // F♯m7♭5 で原曲のジャジーな彩り。全 bar 均等 2 拍チェンジ
+      // (Bar 8 のみ 4 拍 1 コード) のシンプルな配置。
+      // |Am7(9)-D7(9)|G7(9)-Cmaj7(9)|F♯m7♭5-Fmaj7|E7(♭13,♭9)-Am7|
+      // |D7(9)-G7(13,♭9)|Cmaj7(9)-F♯m7♭5|Fmaj7-E7(♭13,♭9)|Am7|
       bars: [
-        // Bar 1: Am7(9)
+        // Bar 1: Am7(9)(2) - D7(9)(2)
         {
           chords: [
             {
@@ -322,11 +323,6 @@ export const virtualInsanity: ArrangePreset = {
               added: true,
               technique: 'Im7(9) — 9th を加えてフローティングな響き',
             },
-          ],
-        },
-        // Bar 2: D7(9) (Dm7 → D7 で 3rd を上げ、明るい色彩に)
-        {
-          chords: [
             {
               chord: D7_9,
               added: true,
@@ -335,7 +331,7 @@ export const virtualInsanity: ArrangePreset = {
             },
           ],
         },
-        // Bar 3: G7(9) - Cmaj7(9)
+        // Bar 2: G7(9)(2) - Cmaj7(9)(2)
         {
           chords: [
             {
@@ -350,32 +346,33 @@ export const virtualInsanity: ArrangePreset = {
             },
           ],
         },
-        // Bar 4: F♯m7♭5(2) - Fmaj7(1) - E7(♭13,♭9)(1)  [2-1-1]
+        // Bar 3: F♯m7(♭5)(2) - Fmaj7(2)
         {
           chords: [
             {
               chord: FSHARP_M7B5,
-              beats: 2,
               added: true,
               technique:
                 '♯VIm7(♭5) — Cmaj7 → Fmaj7 を半音下行で繋ぐ (G→F♯→F)',
             },
-            { chord: FMAJ7, beats: 1 },
-            {
-              chord: E7_B13_B9,
-              beats: 1,
-              added: true,
-              technique:
-                'V7(♭13,♭9) altered — Im への強烈な解決',
-            },
+            { chord: FMAJ7 },
           ],
         },
-        // Bar 5: Am7
-        { chords: [{ chord: AM7 }] },
-        // Bar 6: D7(9)(2) - G7(13,♭9)(2)
+        // Bar 4: E7(♭13,♭9)(2) - Am7(2)
         {
           chords: [
-            { chord: D7_9 },
+            {
+              chord: E7_B13_B9,
+              added: true,
+              technique: 'V7(♭13,♭9) altered — Im への強烈な解決',
+            },
+            { chord: AM7 },
+          ],
+        },
+        // Bar 5: D7(9)(2) - G7(13,♭9)(2)
+        {
+          chords: [
+            { chord: D7_9, added: true },
             {
               chord: G7_13_B9,
               added: true,
@@ -384,21 +381,22 @@ export const virtualInsanity: ArrangePreset = {
             },
           ],
         },
-        // Bar 7: Cmaj7(9)(2) - F♯m7♭5(1) - Fmaj7(1)  [2-1-1]
+        // Bar 6: Cmaj7(9)(2) - F♯m7(♭5)(2)
         {
           chords: [
-            { chord: CMAJ7_9, beats: 2 },
-            { chord: FSHARP_M7B5, beats: 1 },
-            { chord: FMAJ7, beats: 1 },
+            { chord: CMAJ7_9, added: true },
+            { chord: FSHARP_M7B5, added: true },
           ],
         },
-        // Bar 8: E7(♭13,♭9)(2) - Am7(2)
+        // Bar 7: Fmaj7(2) - E7(♭13,♭9)(2)
         {
           chords: [
-            { chord: E7_B13_B9 },
-            { chord: AM7 },
+            { chord: FMAJ7 },
+            { chord: E7_B13_B9, added: true },
           ],
         },
+        // Bar 8: Am7(4) — Im7 で解決
+        { chords: [{ chord: AM7 }] },
       ],
     },
   ],

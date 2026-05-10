@@ -248,11 +248,12 @@ export const virtualInsanity: ArrangePreset = {
       id: 'arrange1',
       label: 'Arrange ①',
       // 基本型 — 7th 化 + ♭III△7 / ♭VI△7 借用で陰影
-      // |Am7|Dm7|G7-Cmaj7|Fmaj7-E7|Am7|G7|Cmaj7-Fmaj7-E7|Am|
+      // |Am7-Dm7|G7-Cmaj7|Fmaj7|E7-Am7|G7|Cmaj7|Fmaj7-E7|Am|
       bars: [
-        { chords: [{ chord: AM7 }] },
+        // Bar 1: Am7(2) - Dm7(2)
         {
           chords: [
+            { chord: AM7 },
             {
               chord: DM7,
               added: true,
@@ -260,6 +261,7 @@ export const virtualInsanity: ArrangePreset = {
             },
           ],
         },
+        // Bar 2: G7(2) - Cmaj7(2)
         {
           chords: [
             {
@@ -270,10 +272,12 @@ export const virtualInsanity: ArrangePreset = {
             {
               chord: CMAJ7,
               added: true,
-              technique: '♭III△7 — 平行調 (C major) のトニックを借りる',
+              technique:
+                '♭III△7 — 平行調 (C major) のトニックを借りる',
             },
           ],
         },
+        // Bar 3: Fmaj7(4)
         {
           chords: [
             {
@@ -281,19 +285,21 @@ export const virtualInsanity: ArrangePreset = {
               added: true,
               technique: '♭VI△7 — サブドミナント代理',
             },
-            { chord: E7 },
           ],
         },
-        { chords: [{ chord: AM7 }] },
+        // Bar 4: E7(2) - Am7(2)
         {
-          chords: [{ chord: G7, added: true }],
+          chords: [{ chord: E7 }, { chord: AM7 }],
         },
-        // Bar 7: Cmaj7(2) - Fmaj7(1) - E7(1)  [2-1-1]
+        // Bar 5: G7(4)
+        { chords: [{ chord: G7, added: true }] },
+        // Bar 6: Cmaj7(4)
+        { chords: [{ chord: CMAJ7, added: true }] },
+        // Bar 7: Fmaj7(2) - E7(2)
         {
           chords: [
-            { chord: CMAJ7, beats: 2, added: true },
-            { chord: FMAJ7, beats: 1, added: true },
-            { chord: E7, beats: 1 },
+            { chord: FMAJ7, added: true },
+            { chord: E7 },
           ],
         },
         // Bar 8: Am triad のままで素っ気なく終わる原曲のニュアンス

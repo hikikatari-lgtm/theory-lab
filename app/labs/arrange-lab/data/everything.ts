@@ -355,14 +355,13 @@ export const everything: ArrangePreset = {
       id: 'arrange2',
       label: 'Arrange ②',
       // 発展型 / 原曲 — 内声クリシェ + テンション + 借用
-      // |C|Gadd9/B|Am7-Gm6|Fmaj7-F(♯5)-G/F|
-      // |Em7-A7(♯11)-A7|Dm7-G7(13,♭9)|Em7-A7(♯9)|Dm7-Fm6/A♭-Dm7/G|
+      // |C-Gadd9/B|Am7-Gm6|Fmaj7-F(♯5)-G/F|Em7-A7(♯11)-A7|
+      // |Dm7-G7(13,♭9)|Em7-A7(♯9)|Dm7-Fm6/A♭-Dm7/G|C|
       bars: [
-        // Bar 1: C
-        { chords: [{ chord: C_TRI }] },
-        // Bar 2: Gadd9/B
+        // Bar 1: C(2) - Gadd9/B(2)
         {
           chords: [
+            { chord: C_TRI },
             {
               chord: GADD9_ON_B,
               added: true,
@@ -371,7 +370,7 @@ export const everything: ArrangePreset = {
             },
           ],
         },
-        // Bar 3: Am7(2) - Gm6(2)
+        // Bar 2: Am7(2) - Gm6(2)
         {
           chords: [
             { chord: AM7 },
@@ -383,7 +382,7 @@ export const everything: ArrangePreset = {
             },
           ],
         },
-        // Bar 4: Fmaj7(2) - F(♯5)(1) - G/F(1)  [2-1-1]
+        // Bar 3: Fmaj7(2) - F(♯5)(1) - G/F(1)  [2-1-1]
         {
           chords: [
             { chord: FMAJ7, beats: 2 },
@@ -403,7 +402,7 @@ export const everything: ArrangePreset = {
             },
           ],
         },
-        // Bar 5: Em7(2) - A7(♯11)(1) - A7(1)  [2-1-1]
+        // Bar 4: Em7(2) - A7(♯11)(1) - A7(1)  [2-1-1]
         {
           chords: [
             { chord: EM7, beats: 2 },
@@ -423,7 +422,7 @@ export const everything: ArrangePreset = {
             },
           ],
         },
-        // Bar 6: Dm7(2) - G7(13,♭9)(2)
+        // Bar 5: Dm7(2) - G7(13,♭9)(2)
         {
           chords: [
             { chord: DM7 },
@@ -435,7 +434,7 @@ export const everything: ArrangePreset = {
             },
           ],
         },
-        // Bar 7: Em7(2) - A7(♯9)(2)
+        // Bar 6: Em7(2) - A7(♯9)(2)
         {
           chords: [
             { chord: EM7 },
@@ -447,7 +446,7 @@ export const everything: ArrangePreset = {
             },
           ],
         },
-        // Bar 8: Dm7(2) - Fm6/A♭(1) - Dm7/G(1)  [2-1-1]
+        // Bar 7: Dm7(2) - Fm6/A♭(1) - Dm7/G(1)  [2-1-1]
         {
           chords: [
             { chord: DM7, beats: 2 },
@@ -461,6 +460,8 @@ export const everything: ArrangePreset = {
             { chord: DM7_ON_G, beats: 1 },
           ],
         },
+        // Bar 8: C — トニックで解決
+        { chords: [{ chord: C_TRI }] },
       ],
     },
   ],

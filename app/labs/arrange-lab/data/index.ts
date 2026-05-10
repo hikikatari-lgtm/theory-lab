@@ -6,6 +6,7 @@ import { kabutomushi } from './kabutomushi';
 import { everything } from './everything';
 import { virtualInsanity } from './virtual-insanity';
 import { donnaTokiMo } from './donna-toki-mo';
+import { popStar } from './pop-star';
 import type { ArrangePreset } from './types';
 
 export const PRESETS: Record<string, ArrangePreset> = {
@@ -17,6 +18,7 @@ export const PRESETS: Record<string, ArrangePreset> = {
   everything: everything,
   'virtual-insanity': virtualInsanity,
   'donna-toki-mo': donnaTokiMo,
+  'pop-star': popStar,
 };
 
 export const PRESET_LIST: ReadonlyArray<{ id: string; label: string }> = [
@@ -28,6 +30,7 @@ export const PRESET_LIST: ReadonlyArray<{ id: string; label: string }> = [
   { id: 'everything', label: 'Everything / MISIA (Key C)' },
   { id: 'virtual-insanity', label: 'Virtual Insanity (Aメロ) / Jamiroquai (Key Am)' },
   { id: 'donna-toki-mo', label: 'どんなときも / 槇原敬之 (Key C)' },
+  { id: 'pop-star', label: 'POP STAR / 平井堅 (Key C)' },
 ];
 
 export const DEFAULT_PRESET_ID = 'four-one-five-six';

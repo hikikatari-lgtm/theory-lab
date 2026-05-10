@@ -249,11 +249,10 @@ export const kabutomushi: ArrangePreset = {
     {
       id: 'original',
       label: 'Original',
-      // 3 コード型 (C / F / G)
-      // |C|F|C|C|C|F|C|F-G|C|
+      // 3 コード型 (C / F / G) — 8 小節構成
+      // |C-F|C|C|C|F|C|F-G|C|
       bars: [
-        { chords: [{ chord: C_TRI }] },
-        { chords: [{ chord: F_TRI }] },
+        { chords: [{ chord: C_TRI }, { chord: F_TRI }] },
         { chords: [{ chord: C_TRI }] },
         { chords: [{ chord: C_TRI }] },
         { chords: [{ chord: C_TRI }] },
@@ -267,11 +266,11 @@ export const kabutomushi: ArrangePreset = {
       id: 'arrange1',
       label: 'Arrange ①',
       // 基本型 — ダイアトニック 7th 化 + 終止に Dm7/G の Vsus
-      // |C|Dm7|Em7|Em7|Am7|F|Em7-Am7|Dm7-Dm7/G|Am7|
+      // |C-Dm7|Em7|Em7|Am7|F|Em7-Am7|Dm7-Dm7/G|Am7|
       bars: [
-        { chords: [{ chord: C_TRI }] },
         {
           chords: [
+            { chord: C_TRI },
             {
               chord: DM7,
               added: true,
@@ -323,12 +322,12 @@ export const kabutomushi: ArrangePreset = {
       id: 'arrange2',
       label: 'Arrange ②',
       // 発展型 / 原曲 — セカンダリードミナント・借用・半音上下行
-      // |C|Dm|C/E|E7-E7/G♯|Am7-Gm7|F♯m7-Fm6|Em7-Cm/E♭|Dm7-F/G|Am7-Gm7-C7|
+      // |C-Dm|C/E|E7-E7/G♯|Am7-Gm7|F♯m7-Fm6|Em7-Cm/E♭|Dm7-F/G|Am7-Gm7-C7|
       bars: [
-        { chords: [{ chord: C_TRI }] },
-        // Bar 2: Dm (Arrange① の Dm7 を 7 抜き triad に変更)
+        // Bar 1: C(2) - Dm(2)
         {
           chords: [
+            { chord: C_TRI },
             {
               chord: DM_TRI,
               added: true,
@@ -336,7 +335,7 @@ export const kabutomushi: ArrangePreset = {
             },
           ],
         },
-        // Bar 3: C/E (Em7 → C/E でバスを 3rd に)
+        // Bar 2: C/E
         {
           chords: [
             {
@@ -346,7 +345,7 @@ export const kabutomushi: ArrangePreset = {
             },
           ],
         },
-        // Bar 4: E7(2) - E7/G♯(2)
+        // Bar 3: E7(2) - E7/G♯(2)
         {
           chords: [
             {
@@ -363,19 +362,20 @@ export const kabutomushi: ArrangePreset = {
             },
           ],
         },
-        // Bar 5: Am7(2) - Gm7(2)
+        // Bar 4: Am7(3) - Gm7(1)  ← 3-1 拍チェンジ
         {
           chords: [
-            { chord: AM7 },
+            { chord: AM7, beats: 3 },
             {
               chord: GM7,
+              beats: 1,
               added: true,
               technique:
-                'Vm7 借用 — C7 への 251 準備 (次に F♯m7 を経て下降)',
+                'Vm7 借用 — Am7 から半音下行で F♯m7 へ繋ぐ通過コード',
             },
           ],
         },
-        // Bar 6: F♯m7(2) - Fm6(2)
+        // Bar 5: F♯m7(2) - Fm6(2)
         {
           chords: [
             {
@@ -390,7 +390,7 @@ export const kabutomushi: ArrangePreset = {
             },
           ],
         },
-        // Bar 7: Em7(2) - Cm/E♭(2)
+        // Bar 6: Em7(2) - Cm/E♭(2)
         {
           chords: [
             { chord: EM7 },
@@ -402,7 +402,7 @@ export const kabutomushi: ArrangePreset = {
             },
           ],
         },
-        // Bar 8: Dm7(2) - F/G(2)
+        // Bar 7: Dm7(2) - F/G(2)
         {
           chords: [
             { chord: DM7 },
@@ -413,7 +413,7 @@ export const kabutomushi: ArrangePreset = {
             },
           ],
         },
-        // Bar 9: Am7(2) - Gm7(1) - C7(1)
+        // Bar 8: Am7(2) - Gm7(1) - C7(1)
         {
           chords: [
             { chord: AM7, beats: 2 },

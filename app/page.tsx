@@ -51,6 +51,14 @@ const LABS: Lab[] = [
       'シンプルなコード進行が、パッシングコードやオンコードを足していくとどう変化するか。Original から段階的なアレンジへ切り替えて体感する。',
     status: 'active',
   },
+  {
+    slug: 'practice-lab',
+    title: 'Practice Lab',
+    subtitle: 'メトロノームでコード進行を練習',
+    description:
+      'バッキングトラックに合わせてコード進行をリアルタイム表示する練習ツール。テンポ調整、カウントイン、区間ループに対応。',
+    status: 'active',
+  },
 ];
 
 export default function Home() {

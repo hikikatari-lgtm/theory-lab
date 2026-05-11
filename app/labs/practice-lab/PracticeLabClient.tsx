@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import LabHeader from '@/components/LabHeader';
 import { PRESETS, getPreset, type Preset } from './data/presets';
 import {
@@ -11,6 +11,11 @@ import {
 } from './audio/metronome';
 
 const COUNT_IN_BEATS = 4;
+
+// Seconds for one quarter-note beat at a given BPM.
+function beatDurationSec(bpm: number) {
+  return 60 / bpm;
+}
 
 // Flatten a preset's bars × chords into a per-beat array so we can answer
 // "what chord is at progression-beat N?" in O(1). Each entry stores:
@@ -60,6 +65,11 @@ export default function PracticeLabClient({ initialPresetId }: Props) {
   const [loopStartBar, setLoopStartBar] = useState(1);
   const [loopEndBar, setLoopEndBar] = useState(totalBars);
 
+  // Backing track audio element (created once per mount).
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  // Whether the metronome click is audible while backing track plays.
+  const [clickMuted, setClickMuted] = useState(false);
+
   const [isPlaying, setIsPlaying] = useState(false);
   // currentTick is the global tick index emitted by the metronome. -1 means
   // "not playing". During count-in it's in [0, COUNT_IN_BEATS); after that
@@ -71,10 +81,28 @@ export default function PracticeLabClient({ initialPresetId }: Props) {
     if (isPlaying) setMetronomeTempo(tempo);
   }, [tempo, isPlaying]);
 
+  // Create / replace the audio element whenever the preset's audioUrl changes.
+  useEffect(() => {
+    if (!preset.audioUrl) {
+      audioRef.current = null;
+      return;
+    }
+    const el = new Audio(preset.audioUrl);
+    el.preload = 'auto';
+    audioRef.current = el;
+    return () => {
+      el.pause();
+    };
+  }, [preset.audioUrl]);
+
   // When the preset changes, stop playback and reset loop range / tempo so
   // we don't carry stale state across presets.
   useEffect(() => {
     stopMetronome();
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
     setIsPlaying(false);
     setCurrentTick(-1);
     setTempo(preset.tempo);
@@ -151,6 +179,29 @@ export default function PracticeLabClient({ initialPresetId }: Props) {
     if (isPlaying) return;
     setCurrentTick(-1);
     setIsPlaying(true);
+
+    // If the preset has a backing track, schedule audio so beat 1 of the
+    // progression aligns with the first chord. The count-in takes
+    // COUNT_IN_BEATS quarter-notes; audio starts `countInSec` seconds before
+    // the progression, offset by audioStartSec into the file.
+    if (audioRef.current && preset.audioUrl) {
+      const countInSec = COUNT_IN_BEATS * beatDurationSec(tempo);
+      const startOffset = (preset.audioStartSec ?? 0) - countInSec;
+      const el = audioRef.current;
+      if (startOffset >= 0) {
+        // Audio starts partway through the file — play immediately.
+        el.currentTime = startOffset;
+        el.play().catch(() => {});
+      } else {
+        // Audio starts before the beginning of the file — delay playback.
+        el.currentTime = 0;
+        const delayMs = -startOffset * 1000;
+        setTimeout(() => {
+          if (el) el.play().catch(() => {});
+        }, delayMs);
+      }
+    }
+
     startMetronome({
       tempo,
       onTick: (tickIndex) => {
@@ -174,11 +225,16 @@ export default function PracticeLabClient({ initialPresetId }: Props) {
         const progressionBeat = tickIndex - COUNT_IN_BEATS;
         return progressionBeat >= totalBeats - 1;
       },
+      clickMuted,
     }).catch(() => {});
   }
 
   function handleStop() {
     stopMetronome();
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
     setIsPlaying(false);
     setCurrentTick(-1);
   }
@@ -249,6 +305,22 @@ export default function PracticeLabClient({ initialPresetId }: Props) {
             <span>200</span>
           </div>
         </div>
+
+        {preset.audioUrl && (
+          <div className="pl-track-block">
+            <div className="pl-track-row">
+              <span className="pl-track-label">🎵 Backing track</span>
+              <button
+                type="button"
+                className={'pl-btn pl-btn-sm' + (clickMuted ? ' pl-btn-muted-on' : '')}
+                onClick={() => setClickMuted((m) => !m)}
+                title="メトロノームのクリック音をミュート"
+              >
+                {clickMuted ? '🔇 クリック OFF' : '🔔 クリック ON'}
+              </button>
+            </div>
+          </div>
+        )}
 
         <div className="pl-controls">
           {!isPlaying ? (

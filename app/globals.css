@@ -2728,6 +2728,34 @@ footer {
   line-height: 1.1;
 }
 
+.pl-track-block {
+  background: var(--pl-panel);
+  border: 1px solid var(--pl-accent-border);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+.pl-track-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.pl-track-label {
+  font-size: 12px;
+  color: var(--pl-accent);
+  letter-spacing: 0.04em;
+}
+.pl-btn-sm {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 5px;
+}
+.pl-btn-muted-on {
+  background: var(--pl-panel-2);
+  color: var(--pl-text-dim);
+  border-color: var(--pl-border);
+}
+
 .pl-foot {
   text-align: center;
   font-size: 11px;

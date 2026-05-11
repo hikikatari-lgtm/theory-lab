@@ -65,6 +65,8 @@ export type StartOpts = {
   /** Return true to stop the transport after this tick (e.g. end of song
    *  with looping disabled). Called on the same tick as onTick. */
   shouldStop?: (tickIndex: number) => boolean;
+  /** When true, the click sound is suppressed (backing track provides the pulse). */
+  clickMuted?: boolean;
 };
 
 export async function startMetronome(opts: StartOpts): Promise<void> {
@@ -91,9 +93,11 @@ export async function startMetronome(opts: StartOpts): Promise<void> {
     const i = tickIndex;
     tickIndex += 1;
     const accent = opts.isAccent(i);
-    const synth = accent ? accentSynth : normalSynth;
-    if (synth) {
-      synth.triggerAttackRelease(accent ? 'C6' : 'C5', '32n', time);
+    if (!opts.clickMuted) {
+      const synth = accent ? accentSynth : normalSynth;
+      if (synth) {
+        synth.triggerAttackRelease(accent ? 'C6' : 'C5', '32n', time);
+      }
     }
     T.Draw.schedule(() => {
       opts.onTick(i);

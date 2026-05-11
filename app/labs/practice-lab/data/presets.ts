@@ -26,11 +26,57 @@ export type Preset = {
   tempo: number;
   beatsPerBar: number;
   bars: Bar[];
-  /** Optional future field: MP3 backing track URL. */
+  /** MP3 backing track URL (relative to /public, e.g. "/audio/foo.mp3"). */
   audioUrl?: string;
+  /**
+   * Seconds into the MP3 where the first beat of the progression lands.
+   * The metronome count-in starts at `audioStartSec - countInDuration`
+   * so that the audio and chord display line up at beat 1.
+   * Defaults to 0.
+   */
+  audioStartSec?: number;
 };
 
 export const PRESETS: Preset[] = [
+  // ─────────────────────────────────────────────────────────────────────────
+  // Isn't She Lovely — Stevie Wonder (Songs in the Key of Life, 1976)
+  // Fake-book / play-along version: Eb major, Rock Shuffle ♩=131
+  //
+  // Structure (14-bar head):
+  //   A (1-8):   VIm7 → II7 → V7sus → Imaj7  ×2
+  //   B (9-14):  IVmaj7 → III7(♭9) → VIm7 → II7 → V7sus → I
+  //
+  // II7  = F7  (V/V — secondary dominant pulling to Bb7sus)
+  // III7 = G7♭9 (V/vi — secondary dominant pulling back to Cm7)
+  // ─────────────────────────────────────────────────────────────────────────
+  {
+    id: 'isnt-she-lovely-eb',
+    name: "Isn't She Lovely (Key E♭)",
+    key: 'E♭',
+    tempo: 131,
+    beatsPerBar: 4,
+    audioUrl: '/audio/isnt-she-lovely.mp3',
+    audioStartSec: 0,
+    bars: [
+      // A section (8 bars) ─────────────────────────────────────
+      { chords: [{ roman: 'VIm7',     symbol: 'Cm7',    beats: 4 }] },
+      { chords: [{ roman: 'II7',      symbol: 'F7',     beats: 4 }] },
+      { chords: [{ roman: 'V7sus',    symbol: 'B♭7sus', beats: 4 }] },
+      { chords: [{ roman: 'Imaj7',    symbol: 'E♭maj7', beats: 4 }] },
+      { chords: [{ roman: 'VIm7',     symbol: 'Cm7',    beats: 4 }] },
+      { chords: [{ roman: 'II7',      symbol: 'F7',     beats: 4 }] },
+      { chords: [{ roman: 'V7sus',    symbol: 'B♭7sus', beats: 4 }] },
+      { chords: [{ roman: 'Imaj7',    symbol: 'E♭maj7', beats: 4 }] },
+      // B section / Bridge (6 bars) ────────────────────────────
+      { chords: [{ roman: 'IVmaj7',   symbol: 'A♭maj7', beats: 4 }] },
+      { chords: [{ roman: 'III7(♭9)', symbol: 'G7(♭9)', beats: 4 }] },
+      { chords: [{ roman: 'VIm7',     symbol: 'Cm7',    beats: 4 }] },
+      { chords: [{ roman: 'II7',      symbol: 'F7',     beats: 4 }] },
+      { chords: [{ roman: 'V7sus',    symbol: 'B♭7sus', beats: 4 }] },
+      { chords: [{ roman: 'I',        symbol: 'E♭',     beats: 4 }] },
+    ],
+  },
+  // ─────────────────────────────────────────────────────────────────────────
   {
     id: 'ii-v-i-practice-c',
     name: 'ii-V-I Practice (Key C)',

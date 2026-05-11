@@ -56,7 +56,10 @@ export const PRESETS: Preset[] = [
     tempo: 131,
     beatsPerBar: 4,
     audioUrl: '/audio/isnt-she-lovely.mp3',
-    audioStartSec: 0,
+    // The audio file has ~0.3s of silence + 2 bars (8 beats) of count-in
+    // at 131 BPM before the chord progression starts.
+    // audioStartSec = 0.319 + 8 × (60/131) ≈ 3.98s
+    audioStartSec: 3.98,
     bars: [
       // A section (8 bars) ─────────────────────────────────────
       { chords: [{ roman: 'VIm7',     symbol: 'Cm7',    beats: 4 }] },

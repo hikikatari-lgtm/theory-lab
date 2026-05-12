@@ -65,8 +65,11 @@ export type StartOpts = {
   /** Return true to stop the transport after this tick (e.g. end of song
    *  with looping disabled). Called on the same tick as onTick. */
   shouldStop?: (tickIndex: number) => boolean;
-  /** When true, the click sound is suppressed (backing track provides the pulse). */
-  clickMuted?: boolean;
+  /**
+   * When true (or when the getter returns true), the click sound is suppressed.
+   * Pass a () => boolean getter to allow real-time toggling while playing.
+   */
+  clickMuted?: boolean | (() => boolean);
   /**
    * Called at the same Web Audio `time` as the click, before Tone.Draw.
    * Use this to schedule synth sounds (drums, bass) that must be
@@ -99,7 +102,8 @@ export async function startMetronome(opts: StartOpts): Promise<void> {
     const i = tickIndex;
     tickIndex += 1;
     const accent = opts.isAccent(i);
-    if (!opts.clickMuted) {
+    const isMuted = typeof opts.clickMuted === 'function' ? opts.clickMuted() : opts.clickMuted;
+    if (!isMuted) {
       const synth = accent ? accentSynth : normalSynth;
       if (synth) {
         synth.triggerAttackRelease(accent ? 'C6' : 'C5', '32n', time);

@@ -169,6 +169,9 @@ export default function PracticeLabClient({ initialPresetId }: Props) {
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [clickMuted, setClickMuted] = useState(false);
+  // Ref so the metronome callback always reads the latest toggle state.
+  const clickMutedRef = useRef(clickMuted);
+  useEffect(() => { clickMutedRef.current = clickMuted; }, [clickMuted]);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTick, setCurrentTick] = useState<number>(-1);
@@ -290,7 +293,8 @@ export default function PracticeLabClient({ initialPresetId }: Props) {
 
     startMetronome({
       tempo,
-      clickMuted: hasSynth ? true : clickMuted,
+      // Getter so toggling the button takes effect immediately, mid-play.
+      clickMuted: hasSynth ? () => true : () => clickMutedRef.current,
       onTick: (tickIndex) => { setCurrentTick(tickIndex); },
       isAccent: (tickIndex) => {
         if (tickIndex < COUNT_IN_BEATS) return true;

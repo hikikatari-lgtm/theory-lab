@@ -19,11 +19,9 @@ type ToneModule = typeof import('tone');
 
 let Tone: ToneModule | null = null;
 
-// Shared synths (created once, reused across presets)
+// Shared synths (created once, reused across presets and styles)
 let kick: import('tone').MembraneSynth | null = null;
 let snare: import('tone').NoiseSynth | null = null;
-let ride: import('tone').MetalSynth | null = null;
-let footHihat: import('tone').MetalSynth | null = null;
 let hihat: import('tone').MetalSynth | null = null;
 let bass: import('tone').MonoSynth | null = null;
 
@@ -55,31 +53,6 @@ export async function initBacking(): Promise<void> {
     snare.volume.value = -14;
   }
 
-  // Ride cymbal — longer decay, metallic ring
-  if (!ride) {
-    ride = new T.MetalSynth({
-      envelope: { attack: 0.001, decay: 0.6, sustain: 0.05, release: 0.4 },
-      harmonicity: 5.1,
-      modulationIndex: 16,
-      resonance: 3200,
-      octaves: 1.5,
-    }).toDestination();
-    ride.volume.value = -18;
-  }
-
-  // Foot hi-hat (beats 2 & 4 in swing) — short, closed
-  if (!footHihat) {
-    footHihat = new T.MetalSynth({
-      envelope: { attack: 0.001, decay: 0.08, sustain: 0, release: 0.04 },
-      harmonicity: 5.1,
-      modulationIndex: 32,
-      resonance: 4000,
-      octaves: 1.5,
-    }).toDestination();
-    footHihat.volume.value = -22;
-  }
-
-  // Straight hi-hat
   if (!hihat) {
     hihat = new T.MetalSynth({
       envelope: { attack: 0.001, decay: 0.04, sustain: 0, release: 0.01 },
@@ -126,52 +99,43 @@ export function setSwing(enabled: boolean): void {
  * beatInBar: 0 = beat 1, 1 = beat 2, 2 = beat 3, 3 = beat 4
  */
 export function triggerStraightDrum(beatInBar: number, time: number): void {
-  // Kick on 1 and (lighter) 3
   if (beatInBar === 0) kick?.triggerAttackRelease('C1', '8n', time, 1.0);
   if (beatInBar === 2) kick?.triggerAttackRelease('C1', '8n', time, 0.6);
-  // Snare on 2 and 4
   if (beatInBar === 1 || beatInBar === 3) snare?.triggerAttackRelease('16n', time, 0.75);
-  // Hi-hat every beat
   hihat?.triggerAttackRelease('32n', time, beatInBar === 0 ? 0.7 : 0.4);
 }
 
 // ─── Jazz swing drum pattern ──────────────────────────────────────────────────
 
 /**
- * Trigger a jazz swing drum hit and schedule the swung "and" notes.
+ * Trigger a jazz swing drum hit using the same synths as straight mode.
+ * The "and" (swung 8th) notes are computed from audioTime + half-beat offset.
  *
- * Ride pattern per bar:
- *   beat 1: ride (accent)
- *   beat 2: ride + foot hihat  → also schedules ride on "and" of 2
- *   beat 3: ride (lighter)
- *   beat 4: ride + foot hihat  → also schedules ride on "and" of 4
+ * Jazz ride pattern (using hihat synth):
+ *   beat 1:     hihat accent + light kick
+ *   beat 2:     hihat + snare (brush)  + "and" hihat
+ *   beat 3:     hihat (lighter)
+ *   beat 4:     hihat + snare (brush)  + "and" hihat
  *
- * The "and" notes use Transport.scheduleOnce('+8n') so they automatically
- * respect the Transport.swing setting without any manual offset math.
+ * tempo is needed to compute the half-beat duration for the "and" hits.
  */
-export function triggerSwingDrum(beatInBar: number, time: number): void {
-  if (!Tone) return;
-  const T = Tone;
+export function triggerSwingDrum(beatInBar: number, time: number, tempo: number): void {
+  // Hihat on every beat (simulates ride cymbal)
+  const hVel = beatInBar === 0 ? 0.85 : beatInBar === 2 ? 0.55 : 0.7;
+  hihat?.triggerAttackRelease('32n', time, hVel);
 
-  // Ride on every beat (accent on 1)
-  const rideVel = beatInBar === 0 ? 0.9 : beatInBar === 2 ? 0.55 : 0.7;
-  ride?.triggerAttackRelease('32n', time, rideVel);
+  // Light kick only on beat 1 (jazz style)
+  if (beatInBar === 0) kick?.triggerAttackRelease('C1', '8n', time, 0.45);
 
-  // Foot hihat on 2 and 4
+  // Snare (brush) on beats 2 and 4
+  if (beatInBar === 1 || beatInBar === 3) snare?.triggerAttackRelease('32n', time, 0.4);
+
+  // Swung "and" on beats 2 and 4 — schedule directly at audio time + 8n duration
+  // (Transport.swing already shifts the perceived feel via the Transport clock)
   if (beatInBar === 1 || beatInBar === 3) {
-    footHihat?.triggerAttackRelease('32n', time, 0.6);
-  }
-
-  // Light kick only on beat 1
-  if (beatInBar === 0) {
-    kick?.triggerAttackRelease('C1', '8n', time, 0.5);
-  }
-
-  // Swung "and" on beats 2 and 4 — scheduled via Transport so swing is applied
-  if (beatInBar === 1 || beatInBar === 3) {
-    T.Transport.scheduleOnce((andTime: number) => {
-      ride?.triggerAttackRelease('32n', andTime, 0.5);
-    }, '+8n');
+    const eighthNoteSec = 60 / (tempo * 2);
+    const andTime = time + eighthNoteSec;
+    hihat?.triggerAttackRelease('32n', andTime, 0.55);
   }
 }
 

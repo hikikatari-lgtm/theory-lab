@@ -225,7 +225,6 @@ export default function PracticeLabClient({ initialPresetId }: Props) {
 
     // Apply (or clear) swing before Transport starts
     if (hasSynth) setSwing(isSwing);
-    const triggerDrum = isSwing ? triggerSwingDrum : triggerStraightDrum;
 
     startMetronome({
       tempo,
@@ -256,7 +255,11 @@ export default function PracticeLabClient({ initialPresetId }: Props) {
         ? (tickIndex, audioTime) => {
             // --- Drums (every tick, including count-in) ---
             const beatInBar = tickIndex % 4;
-            triggerDrum(beatInBar, audioTime);
+            if (isSwing) {
+              triggerSwingDrum(beatInBar, audioTime, capturedTempo);
+            } else {
+              triggerStraightDrum(beatInBar, audioTime);
+            }
 
             // --- Bass (only during progression, on chord beat 1) ---
             if (tickIndex < COUNT_IN_BEATS) return;

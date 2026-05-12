@@ -139,6 +139,62 @@ export const PRESETS: Preset[] = [
     ],
   },
   // ─────────────────────────────────────────────────────────────────────────
+  // Mellow Soulful Groove — Key F, ♩=74 (148 double-time feel)
+  //
+  // YouTube jam track ("Mellow Soulful Groove Guitar Backing Track Jam in F").
+  // No count-in in the audio — music starts at t≈0.52s (first note onset).
+  // audioStartSec = 0.52.
+  //
+  // Progression (25 bars, Key F major):
+  //   A (×3, 12 bars): | Dm7 | Bb | F | C |
+  //   B (2 bars):      | Gm  | Bb |
+  //   C (6 bars):      | Gm  | Bb | Dm | C | F | C |
+  //   D (5 bars):      | Gm  | Bb | Dm | C | Bb |
+  //
+  // Roman numerals relative to F major:
+  //   F=I  Gm=IIm  Bb=IV  C=V  Dm=VIm
+  // ─────────────────────────────────────────────────────────────────────────
+  {
+    id: 'groove-f-74bpm',
+    name: 'Groove in F — 74 BPM (音源)',
+    key: 'F',
+    tempo: 74,
+    beatsPerBar: 4,
+    audioUrl: '/audio/groove-f-74bpm.mp3',
+    audioStartSec: 0.52,
+    bars: [
+      // ── A section (×3 = 12 bars): Dm7 | Bb | F | C ────────────────────
+      { chords: [{ roman: 'VIm7', symbol: 'Dm7', beats: 4 }] },
+      { chords: [{ roman: 'IV',   symbol: 'Bb',  beats: 4 }] },
+      { chords: [{ roman: 'I',    symbol: 'F',   beats: 4 }] },
+      { chords: [{ roman: 'V',    symbol: 'C',   beats: 4 }] },
+      { chords: [{ roman: 'VIm7', symbol: 'Dm7', beats: 4 }] },
+      { chords: [{ roman: 'IV',   symbol: 'Bb',  beats: 4 }] },
+      { chords: [{ roman: 'I',    symbol: 'F',   beats: 4 }] },
+      { chords: [{ roman: 'V',    symbol: 'C',   beats: 4 }] },
+      { chords: [{ roman: 'VIm7', symbol: 'Dm7', beats: 4 }] },
+      { chords: [{ roman: 'IV',   symbol: 'Bb',  beats: 4 }] },
+      { chords: [{ roman: 'I',    symbol: 'F',   beats: 4 }] },
+      { chords: [{ roman: 'V',    symbol: 'C',   beats: 4 }] },
+      // ── B section (2 bars): Gm | Bb ───────────────────────────────────
+      { chords: [{ roman: 'IIm',  symbol: 'Gm',  beats: 4 }] },
+      { chords: [{ roman: 'IV',   symbol: 'Bb',  beats: 4 }] },
+      // ── C section (6 bars): Gm | Bb | Dm | C | F | C ─────────────────
+      { chords: [{ roman: 'IIm',  symbol: 'Gm',  beats: 4 }] },
+      { chords: [{ roman: 'IV',   symbol: 'Bb',  beats: 4 }] },
+      { chords: [{ roman: 'VIm',  symbol: 'Dm',  beats: 4 }] },
+      { chords: [{ roman: 'V',    symbol: 'C',   beats: 4 }] },
+      { chords: [{ roman: 'I',    symbol: 'F',   beats: 4 }] },
+      { chords: [{ roman: 'V',    symbol: 'C',   beats: 4 }] },
+      // ── D section (5 bars): Gm | Bb | Dm | C | Bb ─────────────────────
+      { chords: [{ roman: 'IIm',  symbol: 'Gm',  beats: 4 }] },
+      { chords: [{ roman: 'IV',   symbol: 'Bb',  beats: 4 }] },
+      { chords: [{ roman: 'VIm',  symbol: 'Dm',  beats: 4 }] },
+      { chords: [{ roman: 'V',    symbol: 'C',   beats: 4 }] },
+      { chords: [{ roman: 'IV',   symbol: 'Bb',  beats: 4 }] },
+    ],
+  },
+  // ─────────────────────────────────────────────────────────────────────────
   // ii-V-I in C — MP3 backing track, ♩=65
   //
   // Full-band audio ("全楽器対応"). 1-bar count-in at 65 BPM before loop.

@@ -11,7 +11,9 @@ import {
 } from './audio/metronome';
 import {
   initBacking,
-  triggerDrum,
+  setSwing,
+  triggerStraightDrum,
+  triggerSwingDrum,
   triggerBass,
   stopBacking,
 } from './audio/synth-backing';
@@ -219,6 +221,11 @@ export default function PracticeLabClient({ initialPresetId }: Props) {
     const capturedBassMap = bassMap;
     const capturedTempo = tempo;
     const hasSynth = preset.synthBacking === true;
+    const isSwing = preset.backingStyle === 'swing';
+
+    // Apply (or clear) swing before Transport starts
+    if (hasSynth) setSwing(isSwing);
+    const triggerDrum = isSwing ? triggerSwingDrum : triggerStraightDrum;
 
     startMetronome({
       tempo,
@@ -503,7 +510,11 @@ function buildBassMap(preset: Preset): (BassNote | null)[] {
   preset.bars.forEach((bar) => {
     bar.chords.forEach((chord) => {
       for (let b = 0; b < chord.beats; b++) {
-        if (b === 0 && chord.bassNote) {
+        if (chord.bassNotes && chord.bassNotes[b]) {
+          // Walking bass: one note per beat, hold for one beat
+          slots.push({ note: chord.bassNotes[b], durationBeats: 1 });
+        } else if (b === 0 && chord.bassNote) {
+          // Simple root: trigger on beat 1, hold for full chord duration
           slots.push({ note: chord.bassNote, durationBeats: chord.beats });
         } else {
           slots.push(null);

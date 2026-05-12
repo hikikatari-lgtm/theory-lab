@@ -1,22 +1,33 @@
 // Practice Lab — Tone.js synthesized drums + bass.
 //
-// All sounds are triggered via per-beat callbacks that receive the Web Audio
-// `time` from the metronome's scheduleRepeat, so they share exactly the same
-// clock and never drift relative to the metronome or chord display.
+// Two backing styles share the same synths:
+//   'straight' — kick/snare/hihat, no swing
+//   'swing'    — ride cymbal pattern + foot hihat, Transport swing enabled
 //
-// Public API:
-//   initBacking()          — create synths (call once on mount)
-//   triggerDrum(beat, t)   — kick / snare / hihat at audio time t
-//   triggerBass(note, dur, bpm, t) — bass note at audio time t
-//   stopBacking()          — release held notes (call on stop)
+// All sounds are scheduled at the Web Audio `time` passed from the
+// metronome's scheduleRepeat, so they share the same clock and never drift.
+//
+// Swing ride pattern (fired via scheduleOnce from within the beat callback):
+//   beat 1          ── ride (accent)
+//   beat 2          ── ride + foot hihat
+//   beat 2 "and"    ── ride (swung 8th — Transport.swing handles the timing)
+//   beat 3          ── ride
+//   beat 4          ── ride + foot hihat
+//   beat 4 "and"    ── ride (swung 8th)
 
 type ToneModule = typeof import('tone');
 
 let Tone: ToneModule | null = null;
+
+// Shared synths (created once, reused across presets)
 let kick: import('tone').MembraneSynth | null = null;
 let snare: import('tone').NoiseSynth | null = null;
+let ride: import('tone').MetalSynth | null = null;
+let footHihat: import('tone').MetalSynth | null = null;
 let hihat: import('tone').MetalSynth | null = null;
 let bass: import('tone').MonoSynth | null = null;
+
+export type BackingStyle = 'straight' | 'swing';
 
 async function loadTone(): Promise<ToneModule> {
   if (!Tone) Tone = await import('tone');
@@ -33,7 +44,7 @@ export async function initBacking(): Promise<void> {
       octaves: 5,
       envelope: { attack: 0.001, decay: 0.25, sustain: 0, release: 0.1 },
     }).toDestination();
-    kick.volume.value = -4;
+    kick.volume.value = -6;
   }
 
   if (!snare) {
@@ -44,6 +55,31 @@ export async function initBacking(): Promise<void> {
     snare.volume.value = -14;
   }
 
+  // Ride cymbal — longer decay, metallic ring
+  if (!ride) {
+    ride = new T.MetalSynth({
+      envelope: { attack: 0.001, decay: 0.6, sustain: 0.05, release: 0.4 },
+      harmonicity: 5.1,
+      modulationIndex: 16,
+      resonance: 3200,
+      octaves: 1.5,
+    }).toDestination();
+    ride.volume.value = -18;
+  }
+
+  // Foot hi-hat (beats 2 & 4 in swing) — short, closed
+  if (!footHihat) {
+    footHihat = new T.MetalSynth({
+      envelope: { attack: 0.001, decay: 0.08, sustain: 0, release: 0.04 },
+      harmonicity: 5.1,
+      modulationIndex: 32,
+      resonance: 4000,
+      octaves: 1.5,
+    }).toDestination();
+    footHihat.volume.value = -22;
+  }
+
+  // Straight hi-hat
   if (!hihat) {
     hihat = new T.MetalSynth({
       envelope: { attack: 0.001, decay: 0.04, sustain: 0, release: 0.01 },
@@ -74,24 +110,77 @@ export async function initBacking(): Promise<void> {
 }
 
 /**
- * Trigger a drum sound at the given Web Audio time.
- * beatInBar: 0 = beat 1 (kick+hihat), 1 = beat 2 (snare+hihat),
- *            2 = beat 3 (kick+hihat), 3 = beat 4 (snare+hihat)
+ * Enable or disable swing on the Transport.
+ * Call before Transport.start() — changing swing mid-transport causes glitches.
  */
-export function triggerDrum(beatInBar: number, time: number): void {
-  // Kick on beats 1 and 3
+export function setSwing(enabled: boolean): void {
+  if (!Tone) return;
+  Tone.Transport.swing = enabled ? 0.5 : 0;
+  Tone.Transport.swingSubdivision = '8n';
+}
+
+// ─── Straight drum pattern ────────────────────────────────────────────────────
+
+/**
+ * Trigger a straight (non-swing) drum hit.
+ * beatInBar: 0 = beat 1, 1 = beat 2, 2 = beat 3, 3 = beat 4
+ */
+export function triggerStraightDrum(beatInBar: number, time: number): void {
+  // Kick on 1 and (lighter) 3
   if (beatInBar === 0) kick?.triggerAttackRelease('C1', '8n', time, 1.0);
-  if (beatInBar === 2) kick?.triggerAttackRelease('C1', '8n', time, 0.65);
-  // Snare on beats 2 and 4
+  if (beatInBar === 2) kick?.triggerAttackRelease('C1', '8n', time, 0.6);
+  // Snare on 2 and 4
   if (beatInBar === 1 || beatInBar === 3) snare?.triggerAttackRelease('16n', time, 0.75);
-  // Hi-hat on every beat (accent beat 1)
+  // Hi-hat every beat
   hihat?.triggerAttackRelease('32n', time, beatInBar === 0 ? 0.7 : 0.4);
 }
 
+// ─── Jazz swing drum pattern ──────────────────────────────────────────────────
+
+/**
+ * Trigger a jazz swing drum hit and schedule the swung "and" notes.
+ *
+ * Ride pattern per bar:
+ *   beat 1: ride (accent)
+ *   beat 2: ride + foot hihat  → also schedules ride on "and" of 2
+ *   beat 3: ride (lighter)
+ *   beat 4: ride + foot hihat  → also schedules ride on "and" of 4
+ *
+ * The "and" notes use Transport.scheduleOnce('+8n') so they automatically
+ * respect the Transport.swing setting without any manual offset math.
+ */
+export function triggerSwingDrum(beatInBar: number, time: number): void {
+  if (!Tone) return;
+  const T = Tone;
+
+  // Ride on every beat (accent on 1)
+  const rideVel = beatInBar === 0 ? 0.9 : beatInBar === 2 ? 0.55 : 0.7;
+  ride?.triggerAttackRelease('32n', time, rideVel);
+
+  // Foot hihat on 2 and 4
+  if (beatInBar === 1 || beatInBar === 3) {
+    footHihat?.triggerAttackRelease('32n', time, 0.6);
+  }
+
+  // Light kick only on beat 1
+  if (beatInBar === 0) {
+    kick?.triggerAttackRelease('C1', '8n', time, 0.5);
+  }
+
+  // Swung "and" on beats 2 and 4 — scheduled via Transport so swing is applied
+  if (beatInBar === 1 || beatInBar === 3) {
+    T.Transport.scheduleOnce((andTime: number) => {
+      ride?.triggerAttackRelease('32n', andTime, 0.5);
+    }, '+8n');
+  }
+}
+
+// ─── Bass ─────────────────────────────────────────────────────────────────────
+
 /**
  * Trigger a bass note at the given Web Audio time.
- * durationBeats: how many quarter-note beats to sustain
- * tempo: current BPM (used to convert beats → seconds for the synth)
+ * durationBeats: how many quarter-note beats to sustain.
+ * tempo: current BPM (to convert beats → seconds).
  */
 export function triggerBass(
   note: string,
@@ -99,11 +188,16 @@ export function triggerBass(
   tempo: number,
   time: number,
 ): void {
-  const durationSec = (durationBeats * 60) / tempo;
+  // Walking bass holds for slightly less than a full beat so notes articulate
+  const holdBeats = Math.min(durationBeats, 0.85);
+  const durationSec = (holdBeats * 60) / tempo;
   bass?.triggerAttackRelease(note, durationSec, time);
 }
 
 /** Release any held bass note (call when transport stops). */
 export function stopBacking(): void {
+  if (!Tone) return;
   bass?.triggerRelease();
+  // Reset swing so other presets start clean
+  Tone.Transport.swing = 0;
 }

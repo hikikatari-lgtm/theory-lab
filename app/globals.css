@@ -2756,6 +2756,134 @@ footer {
   border-color: var(--pl-border);
 }
 
+/* ── Key selector ─────────────────────────────────────────────────────── */
+
+.pl-key-block {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--pl-panel);
+  border: 1px solid var(--pl-border);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.pl-key-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--pl-text-dim);
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.pl-key-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.pl-key-btn {
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid var(--pl-border);
+  border-radius: 5px;
+  background: var(--pl-panel-2);
+  color: var(--pl-text-dim);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+  letter-spacing: 0.03em;
+  min-width: 28px;
+  text-align: center;
+}
+.pl-key-btn:hover:not(:disabled) {
+  background: #3a3a3a;
+  color: var(--pl-text);
+}
+.pl-key-btn.is-active {
+  background: var(--pl-accent);
+  color: #1a1205;
+  border-color: var(--pl-accent);
+  font-weight: 700;
+}
+.pl-key-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── Mixer ────────────────────────────────────────────────────────────── */
+
+.pl-mixer-block {
+  background: var(--pl-panel);
+  border: 1px solid var(--pl-border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pl-mixer-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--pl-text-dim);
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.pl-mixer-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pl-mixer-label {
+  font-size: 11px;
+  color: var(--pl-text-dim);
+  width: 42px;
+  flex-shrink: 0;
+  letter-spacing: 0.04em;
+}
+
+.pl-mixer-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--pl-border);
+  outline: none;
+  cursor: pointer;
+}
+.pl-mixer-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--pl-accent);
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 0 0 2px rgba(0,0,0,0.3);
+}
+.pl-mixer-slider::-moz-range-thumb {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--pl-accent);
+  cursor: pointer;
+  border: none;
+}
+
+.pl-mixer-value {
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: var(--pl-text-dim);
+  width: 30px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
 .pl-foot {
   text-align: center;
   font-size: 11px;

@@ -53,6 +53,13 @@ export type Preset = {
    * Defaults to 0.
    */
   audioStartSec?: number;
+  /**
+   * When true, a Key selector is shown and the bass notes are transposed
+   * in real time from `baseKey` to the selected key.
+   */
+  supportsAllKeys?: boolean;
+  /** The key the bassNotes are written in. Required when supportsAllKeys is true. */
+  baseKey?: string;
 };
 
 export const PRESETS: Preset[] = [
@@ -122,6 +129,8 @@ export const PRESETS: Preset[] = [
     beatsPerBar: 4,
     synthBacking: true,
     backingStyle: 'swing',
+    supportsAllKeys: true,
+    baseKey: 'C',
     bars: [
       { chords: [{ roman: 'IIm7',  symbol: 'Dm7',   beats: 4, bassNotes: ['D2', 'F2', 'A2', 'C3'] }] },
       { chords: [{ roman: 'V7',    symbol: 'G7',    beats: 4, bassNotes: ['B2', 'G2', 'D3', 'F3'] }] },

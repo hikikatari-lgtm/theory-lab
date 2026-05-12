@@ -42,7 +42,7 @@ export async function initBacking(): Promise<void> {
       octaves: 5,
       envelope: { attack: 0.001, decay: 0.25, sustain: 0, release: 0.1 },
     }).toDestination();
-    kick.volume.value = -6;
+    kick.volume.value = -3;
   }
 
   if (!snare) {
@@ -50,7 +50,7 @@ export async function initBacking(): Promise<void> {
       noise: { type: 'white' },
       envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.05 },
     }).toDestination();
-    snare.volume.value = -14;
+    snare.volume.value = -10;
   }
 
   if (!hihat) {
@@ -61,7 +61,7 @@ export async function initBacking(): Promise<void> {
       resonance: 4000,
       octaves: 1.5,
     }).toDestination();
-    hihat.volume.value = -24;
+    hihat.volume.value = -18;
   }
 
   if (!bass) {
@@ -81,6 +81,16 @@ export async function initBacking(): Promise<void> {
     bass.volume.value = -6;
   }
 }
+
+// ─── Volume control (called from mixer UI) ────────────────────────────────────
+
+/** Default dB levels — kept in sync with initBacking() above. */
+export const DEFAULT_VOLUMES = { kick: -3, snare: -10, hihat: -18, bass: -6 } as const;
+
+export function setKickVolume(db: number): void  { if (kick)  kick.volume.value  = db; }
+export function setSnareVolume(db: number): void { if (snare) snare.volume.value = db; }
+export function setHihatVolume(db: number): void { if (hihat) hihat.volume.value = db; }
+export function setBassVolume(db: number): void  { if (bass)  bass.volume.value  = db; }
 
 /**
  * Enable or disable swing on the Transport.

@@ -10,20 +10,71 @@ import {
   setMetronomeTempo,
 } from './audio/metronome';
 import {
+  DEFAULT_VOLUMES,
   initBacking,
   setSwing,
   triggerStraightDrum,
   triggerSwingDrum,
   triggerBass,
   stopBacking,
+  setKickVolume,
+  setSnareVolume,
+  setHihatVolume,
+  setBassVolume,
 } from './audio/synth-backing';
 
 const COUNT_IN_BEATS = 4;
 
-// Seconds for one quarter-note beat at a given BPM.
+// ─── Key transposition helpers ────────────────────────────────────────────────
+
+const CHROMATIC_PCS = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+const FLAT_NAMES    = ['C', 'Db', 'D', 'Eb',  'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+const FLAT_TO_SHARP: Record<string, string> = {
+  Db: 'C#', Eb: 'D#', Gb: 'F#', Ab: 'G#', Bb: 'A#', Fb: 'E', Cb: 'B',
+};
+const KEY_PC: Record<string, number> = {
+  C: 0, Db: 1, D: 2, Eb: 3, E: 4, F: 5, 'F#': 6, Gb: 6, G: 7, Ab: 8, A: 9, Bb: 10, B: 11,
+};
+const FLAT_KEYS = new Set(['F', 'Bb', 'Eb', 'Ab', 'Db', 'Gb']);
+const ALL_KEYS = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'];
+
+/** Transpose a bass note like 'D2' or 'Eb3' by N semitones. */
+function transposeNote(noteStr: string, semitones: number): string {
+  if (semitones === 0) return noteStr;
+  const m = noteStr.match(/^([A-G][b#]?)(\d)$/);
+  if (!m) return noteStr;
+  const [, pc, octStr] = m;
+  const octave = parseInt(octStr);
+  const normalized = FLAT_TO_SHARP[pc] ?? pc;
+  const idx = CHROMATIC_PCS.indexOf(normalized);
+  if (idx < 0) return noteStr;
+  const total = octave * 12 + idx + semitones;
+  const newOctave = Math.floor(total / 12);
+  const newPc = ((total % 12) + 12) % 12;
+  return CHROMATIC_PCS[newPc] + newOctave;
+}
+
+/** Transpose a chord symbol like 'Dm7' → 'Am7' (for G key, +7 semitones). */
+function transposeChordSymbol(symbol: string, semitones: number, targetKey: string): string {
+  if (semitones === 0) return symbol;
+  const m = symbol.match(/^([A-G][b#]?)(.*)/);
+  if (!m) return symbol;
+  const [, root, quality] = m;
+  const normalized = FLAT_TO_SHARP[root] ?? root;
+  const idx = CHROMATIC_PCS.indexOf(normalized);
+  if (idx < 0) return symbol;
+  const newPc = (idx + semitones + 12) % 12;
+  const newRoot = FLAT_KEYS.has(targetKey) ? FLAT_NAMES[newPc] : CHROMATIC_PCS[newPc];
+  return newRoot + quality;
+}
+
+// ─── Seconds for one quarter-note beat ───────────────────────────────────────
+
 function beatDurationSec(bpm: number) {
   return 60 / bpm;
 }
+
+// ─── Beat map ────────────────────────────────────────────────────────────────
 
 // Flatten a preset's bars × chords into a per-beat array so we can answer
 // "what chord is at progression-beat N?" in O(1). Each entry stores:
@@ -42,11 +93,7 @@ function buildBeatMap(preset: Preset): BeatSlot[] {
     let beatInBar = 0;
     bar.chords.forEach((chord, chordIdx) => {
       for (let b = 0; b < chord.beats; b++) {
-        slots.push({
-          barIdx,
-          chordIdx,
-          isBarStart: beatInBar === 0,
-        });
+        slots.push({ barIdx, chordIdx, isBarStart: beatInBar === 0 });
         beatInBar += 1;
       }
     });
@@ -67,24 +114,63 @@ export default function PracticeLabClient({ initialPresetId }: Props) {
   const totalBeats = beatMap.length;
   const totalBars = preset.bars.length;
 
-  // Per-beat bass info: note to play if this is the first beat of a chord.
+  // ─── Key state (synth presets only) ────────────────────────────────────────
+
+  const [currentKey, setCurrentKey] = useState(preset.baseKey ?? preset.key);
+
+  // Semitone offset from baseKey → currentKey (always upward).
+  const transposeSemitones = useMemo(() => {
+    if (!preset.supportsAllKeys || !preset.baseKey) return 0;
+    const fromPc = KEY_PC[preset.baseKey] ?? 0;
+    const toPc = KEY_PC[currentKey] ?? 0;
+    return (toPc - fromPc + 12) % 12;
+  }, [preset, currentKey]);
+
+  // Per-beat bass notes, transposed to the selected key.
   const bassMap = useMemo(() => buildBassMap(preset), [preset]);
+  const activeBassMap = useMemo(
+    () => applyTransposeToBassMap(bassMap, transposeSemitones),
+    [bassMap, transposeSemitones],
+  );
+
+  // Chord symbols transposed for display.
+  const displayBars = useMemo(
+    () =>
+      preset.bars.map((bar) => ({
+        ...bar,
+        chords: bar.chords.map((chord) => ({
+          ...chord,
+          symbol: transposeChordSymbol(chord.symbol, transposeSemitones, currentKey),
+        })),
+      })),
+    [preset.bars, transposeSemitones, currentKey],
+  );
+
+  // ─── Mixer state (synth presets only) ──────────────────────────────────────
+
+  const [kickVol,  setKickVol]  = useState(DEFAULT_VOLUMES.kick);
+  const [snareVol, setSnareVol] = useState(DEFAULT_VOLUMES.snare);
+  const [hihatVol, setHihatVol] = useState(DEFAULT_VOLUMES.hihat);
+  const [bassVol,  setBassVol2] = useState(DEFAULT_VOLUMES.bass);
+
+  useEffect(() => { setKickVolume(kickVol);   }, [kickVol]);
+  useEffect(() => { setSnareVolume(snareVol); }, [snareVol]);
+  useEffect(() => { setHihatVolume(hihatVol); }, [hihatVol]);
+  useEffect(() => { setBassVolume(bassVol);   }, [bassVol]);
+
+  // ─── Tempo / loop state ─────────────────────────────────────────────────────
 
   const [tempo, setTempo] = useState(preset.tempo);
   const [loopMode, setLoopMode] = useState<LoopMode>('all');
-  // 1-based bar numbers in UI; converted to 0-based internally.
   const [loopStartBar, setLoopStartBar] = useState(1);
   const [loopEndBar, setLoopEndBar] = useState(totalBars);
 
-  // Backing track audio element (created once per mount).
+  // ─── Backing track audio element ─────────────────────────────────────────
+
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  // Whether the metronome click is audible while backing track plays.
   const [clickMuted, setClickMuted] = useState(false);
 
   const [isPlaying, setIsPlaying] = useState(false);
-  // currentTick is the global tick index emitted by the metronome. -1 means
-  // "not playing". During count-in it's in [0, COUNT_IN_BEATS); after that
-  // the progression has started.
   const [currentTick, setCurrentTick] = useState<number>(-1);
 
   // Keep tempo in sync with the running transport.
@@ -101,13 +187,10 @@ export default function PracticeLabClient({ initialPresetId }: Props) {
     const el = new Audio(preset.audioUrl);
     el.preload = 'auto';
     audioRef.current = el;
-    return () => {
-      el.pause();
-    };
+    return () => { el.pause(); };
   }, [preset.audioUrl]);
 
-  // When the preset changes, stop playback and reset loop range / tempo so
-  // we don't carry stale state across presets.
+  // When the preset changes, stop playback and reset all derived state.
   useEffect(() => {
     stopMetronome();
     if (audioRef.current) {
@@ -119,6 +202,7 @@ export default function PracticeLabClient({ initialPresetId }: Props) {
     setTempo(preset.tempo);
     setLoopStartBar(1);
     setLoopEndBar(preset.bars.length);
+    setCurrentKey(preset.baseKey ?? preset.key);
   }, [presetId, preset]);
 
   // Eagerly initialise synths so first-click latency is just Tone.start().
@@ -129,24 +213,16 @@ export default function PracticeLabClient({ initialPresetId }: Props) {
 
   // Stop on unmount.
   useEffect(() => {
-    return () => {
-      stopMetronome();
-    };
+    return () => { stopMetronome(); };
   }, []);
 
-  // --- progression position from tick ---
-  // tickIndex semantics:
-  //   0 .. COUNT_IN_BEATS-1 → count-in clicks (no chord yet)
-  //   COUNT_IN_BEATS onwards → progression beat 0, 1, 2, ...
-  //
-  // Loop ranges are inclusive bar indices (1-based in UI). We convert them
-  // to a beat range and modulo the progression beat into that range.
+  // ─── Loop beat range ─────────────────────────────────────────────────────
+
   const loopBeats = useMemo(() => {
     if (loopMode === 'off') return null;
     if (loopMode === 'all') return { startBeat: 0, endBeat: totalBeats };
-    // range mode
     const startBarIdx = Math.max(0, Math.min(totalBars - 1, loopStartBar - 1));
-    const endBarIdx = Math.max(startBarIdx, Math.min(totalBars - 1, loopEndBar - 1));
+    const endBarIdx   = Math.max(startBarIdx, Math.min(totalBars - 1, loopEndBar - 1));
     let startBeat = 0;
     for (let i = 0; i < startBarIdx; i++) startBeat += beatsInBar(preset, i);
     let endBeat = startBeat;
@@ -154,15 +230,12 @@ export default function PracticeLabClient({ initialPresetId }: Props) {
     return { startBeat, endBeat };
   }, [loopMode, loopStartBar, loopEndBar, totalBars, preset, totalBeats]);
 
+  // ─── Position info (UI display) ──────────────────────────────────────────
+
   const positionInfo = useMemo(() => {
-    if (currentTick < 0) {
-      return { phase: 'idle' as const };
-    }
+    if (currentTick < 0) return { phase: 'idle' as const };
     if (currentTick < COUNT_IN_BEATS) {
-      return {
-        phase: 'count-in' as const,
-        countInRemaining: COUNT_IN_BEATS - currentTick,
-      };
+      return { phase: 'count-in' as const, countInRemaining: COUNT_IN_BEATS - currentTick };
     }
     const progressionBeat = currentTick - COUNT_IN_BEATS;
     let effectiveBeat: number;
@@ -172,9 +245,7 @@ export default function PracticeLabClient({ initialPresetId }: Props) {
     } else {
       effectiveBeat = progressionBeat;
     }
-    if (effectiveBeat >= totalBeats) {
-      return { phase: 'done' as const };
-    }
+    if (effectiveBeat >= totalBeats) return { phase: 'done' as const };
     const slot = beatMap[effectiveBeat];
     const beatInBar = beatPositionInBar(preset, slot.barIdx, effectiveBeat);
     return {
@@ -186,53 +257,41 @@ export default function PracticeLabClient({ initialPresetId }: Props) {
     };
   }, [currentTick, loopBeats, beatMap, totalBeats, preset]);
 
-  // --- play / stop ---
+  // ─── Play / stop ─────────────────────────────────────────────────────────
+
   function handleStart() {
     if (isPlaying) return;
     setCurrentTick(-1);
     setIsPlaying(true);
 
-    // If the preset has a backing track, schedule audio so beat 1 of the
-    // progression aligns with the first chord. The count-in takes
-    // COUNT_IN_BEATS quarter-notes; audio starts `countInSec` seconds before
-    // the progression, offset by audioStartSec into the file.
     if (audioRef.current && preset.audioUrl) {
       const countInSec = COUNT_IN_BEATS * beatDurationSec(tempo);
       const startOffset = (preset.audioStartSec ?? 0) - countInSec;
       const el = audioRef.current;
       if (startOffset >= 0) {
-        // Audio starts partway through the file — play immediately.
         el.currentTime = startOffset;
         el.play().catch(() => {});
       } else {
-        // Audio starts before the beginning of the file — delay playback.
         el.currentTime = 0;
         const delayMs = -startOffset * 1000;
-        setTimeout(() => {
-          if (el) el.play().catch(() => {});
-        }, delayMs);
+        setTimeout(() => { if (el) el.play().catch(() => {}); }, delayMs);
       }
     }
 
-    // Capture loop-state values in closure so onBeat/isAccent don't
-    // close over stale React state from a previous render.
-    const capturedLoopBeats = loopBeats;
-    const capturedTotalBeats = totalBeats;
-    const capturedBassMap = bassMap;
-    const capturedTempo = tempo;
-    const hasSynth = preset.synthBacking === true;
-    const isSwing = preset.backingStyle === 'swing';
+    // Capture closure values — these must not close over stale state.
+    const capturedLoopBeats    = loopBeats;
+    const capturedTotalBeats   = totalBeats;
+    const capturedBassMap      = activeBassMap;   // already transposed
+    const capturedTempo        = tempo;
+    const hasSynth             = preset.synthBacking === true;
+    const isSwing              = preset.backingStyle === 'swing';
 
-    // Apply (or clear) swing before Transport starts
     if (hasSynth) setSwing(isSwing);
 
     startMetronome({
       tempo,
-      // Auto-mute click when synth backing provides the pulse.
       clickMuted: hasSynth ? true : clickMuted,
-      onTick: (tickIndex) => {
-        setCurrentTick(tickIndex);
-      },
+      onTick: (tickIndex) => { setCurrentTick(tickIndex); },
       isAccent: (tickIndex) => {
         if (tickIndex < COUNT_IN_BEATS) return true;
         const progressionBeat = tickIndex - COUNT_IN_BEATS;
@@ -253,7 +312,7 @@ export default function PracticeLabClient({ initialPresetId }: Props) {
       },
       onBeat: hasSynth
         ? (tickIndex, audioTime) => {
-            // --- Drums (every tick, including count-in) ---
+            // Drums fire every tick (including count-in).
             const beatInBar = tickIndex % 4;
             if (isSwing) {
               triggerSwingDrum(beatInBar, audioTime, capturedTempo);
@@ -261,7 +320,7 @@ export default function PracticeLabClient({ initialPresetId }: Props) {
               triggerStraightDrum(beatInBar, audioTime);
             }
 
-            // --- Bass (only during progression, on chord beat 1) ---
+            // Bass fires only during the progression.
             if (tickIndex < COUNT_IN_BEATS) return;
             const progressionBeat = tickIndex - COUNT_IN_BEATS;
             let effectiveBeat: number;
@@ -292,13 +351,15 @@ export default function PracticeLabClient({ initialPresetId }: Props) {
     setCurrentTick(-1);
   }
 
-  // --- derived UI state ---
+  // ─── Derived UI state ─────────────────────────────────────────────────────
+
   const isPlayingProgression =
     positionInfo.phase === 'playing' || positionInfo.phase === 'count-in';
-  const activeBarIdx =
-    positionInfo.phase === 'playing' ? positionInfo.barIdx : -1;
-  const activeChordIdx =
-    positionInfo.phase === 'playing' ? positionInfo.chordIdx : -1;
+  const activeBarIdx  = positionInfo.phase === 'playing' ? positionInfo.barIdx  : -1;
+  const activeChordIdx = positionInfo.phase === 'playing' ? positionInfo.chordIdx : -1;
+  const hasSynthUI = preset.synthBacking === true;
+
+  // ─── Render ───────────────────────────────────────────────────────────────
 
   return (
     <div className="pl-page">
@@ -333,10 +394,32 @@ export default function PracticeLabClient({ initialPresetId }: Props) {
         <div className="pl-info">
           <div className="pl-info-title">{preset.name}</div>
           <div className="pl-info-meta">
-            Key {preset.key} <span className="pl-dot">·</span>{' '}
+            Key {hasSynthUI && preset.supportsAllKeys ? currentKey : preset.key}
+            <span className="pl-dot">·</span>{' '}
             <span className="pl-tempo-symbol">♩</span>= {tempo}
           </div>
         </div>
+
+        {/* ── Key selector (synth presets that support all keys) ── */}
+        {hasSynthUI && preset.supportsAllKeys && (
+          <div className="pl-key-block">
+            <span className="pl-key-label">Key</span>
+            <div className="pl-key-row">
+              {ALL_KEYS.map((k) => (
+                <button
+                  key={k}
+                  type="button"
+                  className={'pl-key-btn' + (currentKey === k ? ' is-active' : '')}
+                  onClick={() => { if (!isPlaying) setCurrentKey(k); }}
+                  disabled={isPlaying}
+                  title={isPlaying ? '停止してからキーを変更' : `Key ${k}`}
+                >
+                  {k.replace('b', '♭').replace('#', '♯')}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="pl-tempo-block">
           <div className="pl-tempo-row">
@@ -358,6 +441,35 @@ export default function PracticeLabClient({ initialPresetId }: Props) {
             <span>200</span>
           </div>
         </div>
+
+        {/* ── Mixer (synth presets only) ── */}
+        {hasSynthUI && (
+          <div className="pl-mixer-block">
+            <div className="pl-mixer-title">🎛 Mix</div>
+            {(
+              [
+                { label: 'Kick',   vol: kickVol,  set: setKickVol,  min: -30, max: 0 },
+                { label: 'Snare',  vol: snareVol, set: setSnareVol, min: -30, max: 0 },
+                { label: 'Hi-hat', vol: hihatVol, set: setHihatVol, min: -30, max: 0 },
+                { label: 'Bass',   vol: bassVol,  set: setBassVol2, min: -30, max: 0 },
+              ] as const
+            ).map(({ label, vol, set, min, max }) => (
+              <div key={label} className="pl-mixer-row">
+                <span className="pl-mixer-label">{label}</span>
+                <input
+                  type="range"
+                  className="pl-mixer-slider"
+                  min={min}
+                  max={max}
+                  step={1}
+                  value={vol}
+                  onChange={(e) => (set as (v: number) => void)(Number(e.target.value))}
+                />
+                <span className="pl-mixer-value">{vol > 0 ? '+' : ''}{vol}</span>
+              </div>
+            ))}
+          </div>
+        )}
 
         {preset.audioUrl && (
           <div className="pl-track-block">
@@ -459,12 +571,10 @@ export default function PracticeLabClient({ initialPresetId }: Props) {
         </div>
 
         <div className="pl-bars-grid">
-          {preset.bars.map((bar, barIdx) => (
+          {displayBars.map((bar, barIdx) => (
             <div
               key={barIdx}
-              className={
-                'pl-bar' + (activeBarIdx === barIdx ? ' is-active' : '')
-              }
+              className={'pl-bar' + (activeBarIdx === barIdx ? ' is-active' : '')}
             >
               <div className="pl-bar-number">BAR {barIdx + 1}</div>
               <div className="pl-bar-chords">
@@ -474,9 +584,7 @@ export default function PracticeLabClient({ initialPresetId }: Props) {
                   return (
                     <div
                       key={chordIdx}
-                      className={
-                        'pl-chord-cell' + (isActive ? ' is-active' : '')
-                      }
+                      className={'pl-chord-cell' + (isActive ? ' is-active' : '')}
                       style={{ flex: chord.beats }}
                     >
                       <div className="pl-chord-roman">{chord.roman}</div>
@@ -499,14 +607,13 @@ export default function PracticeLabClient({ initialPresetId }: Props) {
   );
 }
 
-// Helpers ---------------------------------------------------------------
+// ─── Helpers ─────────────────────────────────────────────────────────────────
 
 type BassNote = { note: string; durationBeats: number };
 
 /**
  * Build a per-beat array. Each entry is either null (no bass trigger) or
  * a BassNote (trigger this note for durationBeats, starting now).
- * The note fires only on the first beat of each chord that has a bassNote.
  */
 function buildBassMap(preset: Preset): (BassNote | null)[] {
   const slots: (BassNote | null)[] = [];
@@ -514,10 +621,8 @@ function buildBassMap(preset: Preset): (BassNote | null)[] {
     bar.chords.forEach((chord) => {
       for (let b = 0; b < chord.beats; b++) {
         if (chord.bassNotes && chord.bassNotes[b]) {
-          // Walking bass: one note per beat, hold for one beat
           slots.push({ note: chord.bassNotes[b], durationBeats: 1 });
         } else if (b === 0 && chord.bassNote) {
-          // Simple root: trigger on beat 1, hold for full chord duration
           slots.push({ note: chord.bassNote, durationBeats: chord.beats });
         } else {
           slots.push(null);
@@ -528,16 +633,25 @@ function buildBassMap(preset: Preset): (BassNote | null)[] {
   return slots;
 }
 
+/** Return a new bassMap with all notes transposed by `semitones`. */
+function applyTransposeToBassMap(
+  map: (BassNote | null)[],
+  semitones: number,
+): (BassNote | null)[] {
+  if (semitones === 0) return map;
+  return map.map((slot) =>
+    slot ? { ...slot, note: transposeNote(slot.note, semitones) } : null,
+  );
+}
+
 function beatsInBar(preset: Preset, barIdx: number): number {
   return preset.bars[barIdx].chords.reduce((s, c) => s + c.beats, 0);
 }
 
-// Given an absolute progression beat and the bar it belongs to, return how
-// many beats deep into that bar we are (0-based).
 function beatPositionInBar(
   preset: Preset,
   barIdx: number,
-  absoluteBeat: number
+  absoluteBeat: number,
 ): number {
   let acc = 0;
   for (let i = 0; i < barIdx; i++) acc += beatsInBar(preset, i);

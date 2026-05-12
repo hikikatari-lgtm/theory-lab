@@ -143,16 +143,16 @@ export const PRESETS: Preset[] = [
   //
   // YouTube jam track ("Mellow Soulful Groove Guitar Backing Track Jam in F").
   // No count-in in the audio — music starts at t≈0.52s (first note onset).
-  // audioStartSec = 0.52.
   //
-  // Progression (25 bars, Key F major):
-  //   A (×3, 12 bars): | Dm7 | Bb | F | C |
-  //   B (2 bars):      | Gm  | Bb |
-  //   C (6 bars):      | Gm  | Bb | Dm | C | F | C |
-  //   D (5 bars):      | Gm  | Bb | Dm | C | Bb |
+  // Verse (8 bars):
+  //   | Dm7(2) Bb(2) | F(2) C(2) |  ×3
+  //   | Gm(4)        | Bb(4)     |
   //
-  // Roman numerals relative to F major:
-  //   F=I  Gm=IIm  Bb=IV  C=V  Dm=VIm
+  // Chorus (8 bars):
+  //   | Gm(4) | Bb(4) | Dm(2) C(2) | F(2) C(2) |
+  //   | Gm(4) | Bb(4) | Dm(2) C(2) | Bb(4)     |
+  //
+  // Roman numerals: F=I  Gm=IIm  Bb=IV  C=V  Dm=VIm
   // ─────────────────────────────────────────────────────────────────────────
   {
     id: 'groove-f-74bpm',
@@ -163,34 +163,23 @@ export const PRESETS: Preset[] = [
     audioUrl: '/audio/groove-f-74bpm.mp3',
     audioStartSec: 0.52,
     bars: [
-      // ── A section (×3 = 12 bars): Dm7 | Bb | F | C ────────────────────
-      { chords: [{ roman: 'VIm7', symbol: 'Dm7', beats: 4 }] },
-      { chords: [{ roman: 'IV',   symbol: 'Bb',  beats: 4 }] },
-      { chords: [{ roman: 'I',    symbol: 'F',   beats: 4 }] },
-      { chords: [{ roman: 'V',    symbol: 'C',   beats: 4 }] },
-      { chords: [{ roman: 'VIm7', symbol: 'Dm7', beats: 4 }] },
-      { chords: [{ roman: 'IV',   symbol: 'Bb',  beats: 4 }] },
-      { chords: [{ roman: 'I',    symbol: 'F',   beats: 4 }] },
-      { chords: [{ roman: 'V',    symbol: 'C',   beats: 4 }] },
-      { chords: [{ roman: 'VIm7', symbol: 'Dm7', beats: 4 }] },
-      { chords: [{ roman: 'IV',   symbol: 'Bb',  beats: 4 }] },
-      { chords: [{ roman: 'I',    symbol: 'F',   beats: 4 }] },
-      { chords: [{ roman: 'V',    symbol: 'C',   beats: 4 }] },
-      // ── B section (2 bars): Gm | Bb ───────────────────────────────────
+      // ── Verse (8 bars) ─────────────────────────────────────────────────
+      { chords: [{ roman: 'VIm7', symbol: 'Dm7', beats: 2 }, { roman: 'IV', symbol: 'Bb', beats: 2 }] },
+      { chords: [{ roman: 'I',    symbol: 'F',   beats: 2 }, { roman: 'V',  symbol: 'C',  beats: 2 }] },
+      { chords: [{ roman: 'VIm7', symbol: 'Dm7', beats: 2 }, { roman: 'IV', symbol: 'Bb', beats: 2 }] },
+      { chords: [{ roman: 'I',    symbol: 'F',   beats: 2 }, { roman: 'V',  symbol: 'C',  beats: 2 }] },
+      { chords: [{ roman: 'VIm7', symbol: 'Dm7', beats: 2 }, { roman: 'IV', symbol: 'Bb', beats: 2 }] },
+      { chords: [{ roman: 'I',    symbol: 'F',   beats: 2 }, { roman: 'V',  symbol: 'C',  beats: 2 }] },
       { chords: [{ roman: 'IIm',  symbol: 'Gm',  beats: 4 }] },
       { chords: [{ roman: 'IV',   symbol: 'Bb',  beats: 4 }] },
-      // ── C section (6 bars): Gm | Bb | Dm | C | F | C ─────────────────
+      // ── Chorus (8 bars) ────────────────────────────────────────────────
       { chords: [{ roman: 'IIm',  symbol: 'Gm',  beats: 4 }] },
       { chords: [{ roman: 'IV',   symbol: 'Bb',  beats: 4 }] },
-      { chords: [{ roman: 'VIm',  symbol: 'Dm',  beats: 4 }] },
-      { chords: [{ roman: 'V',    symbol: 'C',   beats: 4 }] },
-      { chords: [{ roman: 'I',    symbol: 'F',   beats: 4 }] },
-      { chords: [{ roman: 'V',    symbol: 'C',   beats: 4 }] },
-      // ── D section (5 bars): Gm | Bb | Dm | C | Bb ─────────────────────
+      { chords: [{ roman: 'VIm',  symbol: 'Dm',  beats: 2 }, { roman: 'V',  symbol: 'C',  beats: 2 }] },
+      { chords: [{ roman: 'I',    symbol: 'F',   beats: 2 }, { roman: 'V',  symbol: 'C',  beats: 2 }] },
       { chords: [{ roman: 'IIm',  symbol: 'Gm',  beats: 4 }] },
       { chords: [{ roman: 'IV',   symbol: 'Bb',  beats: 4 }] },
-      { chords: [{ roman: 'VIm',  symbol: 'Dm',  beats: 4 }] },
-      { chords: [{ roman: 'V',    symbol: 'C',   beats: 4 }] },
+      { chords: [{ roman: 'VIm',  symbol: 'Dm',  beats: 2 }, { roman: 'V',  symbol: 'C',  beats: 2 }] },
       { chords: [{ roman: 'IV',   symbol: 'Bb',  beats: 4 }] },
     ],
   },

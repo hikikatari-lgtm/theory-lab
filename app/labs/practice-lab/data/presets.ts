@@ -139,6 +139,36 @@ export const PRESETS: Preset[] = [
     ],
   },
   // ─────────────────────────────────────────────────────────────────────────
+  // ii-V-I in C — MP3 backing track, ♩=65
+  //
+  // Full-band audio ("全楽器対応"). 1-bar count-in at 65 BPM before loop.
+  //
+  //   audioStartSec = count-in click onset (0.132s) + 4 beats × (60/65)
+  //                 = 0.132 + 3.692 ≈ 3.82s
+  //
+  // Progression (2-bar loop):
+  //   Bar 1: | Dm7 (2) · G7 (2) |
+  //   Bar 2: | Cmaj7 (4)        |
+  // ─────────────────────────────────────────────────────────────────────────
+  {
+    id: '251-c-65bpm',
+    name: 'ii-V-I in C — 65 BPM (音源)',
+    key: 'C',
+    tempo: 65,
+    beatsPerBar: 4,
+    audioUrl: '/audio/251-c-65bpm.mp3',
+    audioStartSec: 3.82,
+    bars: [
+      {
+        chords: [
+          { roman: 'IIm7',  symbol: 'Dm7',   beats: 2 },
+          { roman: 'V7',    symbol: 'G7',     beats: 2 },
+        ],
+      },
+      { chords: [{ roman: 'Imaj7', symbol: 'Cmaj7', beats: 4 }] },
+    ],
+  },
+  // ─────────────────────────────────────────────────────────────────────────
   {
     id: 'ii-v-i-practice-c',
     name: 'ii-V-I Practice (Key C)',

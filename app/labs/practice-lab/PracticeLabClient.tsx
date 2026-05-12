@@ -9,6 +9,12 @@ import {
   stopMetronome,
   setMetronomeTempo,
 } from './audio/metronome';
+import {
+  initBacking,
+  triggerDrum,
+  triggerBass,
+  stopBacking,
+} from './audio/synth-backing';
 
 const COUNT_IN_BEATS = 4;
 
@@ -58,6 +64,9 @@ export default function PracticeLabClient({ initialPresetId }: Props) {
   const beatMap = useMemo(() => buildBeatMap(preset), [preset]);
   const totalBeats = beatMap.length;
   const totalBars = preset.bars.length;
+
+  // Per-beat bass info: note to play if this is the first beat of a chord.
+  const bassMap = useMemo(() => buildBassMap(preset), [preset]);
 
   const [tempo, setTempo] = useState(preset.tempo);
   const [loopMode, setLoopMode] = useState<LoopMode>('all');
@@ -113,6 +122,7 @@ export default function PracticeLabClient({ initialPresetId }: Props) {
   // Eagerly initialise synths so first-click latency is just Tone.start().
   useEffect(() => {
     initMetronome().catch(() => {});
+    initBacking().catch(() => {});
   }, []);
 
   // Stop on unmount.
@@ -202,35 +212,68 @@ export default function PracticeLabClient({ initialPresetId }: Props) {
       }
     }
 
+    // Capture loop-state values in closure so onBeat/isAccent don't
+    // close over stale React state from a previous render.
+    const capturedLoopBeats = loopBeats;
+    const capturedTotalBeats = totalBeats;
+    const capturedBassMap = bassMap;
+    const capturedTempo = tempo;
+    const hasSynth = preset.synthBacking === true;
+
     startMetronome({
       tempo,
+      // Auto-mute click when synth backing provides the pulse.
+      clickMuted: hasSynth ? true : clickMuted,
       onTick: (tickIndex) => {
         setCurrentTick(tickIndex);
       },
       isAccent: (tickIndex) => {
-        if (tickIndex < COUNT_IN_BEATS) return true; // every count-in click is loud
+        if (tickIndex < COUNT_IN_BEATS) return true;
         const progressionBeat = tickIndex - COUNT_IN_BEATS;
         let effectiveBeat: number;
-        if (loopBeats) {
-          const len = loopBeats.endBeat - loopBeats.startBeat;
-          effectiveBeat = loopBeats.startBeat + (progressionBeat % len);
+        if (capturedLoopBeats) {
+          const len = capturedLoopBeats.endBeat - capturedLoopBeats.startBeat;
+          effectiveBeat = capturedLoopBeats.startBeat + (progressionBeat % len);
         } else {
           effectiveBeat = progressionBeat;
         }
-        if (effectiveBeat >= totalBeats) return false;
+        if (effectiveBeat >= capturedTotalBeats) return false;
         return beatMap[effectiveBeat].isBarStart;
       },
       shouldStop: (tickIndex) => {
-        if (loopBeats) return false; // looping → never auto-stop
+        if (capturedLoopBeats) return false;
         const progressionBeat = tickIndex - COUNT_IN_BEATS;
-        return progressionBeat >= totalBeats - 1;
+        return progressionBeat >= capturedTotalBeats - 1;
       },
-      clickMuted,
+      onBeat: hasSynth
+        ? (tickIndex, audioTime) => {
+            // --- Drums (every tick, including count-in) ---
+            const beatInBar = tickIndex % 4;
+            triggerDrum(beatInBar, audioTime);
+
+            // --- Bass (only during progression, on chord beat 1) ---
+            if (tickIndex < COUNT_IN_BEATS) return;
+            const progressionBeat = tickIndex - COUNT_IN_BEATS;
+            let effectiveBeat: number;
+            if (capturedLoopBeats) {
+              const len = capturedLoopBeats.endBeat - capturedLoopBeats.startBeat;
+              effectiveBeat = capturedLoopBeats.startBeat + (progressionBeat % len);
+            } else {
+              effectiveBeat = progressionBeat;
+            }
+            if (effectiveBeat >= capturedTotalBeats) return;
+            const bassInfo = capturedBassMap[effectiveBeat];
+            if (bassInfo) {
+              triggerBass(bassInfo.note, bassInfo.durationBeats, capturedTempo, audioTime);
+            }
+          }
+        : undefined,
     }).catch(() => {});
   }
 
   function handleStop() {
     stopMetronome();
+    stopBacking();
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
@@ -447,6 +490,29 @@ export default function PracticeLabClient({ initialPresetId }: Props) {
 }
 
 // Helpers ---------------------------------------------------------------
+
+type BassNote = { note: string; durationBeats: number };
+
+/**
+ * Build a per-beat array. Each entry is either null (no bass trigger) or
+ * a BassNote (trigger this note for durationBeats, starting now).
+ * The note fires only on the first beat of each chord that has a bassNote.
+ */
+function buildBassMap(preset: Preset): (BassNote | null)[] {
+  const slots: (BassNote | null)[] = [];
+  preset.bars.forEach((bar) => {
+    bar.chords.forEach((chord) => {
+      for (let b = 0; b < chord.beats; b++) {
+        if (b === 0 && chord.bassNote) {
+          slots.push({ note: chord.bassNote, durationBeats: chord.beats });
+        } else {
+          slots.push(null);
+        }
+      }
+    });
+  });
+  return slots;
+}
 
 function beatsInBar(preset: Preset, barIdx: number): number {
   return preset.bars[barIdx].chords.reduce((s, c) => s + c.beats, 0);

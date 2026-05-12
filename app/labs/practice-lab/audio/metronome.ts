@@ -67,6 +67,12 @@ export type StartOpts = {
   shouldStop?: (tickIndex: number) => boolean;
   /** When true, the click sound is suppressed (backing track provides the pulse). */
   clickMuted?: boolean;
+  /**
+   * Called at the same Web Audio `time` as the click, before Tone.Draw.
+   * Use this to schedule synth sounds (drums, bass) that must be
+   * sample-accurate rather than React-render-accurate.
+   */
+  onBeat?: (tickIndex: number, audioTime: number) => void;
 };
 
 export async function startMetronome(opts: StartOpts): Promise<void> {
@@ -99,6 +105,7 @@ export async function startMetronome(opts: StartOpts): Promise<void> {
         synth.triggerAttackRelease(accent ? 'C6' : 'C5', '32n', time);
       }
     }
+    if (opts.onBeat) opts.onBeat(i, time);
     T.Draw.schedule(() => {
       opts.onTick(i);
     }, time);

@@ -399,8 +399,12 @@ export default function PracticeLabClient({ initialPresetId }: Props) {
           <div className="pl-info-title">{preset.name}</div>
           <div className="pl-info-meta">
             Key {hasSynthUI && preset.supportsAllKeys ? currentKey : preset.key}
-            <span className="pl-dot">·</span>{' '}
-            <span className="pl-tempo-symbol">♩</span>= {tempo}
+            {!preset.audioUrl && (
+              <>
+                <span className="pl-dot">·</span>{' '}
+                <span className="pl-tempo-symbol">♩</span>= {tempo}
+              </>
+            )}
           </div>
         </div>
 
@@ -425,26 +429,29 @@ export default function PracticeLabClient({ initialPresetId }: Props) {
           </div>
         )}
 
-        <div className="pl-tempo-block">
-          <div className="pl-tempo-row">
-            <span className="pl-tempo-label">Tempo</span>
-            <span className="pl-tempo-value">{tempo} BPM</span>
+        {/* ── Tempo (hidden for audio presets — BPM is fixed in the track) ── */}
+        {!preset.audioUrl && (
+          <div className="pl-tempo-block">
+            <div className="pl-tempo-row">
+              <span className="pl-tempo-label">Tempo</span>
+              <span className="pl-tempo-value">{tempo} BPM</span>
+            </div>
+            <input
+              className="pl-tempo-slider"
+              type="range"
+              min={60}
+              max={200}
+              step={1}
+              value={tempo}
+              onChange={(e) => setTempo(Number(e.target.value))}
+            />
+            <div className="pl-tempo-scale">
+              <span>60</span>
+              <span>120</span>
+              <span>200</span>
+            </div>
           </div>
-          <input
-            className="pl-tempo-slider"
-            type="range"
-            min={60}
-            max={200}
-            step={1}
-            value={tempo}
-            onChange={(e) => setTempo(Number(e.target.value))}
-          />
-          <div className="pl-tempo-scale">
-            <span>60</span>
-            <span>120</span>
-            <span>200</span>
-          </div>
-        </div>
+        )}
 
         {/* ── Mixer (synth presets only) ── */}
         {hasSynthUI && (
